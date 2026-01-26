@@ -11,7 +11,7 @@ namespace Models
     {
         [Key]
         public required string Id { get; set; }
-        public required DateTime createdAt { get; set; }
-        public required DateTime updatedAt { get; set; }
+        public required DateTime CreatedAt { get; set; }
+        public required DateTime UpdatedAt { get; set; }
     }
 }

@@ -12,6 +12,6 @@ namespace Models
         public required string UserId { get;set; }
         public required User User { get; set; }
         public required string ChatId { get; set; }
-        public required Chat chat { get; set; }
+        public required Chat Chat { get; set; }
     }
 }

@@ -8,7 +8,6 @@
         public required DateTime End { get; set; }
         public required string OwnerId { get; set; }
         public User? Owner { get; set; }
-        public List<string>? UserIds { get; set; }
         public List<User>? Users { get; set; }
     }
 }

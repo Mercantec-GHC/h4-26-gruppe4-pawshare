@@ -1,9 +1,15 @@
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+IConfiguration Configuration = builder.Configuration;
+
+string connectionString = Configuration.GetConnectionString("DefaultConnection") ?? Environment.GetEnvironmentVariable("DefaultConnection");
+
+builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connectionString));
 
 // Add services to the container.
 

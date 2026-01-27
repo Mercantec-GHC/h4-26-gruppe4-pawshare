@@ -1,3 +1,8 @@
+using Repositories;
+using Repositories.Context;
+using Repositories.Interfaces;
+using Services.Interfaces;
+using Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -10,6 +15,14 @@ IConfiguration Configuration = builder.Configuration;
 string connectionString = Configuration.GetConnectionString("DefaultConnection") ?? Environment.GetEnvironmentVariable("DefaultConnection");
 
 builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connectionString));
+
+// Add dependcies for dependency injection
+// repos
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+
+// services
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 // Add services to the container.
 

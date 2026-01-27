@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+
+namespace Models
+{
+    public class UserPostAcceptance : Common
+    {
+        [Required(ErrorMessage = "Der skal være mindst en tilkoblet bruger")]
+        public required int UserId { get; set; }
+        public User? User { get; set; }
+
+        [Required(ErrorMessage = "Der skal være mindst et tilkoblet opslag")]
+        public required int PostId { get; set; }
+        public Post? Post { get; set; }
+    }
+}

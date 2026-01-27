@@ -8,6 +8,7 @@ namespace Models
 {
     public class Message : Common
     {
+
         public required string Content { get; set; }
         public required string UserId { get;set; }
         public required User User { get; set; }

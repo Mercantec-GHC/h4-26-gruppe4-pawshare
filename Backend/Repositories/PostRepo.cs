@@ -7,41 +7,40 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 
 
-public class UserRepo : IUserRepo
+public class PostRepo : IPostRepo
 {
     private readonly AppDBContext _dbContext;
 
-    public UserRepo(AppDBContext dBContext)
+    public PostRepo(AppDBContext dBContext)
     {
         _dbContext = dBContext;
     }
-
-    public async Task<List<User>> GetAllUsers()
+    public async Task<List<Post>> GetAllPosts()
     {
-        return await _dbContext.Users.ToListAsync();
+        return await _dbContext.Posts.ToListAsync();
     }
 
-    public async Task<User> GetUser(string id)
+    public async Task<Post> GetPost(string id)
     {
-        var user = await _dbContext.Users.FindAsync(id);
-        if ( user is null)
+        var post = await _dbContext.Posts.FindAsync(id);
+        if (post is null)
         {
             return null;
         }
 
-        return user;
+        return post;
     }
 
-    public async Task<User?> PostUser(User newUser)
+    public async Task<Post?> PostPost(Post newPost)
     {
-        _dbContext.Users.Add(newUser);
+        _dbContext.Posts.Add(newPost);
         try
         {
             await _dbContext.SaveChangesAsync();
         }
         catch (DbUpdateException)
         {
-            if (_dbContext.Users.Any(e => e.Id == newUser.Id))
+            if (_dbContext.Posts.Any(e => e.Id == newPost.Id))
             {
                 return null;
             }
@@ -51,6 +50,6 @@ public class UserRepo : IUserRepo
             }
         }
 
-        return newUser;
+        return newPost;
     }
 }

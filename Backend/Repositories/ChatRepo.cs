@@ -15,9 +15,10 @@ public class ChatRepo : IChatRepo
         _dbContext = dBContext;
     }
 
+    /// <inheritdoc/>
     public async Task<List<Chat>> GetChatsWithUser(string userId)
     {
-        List<Chat>? chats = _dbContext.Chats.Where(e => e.Users.Any(user => user.Id == userId)).ToList();
+        List<Chat>? chats = _dbContext.Chats.Where(e => e.Users != null && e.Users.Any(user => user.Id == userId)).ToList();
 
         if (chats is null)
         {
@@ -27,7 +28,8 @@ public class ChatRepo : IChatRepo
         return chats;
     }
 
-    public async Task<Chat> PostChat(Chat newChat)
+    /// <inheritdoc/>
+    public async Task<Chat?> PostChat(Chat newChat)
     {
         _dbContext.Chats.Add(newChat);
         try

@@ -15,6 +15,8 @@ public class MessageRepo : IMessageRepo
     {
         _dbContext = dBContext;
     }
+
+    /// <inheritdoc/>
     public async Task<List<Message>> GetMessagesFromChat(string chatId)
     {
         List<Message> messages = _dbContext.Messages.Where(e => e.ChatId.Equals(chatId)).ToList();
@@ -26,6 +28,7 @@ public class MessageRepo : IMessageRepo
         return messages;
     }
 
+    /// <inheritdoc/>
     public async Task<Message?> SendMessage(Message newMessage)
     {
         _dbContext.Messages.Add(newMessage);

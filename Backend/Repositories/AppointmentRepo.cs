@@ -16,6 +16,7 @@ public class AppointmentRepo : IAppointmentRepo
         _dbContext = dBContext;
     }
 
+    /// <inheritdoc/>
     public async Task<List<Appointment>> GetAllApppointmentsForUser(string UserId)
     {
         List<Appointment> appointment = _dbContext.Appointments.Where(e => e.Users != null && e.Users.Any(user => user.Id.Equals(UserId))).ToList();
@@ -27,7 +28,8 @@ public class AppointmentRepo : IAppointmentRepo
         return appointment;
     }
 
-    public async Task<Appointment> GetAppointment(string id)
+    /// <inheritdoc/>
+    public async Task<Appointment?> GetAppointment(string id)
     {
         var appointment = await _dbContext.Appointments.FindAsync(id);
         if (appointment is null)
@@ -38,6 +40,7 @@ public class AppointmentRepo : IAppointmentRepo
         return appointment;
     }
 
+    /// <inheritdoc/>
     public async Task<Appointment?> PostAppointment(Appointment newAppointment)
     {
         _dbContext.Appointments.Add(newAppointment);

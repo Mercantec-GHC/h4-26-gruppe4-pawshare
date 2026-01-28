@@ -1,9 +1,26 @@
 namespace Repositories.Interfaces;
 using Models;
+using System.Linq.Expressions;
 
 public interface IUserRepo
 {
-    public Task<User> GetUser(string id);
-    public Task<User> PostUser(User newUser);
-    public Task<List<User>> GetAllUsers();
+    /// <summary>
+    /// Gets user with given Id from table
+    /// </summary>
+    /// <param name="id">The id of the wanted user</param>
+    /// <returns>User with given id, if not found returns null</returns>
+    public Task<User?> GetUser(string id);
+    
+    /// <summary>
+    /// Posts a new user to the table
+    /// </summary>
+    /// <param name="newUser">The new user that needs to be posted</param>
+    /// <returns>Post that was added, null if it already exists, and throws exception if error occurs under creation</returns>
+    public Task<User?> PostUser(User newUser);
+
+    /// <summary>
+    /// Gets all users in the table
+    /// </summary>
+    /// <returns>List of Users in the table or empty list if none is found</returns>
+    public Task<List<User>> GetAllUsers(Expression<Func<User, bool>>? filter = null);
 }

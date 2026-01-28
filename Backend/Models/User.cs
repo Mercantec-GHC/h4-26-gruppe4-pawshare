@@ -28,6 +28,7 @@ namespace Models
         [Base64String(ErrorMessage = "Billede er ikke et gyldigt base64 billede")]
         public required string Base64Pfp { get; set;  }
 
+        public List<Animal>? Animals { get; set; }
         public List<UserPostAcceptance>? UserPostAcceptances { get; set; }
         public List<UserAppointmentBooking>? Bookings { get; set; }
         public List<ChatUserConvo>? Chats { get; set; }

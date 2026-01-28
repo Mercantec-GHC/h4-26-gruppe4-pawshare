@@ -19,9 +19,15 @@ builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connect
 // Add dependcies for dependency injection
 // repos
 builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IAnimalRepo, AnimalRepo>();
+builder.Services.AddScoped<IAnimalTypeRepo, AnimalTypeRepo>();
+builder.Services.AddScoped<IChatRepo, ChatRepo>();
 
 // services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAnimalService, AnimalService>();
+builder.Services.AddScoped<IAnimalTypeService, AnimalTypeService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 
 // Add services to the container.

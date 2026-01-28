@@ -2,6 +2,8 @@
 using Repositories.Interfaces;
 
 namespace Repositories;
+
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 
@@ -23,6 +25,17 @@ public class UserRepo : IUserRepo
         }
 
         return user;
+    }
+
+    public User? GetByEmail(string email)
+    {
+        return _dbContext.Users.FirstOrDefault(u => u.Email == email);
+    }
+
+    public void Add(User user)
+    {
+        _dbContext.Users.Add(user);
+        _dbContext.SaveChanges();
     }
 
 }

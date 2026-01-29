@@ -12,7 +12,7 @@ public interface IChatService
     /// </summary>
     /// <param name="id">The unique identifier of the chat.</param>
     /// <returns>The chat with the specified ID, or null if not found.</returns>
-    public Task<Chat> GetChatAsync(string id);
+    public Task<Chat?> GetChatAsync(string id);
 
     /// <summary>
     /// Creates a new chat with the specified title and initial users.
@@ -35,7 +35,7 @@ public interface IChatService
     /// <param name="chatId">The unique identifier of the chat.</param>
     /// <param name="userId">The unique identifier of the user to add.</param>
     /// <returns>The updated chat with the new user, or null if the operation failed.</returns>
-    public Task<Chat> AddUserToChatAsync(string chatId, string userId);
+    public Task<Chat?> AddUserToChatAsync(string chatId, string userId);
 
     /// <summary>
     /// Removes a user from an existing chat.
@@ -43,7 +43,7 @@ public interface IChatService
     /// <param name="chatId">The unique identifier of the chat.</param>
     /// <param name="userId">The unique identifier of the user to remove.</param>
     /// <returns>The updated chat without the removed user, or null if the operation failed.</returns>
-    public Task<Chat> RemoveUserFromChatAsync(string chatId, string userId);
+    public Task<Chat?> RemoveUserFromChatAsync(string chatId, string userId);
 
     /// <summary>
     /// Retrieves all messages from a specific chat.
@@ -59,5 +59,5 @@ public interface IChatService
     /// <param name="senderId">The unique identifier of the user sending the message.</param>
     /// <param name="content">The content of the message.</param>
     /// <returns>The updated chat with the new message, or null if the operation failed.</returns>
-    public Task<Chat> SendMessageAsync(string chatId, string senderId, string content);
+    public Task<Chat?> SendMessageAsync(string chatId, string senderId, string content);
 }

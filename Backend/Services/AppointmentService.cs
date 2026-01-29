@@ -7,10 +7,12 @@ namespace Services;
 public class AppointmentService : IAppointmentService
 {
     private readonly IAppointmentRepo _appointmentRepo;
+    private readonly IAppointmentAnimalBookingRepo _bookingRepo;
 
-    public AppointmentService(IAppointmentRepo appointmentRepo)
+    public AppointmentService(IAppointmentRepo appointmentRepo, IAppointmentAnimalBookingRepo bookingRepo)
     {
         _appointmentRepo = appointmentRepo;
+        _bookingRepo = bookingRepo;
     }
 
     public async Task<Appointment?> GetAppointmentAsync(string id)
@@ -20,7 +22,7 @@ public class AppointmentService : IAppointmentService
 
     public async Task<List<Appointment>> GetAppointmentsByUserAsync(string userId)
     {
-        return await _appointmentRepo.GetAllApppointmentsForUser(userId);
+        return await _appointmentRepo.GetAllAppointmentsForUser(userId);
     }
 
     public async Task<Appointment?> CreateAppointmentAsync(Appointment appointment)
@@ -42,24 +44,28 @@ public class AppointmentService : IAppointmentService
         existing.Description = appointment.Description;
         existing.UpdatedAt = DateTime.UtcNow;
 
-        return existing;
+        return await _appointmentRepo.UpdateAppointment(existing);
     }
 
     public async Task<bool> DeleteAppointmentAsync(string id)
     {
-        var appointment = await _appointmentRepo.GetAppointment(id);
-        return appointment != null;
+        return await _appointmentRepo.DeleteAppointment(id);
     }
 
     public async Task<bool> AddAnimalToAppointmentAsync(string appointmentId, string animalId)
     {
         var appointment = await _appointmentRepo.GetAppointment(appointmentId);
-        return appointment != null;
+        if (appointment == null) return false;
+
+        var booking = await _bookingRepo.CreateBooking(appointmentId, animalId);
+        return booking != null;
     }
 
     public async Task<bool> RemoveAnimalFromAppointmentAsync(string appointmentId, string animalId)
     {
         var appointment = await _appointmentRepo.GetAppointment(appointmentId);
-        return appointment != null;
+        if (appointment == null) return false;
+
+        return await _bookingRepo.DeleteBooking(appointmentId, animalId);
     }
 }

@@ -54,13 +54,12 @@ public class PostService : IPostService
         existing.End = post.End;
         existing.UpdatedAt = DateTime.UtcNow;
 
-        return existing;
+        return await _postRepo.UpdatePost(existing);
     }
 
     public async Task<bool> DeletePostAsync(string id)
     {
-        var post = await _postRepo.GetPost(id);
-        return post != null;
+        return await _postRepo.DeletePost(id);
     }
 
     public async Task<bool> AcceptPostAsync(string postId, string userId)

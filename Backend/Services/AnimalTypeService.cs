@@ -40,12 +40,11 @@ public class AnimalTypeService : IAnimalTypeService
         existing.Description = animalType.Description;
         existing.UpdatedAt = DateTime.UtcNow;
 
-        return existing;
+        return await _animalTypeRepo.UpdateAnimalType(existing);
     }
 
     public async Task<bool> DeleteAnimalTypeAsync(string id)
     {
-        var animalType = await _animalTypeRepo.GetAnimalType(id);
-        return animalType != null;
+        return await _animalTypeRepo.DeleteAnimalType(id);
     }
 }

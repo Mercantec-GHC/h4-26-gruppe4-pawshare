@@ -68,4 +68,43 @@ public class AnimalRepo : IAnimalRepo
 
         return newAnimal;
     }
+
+    /// <inheritdoc/>
+    public async Task<Animal?> UpdateAnimal(Animal newAnimal)
+    {
+        _dbContext.Entry(newAnimal).State = EntityState.Modified;
+
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!_dbContext.Animals.Any(e => e.Id == newAnimal.Id))
+            {
+                return null;
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return newAnimal;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DeleteAnimal(string AnimalId)
+    {
+        Animal? animal = await _dbContext.Animals.FindAsync(AnimalId);
+        if (animal == null)
+        {
+            return false;
+        }
+
+        _dbContext.Animals.Remove(animal);
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+    }
 }

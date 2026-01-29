@@ -22,4 +22,12 @@ public interface IAppointmentRepo
     /// </summary>
     /// <returns>List of Appointments, empty list if none is found</returns>
     public Task<List<Appointment>> GetAllApppointmentsForUser(string UserId);
+
+    /// <summary>
+    /// Updates given appointment from id
+    /// </summary>
+    /// <param name="appointmentId">The id of the appointment that needs updating</param>
+    /// <param name="appointment">The new version of the appointment</param>
+    /// <returns>The Appointment that was updated, returns null if not succesfull</returns>
+    public Task<Appointment?> UpdateAppointment(Appointment appointment);
 }

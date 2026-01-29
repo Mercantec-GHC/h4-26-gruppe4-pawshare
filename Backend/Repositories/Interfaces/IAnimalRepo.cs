@@ -29,4 +29,18 @@ public interface IAnimalRepo
     /// </summary>
     /// <returns>List of Animals, empty list if none is found</returns>
     public Task<List<Animal>> GetAllAnimals();
+
+    /// <summary>
+    /// Updates given Animal
+    /// </summary>
+    /// <param name="Animal">The new version of the Animal</param>
+    /// <returns>The Animal that was updated, returns null if not succesfull</returns>
+    public Task<Appointment?> UpdateAnimal(Animal Animal);
+
+    /// <summary>
+    /// Delets Animal from table
+    /// </summary>
+    /// <param name="AnimalId">Id of the Animal needed to be deleted</param>
+    /// <returns>Boolean, true if succesful and false if not</returns>
+    public Task<bool> DeleteAnimal(string AnimalId);
 }

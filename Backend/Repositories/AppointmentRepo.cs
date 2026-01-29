@@ -62,4 +62,43 @@ public class AppointmentRepo : IAppointmentRepo
 
         return newAppointment;
     }
+
+    /// <inheritdoc/>
+    public async Task<Appointment?> UpdateAppointment(Appointment newAppointment)
+    {
+        _dbContext.Entry(newAppointment).State = EntityState.Modified;
+
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!_dbContext.Appointments.Any(e => e.Id == newAppointment.Id))
+            {
+                return null;
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return newAppointment;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DeleteAppointment(string id)
+    {
+        Appointment? appointment = await _dbContext.Appointments.FindAsync(id);
+        if (appointment == null)
+        {
+            return false;
+        }
+
+        _dbContext.Appointments.Remove(appointment);
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+    }
 }

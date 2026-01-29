@@ -23,4 +23,18 @@ public interface IUserRepo
     /// </summary>
     /// <returns>List of Users in the table or empty list if none is found</returns>
     public Task<List<User>> GetAllUsers(Expression<Func<User, bool>>? filter = null);
+
+    /// <summary>
+    /// Updates given User
+    /// </summary>
+    /// <param name="user">The new version of the User</param>
+    /// <returns>The User that was updated, returns null if not succesfull</returns>
+    public Task<User?> UpdateUser(User User);
+
+    /// <summary>
+    /// Delets User from table
+    /// </summary>
+    /// <param name="userId">Id of the User needed to be deleted</param>
+    /// <returns>Boolean, true if succesful and false if not</returns>
+    public Task<bool> DeleteUser(string UserId);
 }

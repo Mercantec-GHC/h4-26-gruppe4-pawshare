@@ -22,4 +22,18 @@ public interface IAnimalTypeRepo
     /// </summary>
     /// <returns>List of AnimalType, empty list if none is found</returns>
     public Task<List<AnimalType>> GetAllAnimalTypes();
+
+    /// <summary>
+    /// Updates given appointment
+    /// </summary>
+    /// <param name="animalType">The new version of the animalType</param>
+    /// <returns>The Appointment that was updated, returns null if not succesfull</returns>
+    public Task<Appointment?> UpdateAnimalType(AnimalType animalType);
+
+    /// <summary>
+    /// Delets AnimalType from table
+    /// </summary>
+    /// <param name="typeId">Id of the animaltype needed to be deleted</param>
+    /// <returns>Boolean, true if succesful and false if not</returns>
+    public Task<bool> DeleteAnimalType(string typeId);
 }

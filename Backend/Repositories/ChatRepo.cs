@@ -18,7 +18,7 @@ public class ChatRepo : IChatRepo
     /// <inheritdoc/>
     public async Task<List<Chat>> GetChatsWithUser(string userId)
     {
-        List<Chat>? chats = _dbContext.Chats.Where(e => e.Users != null && e.Users.Any(user => user.Id == userId)).ToList();
+        List<Chat>? chats = await _dbContext.Chats.Where(e => e.Users != null && e.Users.Any(user => user.Id == userId)).ToListAsync();
 
         if (chats is null)
         {

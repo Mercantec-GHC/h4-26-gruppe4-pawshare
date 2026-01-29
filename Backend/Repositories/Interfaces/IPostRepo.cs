@@ -22,4 +22,18 @@ public interface IPostRepo
     /// </summary>
     /// <returns>List of Posts in the table or empty list if none is found</returns>
     public Task<List<Post>> GetAllPosts();
+
+    /// <summary>
+    /// Updates given Post
+    /// </summary>
+    /// <param name="Post">The new version of the Post</param>
+    /// <returns>The Post that was updated, returns null if not succesfull</returns>
+    public Task<Post?> UpdatePost(Post Post);
+
+    /// <summary>
+    /// Delets Post from table
+    /// </summary>
+    /// <param name="PostId">Id of the Post needed to be deleted</param>
+    /// <returns>Boolean, true if succesful and false if not</returns>
+    public Task<bool> DeletePost(string PostId);
 }

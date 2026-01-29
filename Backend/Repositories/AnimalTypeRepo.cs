@@ -58,7 +58,7 @@ public class AnimalTypeRepo : IAnimalTypeRepo
     }
 
     /// <inheritdoc/>
-    public async Task<AnimalType?> UpdateAnimal(AnimalType newAnimalType)
+    public async Task<AnimalType?> UpdateAnimalType(AnimalType newAnimalType)
     {
         _dbContext.Entry(newAnimalType).State = EntityState.Modified;
 

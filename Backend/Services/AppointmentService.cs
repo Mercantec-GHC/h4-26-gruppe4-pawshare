@@ -7,9 +7,9 @@ namespace Services;
 public class AppointmentService : IAppointmentService
 {
     private readonly IAppointmentRepo _appointmentRepo;
-    private readonly IAppointmentAnimalBookingRepo _bookingRepo;
+    private readonly IBookingRepo _bookingRepo;
 
-    public AppointmentService(IAppointmentRepo appointmentRepo, IAppointmentAnimalBookingRepo bookingRepo)
+    public AppointmentService(IAppointmentRepo appointmentRepo, IBookingRepo bookingRepo)
     {
         _appointmentRepo = appointmentRepo;
         _bookingRepo = bookingRepo;

@@ -50,4 +50,40 @@ public class ChatRepo : IChatRepo
 
         return newChat;
     }
+
+    /// <inheritdoc/>
+    public async Task<Chat?> GetChat(string id)
+    {
+        var chat = await _dbContext.Chats.FindAsync(id);
+        if (chat is null)
+        {
+            return null;
+        }
+
+        return chat;
+    }
+
+    /// <inheritdoc/>
+    public async Task<Chat?> UpdateChat(Chat newChat)
+    {
+        _dbContext.Entry(newChat).State = EntityState.Modified;
+
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!_dbContext.Chats.Any(e => e.Id == newChat.Id))
+            {
+                return null;
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return newChat;
+    }
 }

@@ -21,7 +21,7 @@ public interface IAppointmentRepo
     /// Gets all Appointments for a given user in the table
     /// </summary>
     /// <returns>List of Appointments, empty list if none is found</returns>
-    public Task<List<Appointment>> GetAllApppointmentsForUser(string UserId);
+    public Task<List<Appointment>> GetAllAppointmentsForUser(string UserId);
 
     /// <summary>
     /// Updates given appointment from id
@@ -30,4 +30,11 @@ public interface IAppointmentRepo
     /// <param name="appointment">The new version of the appointment</param>
     /// <returns>The Appointment that was updated, returns null if not succesfull</returns>
     public Task<Appointment?> UpdateAppointment(Appointment appointment);
+
+    /// <summary>
+    /// Deletes an Appointment from the table
+    /// </summary>
+    /// <param name="id">Id of the appointment to be deleted</param>
+    /// <returns>Boolean, true if successful and false if not</returns>
+    public Task<bool> DeleteAppointment(string id);
 }

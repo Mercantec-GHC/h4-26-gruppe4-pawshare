@@ -31,7 +31,7 @@ public class ChatService : IChatService
             Title = title,
             Users = users,
             Messages = new List<Message>(),
-            ChatUsers = users.Select(u => new ChatUserConvo
+            chatUsers = users.Select(u => new ChatUserConvo
             {
                 Id = Guid.NewGuid().ToString(),
                 ChatId = chatId,

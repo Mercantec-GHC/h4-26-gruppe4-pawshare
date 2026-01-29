@@ -17,7 +17,7 @@ public class AppointmentRepo : IAppointmentRepo
     }
 
     /// <inheritdoc/>
-    public async Task<List<Appointment>> GetAllApppointmentsForUser(string UserId)
+    public async Task<List<Appointment>> GetAllAppointmentsForUser(string UserId)
     {
         List<Appointment> appointment = _dbContext.Appointments.Where(e => e.Users != null && e.Users.Any(user => user.Id.Equals(UserId))).ToList();
         if (appointment is null || appointment.Count < 1)

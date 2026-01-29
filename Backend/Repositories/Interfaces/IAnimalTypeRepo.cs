@@ -27,8 +27,8 @@ public interface IAnimalTypeRepo
     /// Updates given appointment
     /// </summary>
     /// <param name="animalType">The new version of the animalType</param>
-    /// <returns>The Appointment that was updated, returns null if not succesfull</returns>
-    public Task<Appointment?> UpdateAnimalType(AnimalType animalType);
+    /// <returns>The AnimalType that was updated, returns null if not succesfull</returns>
+    public Task<AnimalType?> UpdateAnimalType(AnimalType animalType);
 
     /// <summary>
     /// Delets AnimalType from table

@@ -35,7 +35,7 @@ public interface IAnimalRepo
     /// </summary>
     /// <param name="Animal">The new version of the Animal</param>
     /// <returns>The Animal that was updated, returns null if not succesfull</returns>
-    public Task<Appointment?> UpdateAnimal(Animal Animal);
+    public Task<Animal?> UpdateAnimal(Animal Animal);
 
     /// <summary>
     /// Delets Animal from table

@@ -56,4 +56,43 @@ public class PostRepo : IPostRepo
 
         return newPost;
     }
+
+    /// <inheritdoc/>
+    public async Task<Post?> UpdatePost(Post newPost)
+    {
+        _dbContext.Entry(newPost).State = EntityState.Modified;
+
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!_dbContext.Posts.Any(e => e.Id == newPost.Id))
+            {
+                return null;
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return newPost;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DeletePost(string postId)
+    {
+        Post? post = await _dbContext.Posts.FindAsync(postId);
+        if (post == null)
+        {
+            return false;
+        }
+
+        _dbContext.Posts.Remove(post);
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+    }
 }

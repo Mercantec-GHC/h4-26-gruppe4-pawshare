@@ -1,20 +1,37 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'dart:convert';
+
+import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
+
+import '../../classes/helpers/api.dart';
+import '../../classes/objects/api_path.dart';
 import 'discover_events_states.dart';
 
 class DiscoverBloc extends Bloc<DiscoverEvents, DiscoverState> {
     DiscoverBloc() : super(const DiscoverTestState()) {
-    on<TestEvent>(_onCheckPin);
+    on<DiscoverAnimals>(onDiscoverPageLoad);
   }
+Future<Animal?> onDiscoverPageLoad(DiscoverAnimals event, Emitter<DiscoverState> emit ) async {
+  Response resp = await API.getRequest(ApiPath.animal);
+  if(resp.statusCode == 200) {
+    Map<String, dynamic> decodeResp = json.decode(resp.body);
+    try {
+      return Animal.fromJson(decodeResp);
+    }
+    catch (e){
+      debugPrint(e.toString());
+    }
+    
+  }
+  
+}
 
   Future<void> _onCheckPin(TestEvent event, Emitter<DiscoverState> emit) async {
     emit(const DiscoverTestState());
   }
   
 
-  @override
-  Future<void> close() {
-    return super.close();
-  }
+
 }

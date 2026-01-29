@@ -1,3 +1,23 @@
+
+// Name all paths
+// TODO: ADD ALL ENDPOINTS
+enum ApiPath {
+  animal,
+}
+
+// Specify the string needed for each path. Avoids accidental misspellings and ensures consistency
+extension PathExtension on ApiPath {
+  String get value {
+    String name;
+    switch (this) {
+      case ApiPath.animal:
+        name = 'Animal';
+    }
+    return name;
+  }
+}
+
+
 class Animal extends Common {
   Animal({
     required this.Id,

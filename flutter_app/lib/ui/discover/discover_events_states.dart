@@ -11,6 +11,14 @@ abstract class DiscoverState {
   const DiscoverState();
 }
 
+class DiscoverAnimals extends DiscoverEvents {
+
+  const DiscoverAnimals();
+}
+
+
+
+
 class DiscoverTestState extends DiscoverState {
   const DiscoverTestState();
 }

@@ -17,6 +17,7 @@ public class UserRepo : IUserRepo
     }
 
 
+
     // Exempel kald:
     // var usersNamedJonas = await _userRepo.GetAllUsers(u => u.Name == "Jonas");
 
@@ -66,5 +67,15 @@ public class UserRepo : IUserRepo
         }
 
         return newUser;
+    }
+
+    public Task<User?> UpdateUser(User User)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public Task<bool> DeleteUser(string UserId)
+    {
+        throw new NotImplementedException();
     }
 }

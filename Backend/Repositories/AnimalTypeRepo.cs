@@ -44,7 +44,7 @@ public class AnimalTypeRepo : IAnimalTypeRepo
         }
         catch (DbUpdateException)
         {
-            if (_dbContext.Users.Any(e => e.Id == newAnimalType.Id))
+            if (_dbContext.AnimalTypes.Any(e => e.Id == newAnimalType.Id))
             {
                 return null;
             }

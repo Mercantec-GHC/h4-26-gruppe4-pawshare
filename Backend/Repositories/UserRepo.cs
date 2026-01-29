@@ -5,7 +5,7 @@ namespace Repositories;
 
 using Microsoft.EntityFrameworkCore;
 using Models;
-
+using System.Linq.Expressions;
 
 public class UserRepo : IUserRepo
 {
@@ -16,12 +16,25 @@ public class UserRepo : IUserRepo
         _dbContext = dBContext;
     }
 
-    public async Task<List<User>> GetAllUsers()
+
+    // Exempel kald:
+    // var usersNamedJonas = await _userRepo.GetAllUsers(u => u.Name == "Jonas");
+
+    /// <inheritdoc/>
+    public async Task<List<User>> GetAllUsers(Expression<Func<User, bool>>? filter = null)
     {
-        return await _dbContext.Users.ToListAsync();
+        IQueryable<User> query = _dbContext.Users.AsQueryable();
+
+        if (filter is not null)
+        {
+            query = query.Where(filter);
+        }
+
+        return await query.ToListAsync();
     }
 
-    public async Task<User> GetUser(string id)
+    /// <inheritdoc/>
+    public async Task<User?> GetUser(string id)
     {
         var user = await _dbContext.Users.FindAsync(id);
         if ( user is null)
@@ -32,6 +45,7 @@ public class UserRepo : IUserRepo
         return user;
     }
 
+    /// <inheritdoc/>
     public async Task<User?> PostUser(User newUser)
     {
         _dbContext.Users.Add(newUser);

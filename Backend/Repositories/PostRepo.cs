@@ -15,12 +15,15 @@ public class PostRepo : IPostRepo
     {
         _dbContext = dBContext;
     }
+
+    /// <inheritdoc/>
     public async Task<List<Post>> GetAllPosts()
     {
         return await _dbContext.Posts.ToListAsync();
     }
 
-    public async Task<Post> GetPost(string id)
+    /// <inheritdoc/>
+    public async Task<Post?> GetPost(string id)
     {
         var post = await _dbContext.Posts.FindAsync(id);
         if (post is null)
@@ -31,6 +34,7 @@ public class PostRepo : IPostRepo
         return post;
     }
 
+    /// <inheritdoc/>
     public async Task<Post?> PostPost(Post newPost)
     {
         _dbContext.Posts.Add(newPost);

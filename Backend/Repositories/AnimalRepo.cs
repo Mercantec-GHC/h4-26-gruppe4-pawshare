@@ -16,12 +16,14 @@ public class AnimalRepo : IAnimalRepo
         _dbContext = dBContext;
     }
 
+    /// <inheritdoc/>
     public async Task<List<Animal>> GetAllAnimals()
     {
         return await _dbContext.Animals.ToListAsync();
     }
 
-    public async Task<Animal> GetAnimal(string id)
+    /// <inheritdoc/>
+    public async Task<Animal?> GetAnimal(string id)
     {
         var animal = await _dbContext.Animals.FindAsync(id);
         if (animal is null)
@@ -32,6 +34,7 @@ public class AnimalRepo : IAnimalRepo
         return animal;
     }
 
+    /// <inheritdoc/>
     public async Task<List<Animal>> GetAnimalsFromType(string typeId)
     {
         List<Animal> animal = _dbContext.Animals.Where(e => e.AnimalType != null && e.AnimalType.Id.Equals(typeId)).ToList();
@@ -43,7 +46,8 @@ public class AnimalRepo : IAnimalRepo
         return animal;
     }
 
-    public async Task<Animal> PostAnimal(Animal newAnimal)
+    /// <inheritdoc/>
+    public async Task<Animal?> PostAnimal(Animal newAnimal)
     {
         _dbContext.Animals.Add(newAnimal);
         try

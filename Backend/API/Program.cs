@@ -18,26 +18,19 @@ builder.AddServiceDefaults();
 
 IConfiguration Configuration = builder.Configuration;
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var provider = builder.Configuration["DatabaseProvider"];
-
-builder.Services.AddDbContext<AppDBContext>(options =>
-{
-    if (provider == "Postgres")
-    {
-        options.UseNpgsql(connectionString);
-    }
-    else
-    {
-        options.UseSqlServer(connectionString);
-    }
-});
-
+string connectionString = builder.Configuration.GetConnectionString("db")
+    ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
 
 // Add dependcies for dependency injection
 // repos
 builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IAnimalRepo, AnimalRepo>();
+builder.Services.AddScoped<IAnimalTypeRepo, AnimalTypeRepo>();
+builder.Services.AddScoped<IPostRepo, PostRepo>();
+builder.Services.AddScoped<IAppointmentRepo, AppointmentRepo>();
+builder.Services.AddScoped<IChatRepo, ChatRepo>();
+builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 
 // services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -67,6 +60,12 @@ builder.Services.AddAuthentication(options =>
 });
 
 
+builder.Services.AddScoped<IAnimalService, AnimalService>();
+builder.Services.AddScoped<IAnimalTypeService, AnimalTypeService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 
 // Add services to the container.

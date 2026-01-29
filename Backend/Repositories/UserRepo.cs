@@ -1,11 +1,10 @@
 ﻿using Repositories.Context;
 using Repositories.Interfaces;
-
-namespace Repositories;
-
 using Microsoft.EntityFrameworkCore;
 using Models;
+using System.Linq.Expressions;
 
+namespace Repositories;
 
 public class UserRepo : IUserRepo
 {
@@ -16,7 +15,26 @@ public class UserRepo : IUserRepo
         _dbContext = dBContext;
     }
 
-    public async Task<User> GetUser(string id)
+
+
+    // Exempel kald:
+    // var usersNamedJonas = await _userRepo.GetAllUsers(u => u.Name == "Jonas");
+
+    /// <inheritdoc/>
+    public async Task<List<User>> GetAllUsers(Expression<Func<User, bool>>? filter = null)
+    {
+        IQueryable<User> query = _dbContext.Users.AsQueryable();
+
+        if (filter is not null)
+        {
+            query = query.Where(filter);
+        }
+
+        return await query.ToListAsync();
+    }
+
+    /// <inheritdoc/>
+    public async Task<User?> GetUser(string id)
     {
         var user = await _dbContext.Users.FindAsync(id);
         if ( user is null)
@@ -38,4 +56,36 @@ public class UserRepo : IUserRepo
         _dbContext.SaveChanges();
     }
 
+    /// <inheritdoc/>
+    public async Task<User?> PostUser(User newUser)
+    {
+        _dbContext.Users.Add(newUser);
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            if (_dbContext.Users.Any(e => e.Id == newUser.Id))
+            {
+                return null;
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return newUser;
+    }
+
+    public Task<User?> UpdateUser(User User)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public Task<bool> DeleteUser(string UserId)
+    {
+        throw new NotImplementedException();
+    }
 }

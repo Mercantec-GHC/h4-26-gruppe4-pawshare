@@ -8,6 +8,7 @@
         public required DateTime End { get; set; }
         public required string OwnerId { get; set; }
         public User? Owner { get; set; }
-        public List<User>? Users { get; set; }
+        public required List<UserPostAcceptance>? Users { get; set; }
+        public required List<PostAnimalReq> AnimalRelations { get; set; }
     }
 }

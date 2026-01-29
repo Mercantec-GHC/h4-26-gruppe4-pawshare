@@ -12,7 +12,7 @@ public class UserService : IUserService
     {
         _userRepo = userRepo;
     }
-    public Task<User> GetUser(string id)
+    public Task<User?> GetUser(string id)
     {
         return _userRepo.GetUser(id);
     }

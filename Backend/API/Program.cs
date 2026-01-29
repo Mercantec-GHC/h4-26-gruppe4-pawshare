@@ -12,6 +12,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 builder.AddServiceDefaults();
 
 IConfiguration Configuration = builder.Configuration;
@@ -108,6 +110,13 @@ builder.Services.AddOpenApi();
 // OpenAPI configuration will be handled by middleware
 
 var app = builder.Build();
+
+// 🔹 AUTOMATIC MIGRATIONS
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+    dbContext.Database.Migrate();
+}
 
 app.MapDefaultEndpoints();
 

@@ -32,11 +32,19 @@ builder.Services.AddScoped<IPostRepo, PostRepo>();
 builder.Services.AddScoped<IAppointmentRepo, AppointmentRepo>();
 builder.Services.AddScoped<IChatRepo, ChatRepo>();
 builder.Services.AddScoped<IMessageRepo, MessageRepo>();
+builder.Services.AddScoped<IBookingRepo, BookingRepo>();
 
 // services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IAnimalService, AnimalService>();
+builder.Services.AddScoped<IAnimalTypeService, AnimalTypeService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,15 +67,6 @@ builder.Services.AddAuthentication(options =>
         )
     };
 });
-
-
-builder.Services.AddScoped<IAnimalService, AnimalService>();
-builder.Services.AddScoped<IAnimalTypeService, AnimalTypeService>();
-builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IMessageService, MessageService>();
-
 
 // Add services to the container.
 

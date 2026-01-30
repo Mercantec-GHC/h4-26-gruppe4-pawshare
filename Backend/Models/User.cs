@@ -17,7 +17,7 @@ namespace Models
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$", 
             ErrorMessage = "Der skal være mindst 8 karaktere, mindst et stort bogstav, et lillebogstav og et tal")]
         [Display(Name = "Adgangskode")]
-        public required string Password { get; set; }
+        public required string HashedPassword { get; set; }
 
         [Required(ErrorMessage = "Salt er påkrævet")]
         public required string Salt { get; set; }

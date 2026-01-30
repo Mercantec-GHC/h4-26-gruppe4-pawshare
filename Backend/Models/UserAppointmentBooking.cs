@@ -5,14 +5,14 @@ using System.Text;
 
 namespace Models
 {
-    public class UserPostAcceptance : Common
+    public class UserAppointmentBooking : Common
     {
         [Required(ErrorMessage = "Der skal være mindst en tilkoblet bruger")]
         public required string UserId { get; set; }
         public User? User { get; set; }
 
-        [Required(ErrorMessage = "Der skal være mindst et tilkoblet opslag")]
-        public required string PostId { get; set; }
-        public Post? Post { get; set; }
+        [Required(ErrorMessage = "Der skal være mindst en tilkoblet aftale")]
+        public required string AppointmentId { get; set; }
+        public Appointment? Appointment { get; set; }
     }
 }

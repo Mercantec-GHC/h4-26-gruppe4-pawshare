@@ -17,7 +17,7 @@ namespace Models
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$", 
             ErrorMessage = "Der skal være mindst 8 karaktere, mindst et stort bogstav, et lillebogstav og et tal")]
         [Display(Name = "Adgangskode")]
-        public required string Password { get; set; }
+        public required string HashedPassword { get; set; }
 
         [Required(ErrorMessage = "Salt er påkrævet")]
         public required string Salt { get; set; }
@@ -28,6 +28,9 @@ namespace Models
         [Base64String(ErrorMessage = "Billede er ikke et gyldigt base64 billede")]
         public required string Base64Pfp { get; set;  }
 
+        public List<Animal>? Animals { get; set; }
         public List<UserPostAcceptance>? UserPostAcceptances { get; set; }
+        public List<UserAppointmentBooking>? Bookings { get; set; }
+        public List<ChatUserConvo>? Chats { get; set; }
     }
 }

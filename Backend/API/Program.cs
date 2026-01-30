@@ -21,6 +21,7 @@ IConfiguration Configuration = builder.Configuration;
 string connectionString = builder.Configuration.GetConnectionString("db")
     ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
+builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connectionString));
 
 // Add dependcies for dependency injection
 // repos

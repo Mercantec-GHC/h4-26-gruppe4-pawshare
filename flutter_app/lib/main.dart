@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'ui/discover/discover_page.dart';
 import 'ui/login/login_page.dart';
 
 final globalNavigatorKey = GlobalKey<NavigatorState>();
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'PawShare',
       navigatorKey: globalNavigatorKey,
       debugShowCheckedModeBanner: false,
+      //should be LoginPage() by default
       home: const LoginPage(),
     );
   }

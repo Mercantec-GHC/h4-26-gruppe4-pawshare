@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'ui/login/login_page.dart';
+import 'classes/helpers/theme_manager.dart';
+import 'ui/profile/profile_page.dart';
 
 final globalNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -13,11 +14,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'PawShare',
-      navigatorKey: globalNavigatorKey,
-      debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (_, mode, __) {
+        return MaterialApp(
+          theme: buildLightTheme(),
+          darkTheme: buildDarkTheme(),
+          themeMode: mode,
+          home: const ProfilePage(),
+        );
+      },
     );
   }
 }

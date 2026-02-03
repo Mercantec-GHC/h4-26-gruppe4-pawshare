@@ -83,14 +83,41 @@ public class UserRepo : IUserRepo
     }
 
     /// <inheritdoc/>
-    public Task<User?> UpdateUser(User User)
+    public async Task<User?> UpdateUser(User NewUser)
     {
-        throw new NotImplementedException();
+        _dbContext.Entry(NewUser).State = EntityState.Modified;
+
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!_dbContext.Users.Any(e => e.Id == NewUser.Id))
+            {
+                return null;
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NewUser;
     }
-    
+
     /// <inheritdoc/>
-    public Task<bool> DeleteUser(string UserId)
+    public async Task<bool> DeleteUser(string userId)
     {
-        throw new NotImplementedException();
+        User? user = await _dbContext.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        _dbContext.Users.Remove(user);
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
 }

@@ -17,5 +17,7 @@ namespace Repositories.Context
         public DbSet<User> Users { get; set; } = default!;
         public DbSet<AppointmentAnimalBooking> AppointmentAnimalBookings { get; set; } = default!;
         public DbSet<ChatUserConvo> ChatUserConvos { get; set; } = default!;
+        public DbSet<Role> Roles { get; set; } = default!;
+        public DbSet<UserRole> UserRoles { get; set; } = default!;
     }
 }

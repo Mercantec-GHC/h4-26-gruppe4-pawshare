@@ -31,5 +31,6 @@ namespace Models
         public List<Animal>? Animals { get; set; }
         public List<UserAppointmentBooking>? Bookings { get; set; }
         public List<ChatUserConvo>? Chats { get; set; }
+        public List<UserRole>? Roles { get; set; }
     }
 }

@@ -32,6 +32,7 @@ builder.Services.AddScoped<IAppointmentRepo, AppointmentRepo>();
 builder.Services.AddScoped<IChatRepo, ChatRepo>();
 builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 builder.Services.AddScoped<IBookingRepo, BookingRepo>();
+builder.Services.AddScoped<IRoleRepo, RoleRepo>();
 
 // services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -42,6 +43,7 @@ builder.Services.AddScoped<IAnimalTypeService, AnimalTypeService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 builder.Services.AddAuthentication(options =>
 {

@@ -25,6 +25,7 @@ Future<Animal?> onDiscoverPageLoad(DiscoverAnimals event, Emitter<DiscoverState>
     }
     
   }
+  return null;
   
 }
 

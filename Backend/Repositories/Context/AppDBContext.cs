@@ -14,12 +14,8 @@ namespace Repositories.Context
         public DbSet<Appointment> Appointments { get; set; } = default!;
         public DbSet<Chat> Chats { get; set; } = default!;
         public DbSet<Message> Messages { get; set; } = default!;
-        public DbSet<Post> Posts { get; set; } = default!;
         public DbSet<User> Users { get; set; } = default!;
         public DbSet<AppointmentAnimalBooking> AppointmentAnimalBookings { get; set; } = default!;
         public DbSet<ChatUserConvo> ChatUserConvos { get; set; } = default!;
-        public DbSet<PostAnimalReq> PostAnimalReqs { get; set; } = default!;
-        public DbSet<UserAppointmentBooking> UserAppointmentBookings { get; set; } = default!;
-        public DbSet<UserPostAcceptance> UserPostAcceptances { get; set; } = default!;
     }
 }

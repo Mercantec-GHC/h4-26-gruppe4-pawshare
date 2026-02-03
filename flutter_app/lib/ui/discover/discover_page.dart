@@ -94,6 +94,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
 
 class DiscoverCard extends StatefulWidget {
+  const DiscoverCard({super.key});
+
   @override
   State<DiscoverCard> createState() => _DiscoverCardState();
 }
@@ -196,7 +198,7 @@ class LikeButton extends StatelessWidget {
   final onTap;
   final bool isLiked;
 
-  LikeButton({this.onTap, required this.isLiked});
+  LikeButton({super.key, this.onTap, required this.isLiked});
 
   @override
   Widget build(BuildContext context) {

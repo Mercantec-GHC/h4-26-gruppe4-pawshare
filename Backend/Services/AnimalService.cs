@@ -25,7 +25,7 @@ public class AnimalService : IAnimalService
 
     public async Task<List<Animal>> GetAnimalsByTypeAsync(string typeId)
     {
-        return await _animalRepo.GetAnimalsFromType(typeId);
+        return _animalRepo.GetAnimalsFromType(typeId);
     }
 
     public async Task<List<Animal>> GetAnimalsByUserAsync(string userId)

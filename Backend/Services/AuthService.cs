@@ -47,7 +47,7 @@ namespace Services
                 Base64Pfp = dto.Base64Pfp
             };
 
-            _users.Add(user);
+            _users.PostUser(user);
         }
 
         public (string accessToken, string refreshToken)? Login(LoginDto dto)

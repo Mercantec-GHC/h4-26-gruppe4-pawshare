@@ -4,9 +4,14 @@ using System.Linq.Expressions;
 
 public interface IUserRepo
 {
+    /// <summary>
+    /// Gets user by email from table
+    /// </summary>
+    /// <param name="email">User's email address</param>
+    /// <returns>User with given email, if not found returns null</returns>
     User? GetByEmail(string email);
     User? GetByRefreshToken(string refreshToken);
-    void Add(User user);
+
     /// <summary>
     /// Gets user with given Id from table
     /// </summary>

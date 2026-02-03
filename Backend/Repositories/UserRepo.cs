@@ -15,11 +15,6 @@ public class UserRepo : IUserRepo
         _dbContext = dBContext;
     }
 
-
-
-    // Exempel kald:
-    // var usersNamedJonas = await _userRepo.GetAllUsers(u => u.Name == "Jonas");
-
     /// <inheritdoc/>
     public async Task<List<User>> GetAllUsers(Expression<Func<User, bool>>? filter = null)
     {
@@ -46,9 +41,23 @@ public class UserRepo : IUserRepo
     }
 
 
+    /// <inheritdoc/>
     public User? GetByEmail(string email)
     {
-        return _dbContext.Users.FirstOrDefault(u => u.Email == email);
+        try
+        {
+            var user = _dbContext.Users.FirstOrDefault(u => u.Email == email);
+            if (user is null)
+            {
+                return null;
+            }
+
+            return user;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     public User? GetByRefreshToken(string refreshToken)
@@ -87,11 +96,13 @@ public class UserRepo : IUserRepo
         return newUser;
     }
 
+    /// <inheritdoc/>
     public Task<User?> UpdateUser(User User)
     {
         throw new NotImplementedException();
     }
     
+    /// <inheritdoc/>
     public Task<bool> DeleteUser(string UserId)
     {
         throw new NotImplementedException();

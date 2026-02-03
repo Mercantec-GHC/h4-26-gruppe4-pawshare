@@ -24,6 +24,10 @@ namespace Models
 
         public required string RealPassword { get; set; }
 
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiresAt { get; set; }
+
+
         [Required(ErrorMessage = "Der skal tilføjes et billede")]
         [Base64String(ErrorMessage = "Billede er ikke et gyldigt base64 billede")]
         public required string Base64Pfp { get; set;  }

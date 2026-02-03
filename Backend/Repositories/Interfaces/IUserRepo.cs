@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 public interface IUserRepo
 {
     User? GetByEmail(string email);
+    User? GetByRefreshToken(string refreshToken);
     void Add(User user);
     /// <summary>
     /// Gets user with given Id from table

@@ -16,5 +16,9 @@ namespace Models.DTOs
         public required string Password { get; set; }
     }
 
+    public class RefreshTokenDto
+    {
+        public required string RefreshToken { get; set; }
+    }
 
 }

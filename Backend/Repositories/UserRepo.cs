@@ -45,9 +45,17 @@ public class UserRepo : IUserRepo
         return user;
     }
 
+
     public User? GetByEmail(string email)
     {
         return _dbContext.Users.FirstOrDefault(u => u.Email == email);
+    }
+
+    public User? GetByRefreshToken(string refreshToken)
+    {
+        return _dbContext.Users.FirstOrDefault(u =>
+            u.RefreshToken == refreshToken
+        );
     }
 
     public void Add(User user)

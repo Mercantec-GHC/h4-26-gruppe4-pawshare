@@ -28,34 +28,52 @@ namespace API.Controllers
         [HttpPost("login")]
         public IActionResult Login(LoginDto dto)
         {
-            var token = _auth.Login(dto);
+            var result = _auth.Login(dto);
 
-            if (token == null)
-                return Unauthorized("Invalid credentials");
+            if (result == null)
+                return Unauthorized();
 
-            return Ok(new { token });
+            return Ok(new
+            {
+                accessToken = result.Value.accessToken,
+                refreshToken = result.Value.refreshToken
+            });
         }
 
-        
-
-    [Authorize]
-    [HttpGet("me")]
-    public IActionResult Me()
-    {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-
-        if (userId == null)
-            return Unauthorized();
-
-        return Ok(new
+        [HttpPost("refresh")]
+        public IActionResult Refresh(RefreshTokenDto dto)
         {
-            UserId = userId,
-            Email = email
-        });
+            var newToken = _auth.Refresh(dto.RefreshToken);
+
+            if (newToken == null)
+                return Unauthorized();
+
+            return Ok(new { accessToken = newToken });
+        }
+
+
+
+
+
+
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult Me()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (userId == null)
+                return Unauthorized();
+
+            return Ok(new
+            {
+                UserId = userId,
+                Email = email
+            });
+        }
+
+
     }
-
-
-}
 
 }

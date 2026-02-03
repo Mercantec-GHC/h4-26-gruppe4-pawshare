@@ -40,7 +40,7 @@ namespace Services
                 Base64Pfp = dto.Base64Pfp
             };
 
-            _users.Add(user);
+            _users.PostUser(user);
         }
 
         public string? Login(LoginDto dto)

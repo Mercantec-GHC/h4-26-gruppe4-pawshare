@@ -5,6 +5,7 @@ import '../../colors.dart';
 import '../../widgets/default_scaffold.dart';
 import '../../widgets/profile_tile.dart';
 import '../../widgets/profile_name.dart';
+import '../../widgets/skeleton_tile.dart';
 import 'profile_bloc.dart';
 import 'profile_events_states.dart';
 
@@ -185,13 +186,13 @@ Widget _buildLoadingProfileState(BuildContext context) {
           const SizedBox(height: 18),
 
           // TILES
-          skeletonTile(),
+          SkeletonTile(),
           const SizedBox(height: 12),
-          skeletonTile(),
+          SkeletonTile(),
           const SizedBox(height: 12),
-          skeletonTile(),
+          SkeletonTile(),
           const SizedBox(height: 12),
-          skeletonTile(),
+          SkeletonTile(),
 
           const SizedBox(height: 24),
 

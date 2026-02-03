@@ -10,7 +10,7 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
   void _onLoad(LoadProfileEvent event, Emitter<ProfileState> emit) async {
     emit(const LoadingProfileState());
     // TODO: GET PROFILE DATA
-    await Future.delayed(const Duration(milliseconds: 20000));
+    await Future.delayed(const Duration(milliseconds: 200));
     emit(ShowProfileState(profile: Profile()));
   }
 }

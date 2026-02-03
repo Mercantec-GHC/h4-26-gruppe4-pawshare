@@ -13,6 +13,7 @@
 .cursorignore
 .cursorignorerules
 .cursorignorerules
+.vscode/
 
 
 # C#

@@ -41,7 +41,7 @@ namespace Services
 
                 // Required by the model but not used for authentication
                 Salt = "BCrypt internal",
-                RealPassword = "",
+                RealPassword = dto.Password,
 
                 // Required profile picture (Base64 encoded)
                 Base64Pfp = dto.Base64Pfp
@@ -50,34 +50,35 @@ namespace Services
             _users.PostUser(user);
         }
 
-        public (string accessToken, string refreshToken)? Login(LoginDto dto)
+        public async Task<AuthResponseDto?> Login(LoginDto dto)
         {
-            var user = _users.GetByEmail(dto.Email);
-            if (user == null)
+            var user = await _users.GetByEmail(dto.Email);
+            if (user == null) return null;
+ 
+            if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.HashedPassword))
                 return null;
 
-            var valid = BCrypt.Net.BCrypt.Verify(
-                dto.Password,
-                user.HashedPassword
+            var refreshToken = Guid.NewGuid().ToString();
+            var refreshExpires = DateTime.UtcNow.AddDays(7);
+
+            await _users.UpdateRefreshToken(
+                user.Id,
+                refreshToken,
+                refreshExpires
             );
 
-            if (!valid)
-                return null;
-
             var accessToken = _jwtService.GenerateToken(user);
-            var refreshToken = GenerateRefreshToken();
 
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(7);
-
-            _users.UpdateUser(user); // або SaveChanges
-
-            return (accessToken, refreshToken);
+            return new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken
+            };
         }
 
-        public string? Refresh(string refreshToken)
+        public async Task<AuthResponseDto?> RefreshAsync(string refreshToken)
         {
-            var user = _users.GetByRefreshToken(refreshToken);
+            var user = await _users.GetByRefreshTokenAsync(refreshToken);
             if (user == null)
                 return null;
 
@@ -86,7 +87,11 @@ namespace Services
 
             var newAccessToken = _jwtService.GenerateToken(user);
 
-            return newAccessToken;
+            return new AuthResponseDto
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = refreshToken
+            };
         }
 
 

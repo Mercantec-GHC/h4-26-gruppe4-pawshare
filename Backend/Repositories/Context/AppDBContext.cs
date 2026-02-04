@@ -32,8 +32,28 @@ namespace Repositories.Context
 
             modelBuilder.Entity<ChatUserConvo>()
                 .HasOne(x => x.Chat)
-                .WithMany()
+                .WithMany(c => c.ChatUsers)
                 .HasForeignKey(x => x.ChatId);
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<Common>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                }
+
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Property(x => x.CreatedAt).IsModified = false;
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

@@ -26,31 +26,24 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginDto dto)
+        public async Task<ActionResult<AuthResponseDto>> Login(LoginDto dto)
         {
-            var result = _auth.Login(dto);
-
+            var result = await _auth.Login(dto);
             if (result == null)
                 return Unauthorized();
 
-            return Ok(new
-            {
-                accessToken = result.Value.accessToken,
-                refreshToken = result.Value.refreshToken
-            });
+            return Ok(result);
         }
-
+        
         [HttpPost("refresh")]
-        public IActionResult Refresh(RefreshTokenDto dto)
+        public async Task<ActionResult<AuthResponseDto>> Refresh(RefreshTokenDto dto)
         {
-            var newToken = _auth.Refresh(dto.RefreshToken);
-
-            if (newToken == null)
+            var result = await _auth.RefreshAsync(dto.RefreshToken);
+            if (result == null)
                 return Unauthorized();
 
-            return Ok(new { accessToken = newToken });
+            return Ok(result);
         }
-
 
 
 

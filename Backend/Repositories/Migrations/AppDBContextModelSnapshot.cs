@@ -178,14 +178,9 @@ namespace Repositories.Migrations
                     b.Property<string>("ChatId")
                         .HasColumnType("text");
 
-                    b.Property<string>("ChatId1")
-                        .HasColumnType("text");
-
                     b.HasKey("UserId", "ChatId");
 
                     b.HasIndex("ChatId");
-
-                    b.HasIndex("ChatId1");
 
                     b.ToTable("ChatUserConvos");
                 });
@@ -231,9 +226,6 @@ namespace Repositories.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ChatId")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -250,7 +242,6 @@ namespace Repositories.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("RealPassword")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
@@ -267,8 +258,6 @@ namespace Repositories.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ChatId");
 
                     b.ToTable("Users");
                 });
@@ -340,14 +329,10 @@ namespace Repositories.Migrations
             modelBuilder.Entity("Models.ChatUserConvo", b =>
                 {
                     b.HasOne("Models.Chat", "Chat")
-                        .WithMany()
+                        .WithMany("ChatUsers")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Models.Chat", null)
-                        .WithMany("chatUsers")
-                        .HasForeignKey("ChatId1");
 
                     b.HasOne("Models.User", "User")
                         .WithMany("Chats")
@@ -377,13 +362,6 @@ namespace Repositories.Migrations
                     b.Navigation("Chat");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Models.User", b =>
-                {
-                    b.HasOne("Models.Chat", null)
-                        .WithMany("Users")
-                        .HasForeignKey("ChatId");
                 });
 
             modelBuilder.Entity("Models.UserAppointmentBooking", b =>
@@ -424,11 +402,9 @@ namespace Repositories.Migrations
 
             modelBuilder.Entity("Models.Chat", b =>
                 {
+                    b.Navigation("ChatUsers");
+
                     b.Navigation("Messages");
-
-                    b.Navigation("Users");
-
-                    b.Navigation("chatUsers");
                 });
 
             modelBuilder.Entity("Models.User", b =>

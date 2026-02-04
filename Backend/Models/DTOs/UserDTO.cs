@@ -28,4 +28,10 @@ namespace Models.DTOs
         public required string RefreshToken { get; set; }
     }
 
+    public class AuthResponseDto
+    {
+        public string AccessToken { get; set; } = null!;
+        public string RefreshToken { get; set; } = null!;
+    }
+
 }

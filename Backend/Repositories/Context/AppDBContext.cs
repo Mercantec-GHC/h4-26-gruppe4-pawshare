@@ -17,6 +17,7 @@ namespace Repositories.Context
         public DbSet<User> Users { get; set; } = default!;
         public DbSet<AppointmentAnimalBooking> AppointmentAnimalBookings { get; set; } = default!;
         public DbSet<ChatUserConvo> ChatUserConvos { get; set; } = default!;
+        public DbSet<Role> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,18 @@ namespace Repositories.Context
                 .HasOne(x => x.Chat)
                 .WithMany(c => c.ChatUsers)
                 .HasForeignKey(x => x.ChatId);
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = "Admin" },
+                new Role { Id = 2, Name = "AnimalUser" },
+                new Role { Id = 3, Name = "Institution" },
+                new Role { Id = 4, Name = "Moderator" }
+            );
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Role)
+                .WithMany(r => r.Users)
+                .HasForeignKey(u => u.RoleId);
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

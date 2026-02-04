@@ -9,11 +9,13 @@ namespace Services
     {
         private readonly IUserRepo _users;
         private readonly JwtService _jwtService;
+        private readonly IRoleRepo _roleRepo;
 
         
-        public AuthService(IUserRepo users, JwtService jwtService)
+        public AuthService(IUserRepo users, JwtService jwtService, IRoleRepo roleRepo)
         {
             _users = users;
+            _roleRepo = roleRepo;
             _jwtService = jwtService;
         }
 
@@ -23,31 +25,30 @@ namespace Services
         }
 
 
-        public void Register(RegisterDto dto)
+        public async Task Register(RegisterDto dto)
         {
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
+            var role = await _roleRepo.GetByNameAsync("AnimalUser")
+                ?? throw new Exception("Default role not found");
+
             var user = new User
-            {
-                // ===== Common fields =====
+            { 
                 Id = Guid.NewGuid().ToString(),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-
-                // ===== User fields =====
-                Name = dto.Username,
+                Name = dto.Name,
                 Email = dto.Email,
                 HashedPassword = hashedPassword,
+                RoleId = role.Id,
 
                 // Required by the model but not used for authentication
                 Salt = "BCrypt internal",
                 RealPassword = dto.Password,
-
-                // Required profile picture (Base64 encoded)
                 Base64Pfp = dto.Base64Pfp
             };
 
-            _users.PostUser(user);
+            await _users.PostUser(user);
         }
 
         public async Task<AuthResponseDto?> Login(LoginDto dto)

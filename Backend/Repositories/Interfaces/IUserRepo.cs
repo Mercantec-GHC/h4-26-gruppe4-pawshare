@@ -1,6 +1,7 @@
-namespace Repositories.Interfaces;
 using Models;
 using System.Linq.Expressions;
+
+namespace Repositories.Interfaces;
 
 public interface IUserRepo
 {

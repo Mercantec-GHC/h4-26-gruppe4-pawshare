@@ -46,7 +46,9 @@ public class UserRepo : IUserRepo
     {
         try
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _dbContext.Users
+                        .Include(u => u.Role)
+                        .FirstOrDefaultAsync(u => u.Email == email);
             if (user is null)
             {
                 return null;

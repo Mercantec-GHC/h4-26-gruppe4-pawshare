@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../classes/helpers/theme_manager.dart';
-import '../../classes/objects/user_dto.dart';
 import '../../colors.dart';
 import '../../widgets/default_scaffold.dart';
 import '../../widgets/profile_tile.dart';
@@ -29,16 +28,13 @@ class _ProfilePageState extends State<ProfilePage> {
           showTitle: true,
           child: Builder(
             builder: (context) {
-              final theme = Theme.of(context);
-              final isLight = theme.brightness == Brightness.light;
-
 
               switch (state.runtimeType) {
                 case const (ShowProfileState):
-                  return _buildShowProfileState(context, theme, isLight, (state as ShowProfileState).profile);
+                  return _buildShowProfileState(context);
 
                 default:
-                  return _buildLoadingProfileState(context, theme, isLight);
+                  return _buildLoadingProfileState(context);
               }
             }
           ),
@@ -47,14 +43,19 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildShowProfileState(BuildContext context, ThemeData theme, bool isLightMode, UserDTO profile) {
+
+
+  Widget _buildShowProfileState(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLightMode = theme.brightness == Brightness.light;
+    
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
         child: Column(
           children: [
             // PROFILE CARD
-            ProfileName(theme: theme, isLightMode: isLightMode, profile: profile),
+            ProfileName(theme: theme, isLightMode: isLightMode),
             const SizedBox(height: 18),
 
             ProfileTile(
@@ -111,9 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   elevation: isLightMode ? 4 : 0,
                   shadowColor: isLightMode ? AppColors.lightShadow.color : null,
                 ),
-                onPressed: () {
-                  context.read<ProfileBloc>().add(LogoutEvent());
-                },
+                onPressed: () {},
                 child: Text(
                   'Log Out',
                   style: theme.textTheme.titleLarge?.copyWith(fontSize: 20),
@@ -126,87 +125,92 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildLoadingProfileState(BuildContext context, ThemeData theme, bool isLightMode) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-        child: Column(
-          children: [
-            // PROFILE CARD SKELETON
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: isLightMode ? [AppColors.lightShadow] : [],
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  // Avatar placeholder
-                  Container(
-                    width: 86,
-                    height: 86,
-                    decoration: const BoxDecoration(
-                      color: AppColors.avatarPlaceholder,
-                      shape: BoxShape.circle,
+Widget _buildLoadingProfileState(BuildContext context) {
+  final theme = Theme.of(context);
+  final isLight = theme.brightness == Brightness.light;
+
+  return SingleChildScrollView(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+      child: Column(
+        children: [
+          // PROFILE CARD SKELETON
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(6),
+              boxShadow: isLight ? [AppColors.lightShadow] : [],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Avatar placeholder
+                Container(
+                  width: 86,
+                  height: 86,
+                  decoration: const BoxDecoration(
+                    color: AppColors.avatarPlaceholder,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 12),
+
+                // Name + role placeholders
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 140,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: theme.dividerColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-  
-                  // Name + role placeholders
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 140,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: theme.dividerColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 80,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: theme.dividerColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: 80,
-                        height: 16,
-                        decoration: BoxDecoration(
-                          color: theme.dividerColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-  
-            const SizedBox(height: 18),
-  
-            // TILES
-            SkeletonTile(),
-            const SizedBox(height: 12),
-            SkeletonTile(),
-            const SizedBox(height: 12),
-            SkeletonTile(),
-            const SizedBox(height: 12),
-            SkeletonTile(),
-  
-            const SizedBox(height: 24),
-  
-            // LOGOUT BUTTON SKELETON
-            Container(
-              width: double.infinity,
-              height: 52,
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: isLightMode ? [AppColors.lightShadow] : [],
-              ),
+          ),
+
+          const SizedBox(height: 18),
+
+          // TILES
+          SkeletonTile(),
+          const SizedBox(height: 12),
+          SkeletonTile(),
+          const SizedBox(height: 12),
+          SkeletonTile(),
+          const SizedBox(height: 12),
+          SkeletonTile(),
+
+          const SizedBox(height: 24),
+
+          // LOGOUT BUTTON SKELETON
+          Container(
+            width: double.infinity,
+            height: 52,
+            decoration: BoxDecoration(
+              color: theme.cardColor,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: isLight ? [AppColors.lightShadow] : [],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+
 }

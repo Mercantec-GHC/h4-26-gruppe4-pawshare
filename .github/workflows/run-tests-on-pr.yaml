@@ -16,6 +16,8 @@ jobs:
   run-tests:
     name: Run tests
     runs-on: ubuntu-latest
+    env:
+      ConnectionStrings__DefaultConnection: ${{ secrets.connectionString }}
 
     steps:
       - name: Check out code

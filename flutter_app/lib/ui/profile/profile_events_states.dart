@@ -1,5 +1,5 @@
 // EVENTS
-import '../../classes/objects/profile.dart';
+import '../../classes/objects/user_dto.dart';
 
 abstract class ProfileEvents {
   const ProfileEvents();
@@ -7,6 +7,10 @@ abstract class ProfileEvents {
 
 class LoadProfileEvent extends ProfileEvents {
   const LoadProfileEvent();
+}
+
+class LogoutEvent extends ProfileEvents {
+  const LogoutEvent();
 }
 
 // STATES
@@ -20,6 +24,6 @@ class LoadingProfileState extends ProfileState {
 
 class ShowProfileState extends ProfileState {
   // TODO: REPLACE WITH REAL MODEL
-  final Profile profile;
+  final UserDTO profile;
   const ShowProfileState({required this.profile});
 }

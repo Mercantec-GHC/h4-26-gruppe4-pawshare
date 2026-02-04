@@ -97,11 +97,13 @@ public class UserRepo : IUserRepo
     }
 
     /// <inheritdoc/>
-    public Task<User?> UpdateUser(User User)
+    public async Task<User?> UpdateUser(User user)
     {
-        throw new NotImplementedException();
+        _dbContext.Users.Update(user);
+        await _dbContext.SaveChangesAsync();
+        return user;
     }
-    
+
     /// <inheritdoc/>
     public Task<bool> DeleteUser(string UserId)
     {

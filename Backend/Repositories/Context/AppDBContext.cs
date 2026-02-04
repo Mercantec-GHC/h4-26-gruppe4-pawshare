@@ -17,5 +17,23 @@ namespace Repositories.Context
         public DbSet<User> Users { get; set; } = default!;
         public DbSet<AppointmentAnimalBooking> AppointmentAnimalBookings { get; set; } = default!;
         public DbSet<ChatUserConvo> ChatUserConvos { get; set; } = default!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ChatUserConvo>()
+                .HasKey(x => new { x.UserId, x.ChatId });
+
+            modelBuilder.Entity<ChatUserConvo>()
+                .HasOne(x => x.User)
+                .WithMany(u => u.Chats)
+                .HasForeignKey(x => x.UserId);
+
+            modelBuilder.Entity<ChatUserConvo>()
+                .HasOne(x => x.Chat)
+                .WithMany()
+                .HasForeignKey(x => x.ChatId);
+        }
     }
 }

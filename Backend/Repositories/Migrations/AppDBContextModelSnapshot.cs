@@ -172,28 +172,20 @@ namespace Repositories.Migrations
 
             modelBuilder.Entity("Models.ChatUserConvo", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("UserId")
                         .HasColumnType("text");
 
                     b.Property<string>("ChatId")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
+                    b.Property<string>("ChatId1")
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "ChatId");
 
                     b.HasIndex("ChatId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ChatId1");
 
                     b.ToTable("ChatUserConvos");
                 });
@@ -230,69 +222,6 @@ namespace Repositories.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("Models.Post", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsRequest")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Posts");
-                });
-
-            modelBuilder.Entity("Models.PostAnimalReq", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AnimalId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PostId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnimalId");
-
-                    b.HasIndex("PostId");
-
-                    b.ToTable("PostAnimalReqs");
-                });
-
             modelBuilder.Entity("Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -323,6 +252,12 @@ namespace Repositories.Migrations
                     b.Property<string>("RealPassword")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RefreshTokenExpiresAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Salt")
                         .IsRequired()
@@ -363,35 +298,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserAppointmentBookings");
-                });
-
-            modelBuilder.Entity("Models.UserPostAcceptance", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PostId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserPostAcceptances");
+                    b.ToTable("UserAppointmentBooking");
                 });
 
             modelBuilder.Entity("Models.Animal", b =>
@@ -433,10 +340,14 @@ namespace Repositories.Migrations
             modelBuilder.Entity("Models.ChatUserConvo", b =>
                 {
                     b.HasOne("Models.Chat", "Chat")
-                        .WithMany("chatUsers")
+                        .WithMany()
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Models.Chat", null)
+                        .WithMany("chatUsers")
+                        .HasForeignKey("ChatId1");
 
                     b.HasOne("Models.User", "User")
                         .WithMany("Chats")
@@ -468,36 +379,6 @@ namespace Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Models.Post", b =>
-                {
-                    b.HasOne("Models.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("Models.PostAnimalReq", b =>
-                {
-                    b.HasOne("Models.Animal", "Animal")
-                        .WithMany("PostAnimals")
-                        .HasForeignKey("AnimalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.Post", "Post")
-                        .WithMany("AnimalRelations")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Animal");
-
-                    b.Navigation("Post");
-                });
-
             modelBuilder.Entity("Models.User", b =>
                 {
                     b.HasOne("Models.Chat", null)
@@ -524,30 +405,9 @@ namespace Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Models.UserPostAcceptance", b =>
-                {
-                    b.HasOne("Models.Post", "Post")
-                        .WithMany("Users")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Models.User", "User")
-                        .WithMany("UserPostAcceptances")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Post");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Models.Animal", b =>
                 {
                     b.Navigation("Bookings");
-
-                    b.Navigation("PostAnimals");
                 });
 
             modelBuilder.Entity("Models.AnimalType", b =>
@@ -571,13 +431,6 @@ namespace Repositories.Migrations
                     b.Navigation("chatUsers");
                 });
 
-            modelBuilder.Entity("Models.Post", b =>
-                {
-                    b.Navigation("AnimalRelations");
-
-                    b.Navigation("Users");
-                });
-
             modelBuilder.Entity("Models.User", b =>
                 {
                     b.Navigation("Animals");
@@ -585,8 +438,6 @@ namespace Repositories.Migrations
                     b.Navigation("Bookings");
 
                     b.Navigation("Chats");
-
-                    b.Navigation("UserPostAcceptances");
                 });
 #pragma warning restore 612, 618
         }

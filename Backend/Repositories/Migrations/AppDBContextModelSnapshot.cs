@@ -172,6 +172,7 @@ namespace Repositories.Migrations
 
             modelBuilder.Entity("Models.ChatUserConvo", b =>
                 {
+<<<<<<< HEAD
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
@@ -182,6 +183,31 @@ namespace Repositories.Migrations
 
                     b.HasIndex("ChatId");
 
+=======
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ChatId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatId");
+
+                    b.HasIndex("UserId");
+
+>>>>>>> dev
                     b.ToTable("ChatUserConvos");
                 });
 
@@ -224,6 +250,12 @@ namespace Repositories.Migrations
 
                     b.Property<string>("Base64Pfp")
                         .IsRequired()
+<<<<<<< HEAD
+=======
+                        .HasColumnType("text");
+
+                    b.Property<string>("ChatId")
+>>>>>>> dev
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -242,6 +274,7 @@ namespace Repositories.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("RealPassword")
+<<<<<<< HEAD
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
@@ -250,6 +283,11 @@ namespace Repositories.Migrations
                     b.Property<DateTime?>("RefreshTokenExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
+=======
+                        .IsRequired()
+                        .HasColumnType("text");
+
+>>>>>>> dev
                     b.Property<string>("Salt")
                         .IsRequired()
                         .HasColumnType("text");
@@ -259,6 +297,11 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
+<<<<<<< HEAD
+=======
+                    b.HasIndex("ChatId");
+
+>>>>>>> dev
                     b.ToTable("Users");
                 });
 
@@ -329,7 +372,11 @@ namespace Repositories.Migrations
             modelBuilder.Entity("Models.ChatUserConvo", b =>
                 {
                     b.HasOne("Models.Chat", "Chat")
+<<<<<<< HEAD
                         .WithMany("ChatUsers")
+=======
+                        .WithMany("chatUsers")
+>>>>>>> dev
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -364,6 +411,7 @@ namespace Repositories.Migrations
                     b.Navigation("User");
                 });
 
+<<<<<<< HEAD
             modelBuilder.Entity("Models.UserAppointmentBooking", b =>
                 {
                     b.HasOne("Models.Appointment", "Appointment")
@@ -388,6 +436,39 @@ namespace Repositories.Migrations
                     b.Navigation("Bookings");
                 });
 
+=======
+            modelBuilder.Entity("Models.User", b =>
+                {
+                    b.HasOne("Models.Chat", null)
+                        .WithMany("Users")
+                        .HasForeignKey("ChatId");
+                });
+
+            modelBuilder.Entity("Models.UserAppointmentBooking", b =>
+                {
+                    b.HasOne("Models.Appointment", "Appointment")
+                        .WithMany("Users")
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.User", "User")
+                        .WithMany("Bookings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Models.Animal", b =>
+                {
+                    b.Navigation("Bookings");
+                });
+
+>>>>>>> dev
             modelBuilder.Entity("Models.AnimalType", b =>
                 {
                     b.Navigation("Animals");
@@ -402,9 +483,17 @@ namespace Repositories.Migrations
 
             modelBuilder.Entity("Models.Chat", b =>
                 {
+<<<<<<< HEAD
                     b.Navigation("ChatUsers");
 
                     b.Navigation("Messages");
+=======
+                    b.Navigation("Messages");
+
+                    b.Navigation("Users");
+
+                    b.Navigation("chatUsers");
+>>>>>>> dev
                 });
 
             modelBuilder.Entity("Models.User", b =>

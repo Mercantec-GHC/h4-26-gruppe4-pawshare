@@ -18,8 +18,9 @@ builder.AddServiceDefaults();
 
 IConfiguration Configuration = builder.Configuration;
 
-string connectionString = builder.Configuration.GetConnectionString("db")
-    ?? throw new InvalidOperationException("Connection string 'db' not found.");
+string connectionString = builder.Configuration.GetConnectionString("db") 
+                          ?? builder.Configuration.GetConnectionString("DefaultConnection")
+                                                       ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
 builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connectionString));
 

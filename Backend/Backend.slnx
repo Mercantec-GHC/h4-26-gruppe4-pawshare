@@ -2,6 +2,7 @@
   <Project Path="API/API.csproj" />
   <Project Path="Backend.AppHost/Backend.AppHost.csproj" />
   <Project Path="Backend.ServiceDefaults/Backend.ServiceDefaults.csproj" />
+  <Project Path="Backend.Test/Backend.Test.csproj" />
   <Project Path="Models/Models.csproj" Id="17d24030-935c-482d-aad6-458d2772f3be" />
   <Project Path="Repositories/Repositories.csproj" />
   <Project Path="Services/Services.csproj" />

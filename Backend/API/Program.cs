@@ -1,19 +1,26 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Repositories;
 using Repositories.Context;
 using Repositories.Interfaces;
-using Services.Interfaces;
-using Services;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Services;
+using Services.Interfaces;
+using System;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 builder.AddServiceDefaults();
 
 IConfiguration Configuration = builder.Configuration;
 
-string connectionString = builder.Configuration.GetConnectionString("db")
-    ?? throw new InvalidOperationException("Connection string 'db' not found.");
+string connectionString = builder.Configuration.GetConnectionString("db") 
+                          ?? builder.Configuration.GetConnectionString("DefaultConnection")
+                                                       ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
 builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connectionString));
 
@@ -22,20 +29,43 @@ builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connect
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IAnimalRepo, AnimalRepo>();
 builder.Services.AddScoped<IAnimalTypeRepo, AnimalTypeRepo>();
-builder.Services.AddScoped<IPostRepo, PostRepo>();
 builder.Services.AddScoped<IAppointmentRepo, AppointmentRepo>();
 builder.Services.AddScoped<IChatRepo, ChatRepo>();
 builder.Services.AddScoped<IMessageRepo, MessageRepo>();
+builder.Services.AddScoped<IBookingRepo, BookingRepo>();
 
 // services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IAnimalService, AnimalService>();
 builder.Services.AddScoped<IAnimalTypeService, AnimalTypeService>();
-builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(
+                builder.Configuration["Jwt:SecretKey"]!
+            )
+        )
+    };
+});
 
 // Add services to the container.
 
@@ -79,6 +109,13 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// 🔹 AUTOMATIC MIGRATIONS
+ using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.    GetRequiredService<AppDBContext>();
+    dbContext.Database.Migrate();
+} 
+
 app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
@@ -112,6 +149,7 @@ app.UseCors(app.Environment.IsDevelopment() ? "AllowAllLocalhost" : "AllowFlutte
 
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

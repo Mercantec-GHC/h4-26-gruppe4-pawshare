@@ -35,7 +35,7 @@ public class AnimalRepo : IAnimalRepo
     }
 
     /// <inheritdoc/>
-    public async Task<List<Animal>> GetAnimalsFromType(string typeId)
+    public List<Animal> GetAnimalsFromType(string typeId)
     {
         List<Animal> animal = _dbContext.Animals.Where(e => e.AnimalType != null && e.AnimalType.Id.Equals(typeId)).ToList();
         if (animal is null)

@@ -10,7 +10,6 @@
         public AnimalType? AnimalType { get; set; }
         public required string UserId { get; set; }
         public User? User { get; set; }
-        public List<PostAnimalReq>? PostAnimals { get; set; }
         public List<AppointmentAnimalBooking>? Bookings { get; set; }
     }
 }

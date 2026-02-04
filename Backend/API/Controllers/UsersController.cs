@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Models;
+using Models.DTOs;
 
 namespace API.Controllers;
 
@@ -18,8 +19,11 @@ public class UsersController : ControllerBase
     
     
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUser(string id)
+    public async Task<ActionResult<UserDto>> GetUser(string id)
     {
-        return await _userService.GetUser(id);
+        var user = await _userService.GetUser(id);
+        if (user == null) return NotFound();
+
+        return Ok(user);
     }
 }

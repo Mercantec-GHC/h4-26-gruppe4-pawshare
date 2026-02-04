@@ -12,7 +12,7 @@
 .cursorrules
 .cursorignore
 .cursorignorerules
-.cursorignorerules
+# VS Code local settings
 .vscode/
 
 
@@ -37,6 +37,7 @@ appsettings.Development.json
 .buildlog/
 .history
 .svn/
+•flutter_app/lib/*.dart
 
 
 # Flutter/Dart/Pub related

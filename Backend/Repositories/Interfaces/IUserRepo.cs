@@ -9,7 +9,8 @@ public interface IUserRepo
     /// </summary>
     /// <param name="email">User's email address</param>
     /// <returns>User with given email, if not found returns null</returns>
-    User? GetByEmail(string email);
+    Task<User?> GetByEmail(string email);
+    Task<User?> GetByRefreshTokenAsync(string refreshToken);
 
     /// <summary>
     /// Gets user with given Id from table
@@ -37,6 +38,12 @@ public interface IUserRepo
     /// <param name="User">The new version of the User</param>
     /// <returns>The User that was updated, returns null if not succesfull</returns>
     public Task<User?> UpdateUser(User User);
+
+    Task UpdateRefreshToken(
+    string userId,
+    string refreshToken,
+    DateTime expiresAt
+);
 
     /// <summary>
     /// Delets User from table

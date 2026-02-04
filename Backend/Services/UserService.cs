@@ -1,6 +1,7 @@
 ﻿using Services.Interfaces;
 using Models;
 using Repositories.Interfaces;
+using Models.DTOs;
 
 namespace Services;
 
@@ -12,8 +13,17 @@ public class UserService : IUserService
     {
         _userRepo = userRepo;
     }
-    public Task<User?> GetUser(string id)
+    public async Task<UserDto?> GetUser(string id)
     {
-        return _userRepo.GetUser(id);
+        var user = await _userRepo.GetUser(id);
+        if (user == null) return null;
+
+        return new UserDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Base64Pfp = user.Base64Pfp
+        };
     }
 }

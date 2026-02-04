@@ -26,36 +26,47 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginDto dto)
+        public async Task<ActionResult<AuthResponseDto>> Login(LoginDto dto)
         {
-            var token = _auth.Login(dto);
+            var result = await _auth.Login(dto);
+            if (result == null)
+                return Unauthorized();
 
-            if (token == null)
-                return Unauthorized("Invalid credentials");
+            return Ok(result);
+        }
+        
+        [HttpPost("refresh")]
+        public async Task<ActionResult<AuthResponseDto>> Refresh(RefreshTokenDto dto)
+        {
+            var result = await _auth.RefreshAsync(dto.RefreshToken);
+            if (result == null)
+                return Unauthorized();
 
-            return Ok(new { token });
+            return Ok(result);
         }
 
-        
 
-    [Authorize]
-    [HttpGet("me")]
-    public IActionResult Me()
-    {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
 
-        if (userId == null)
-            return Unauthorized();
 
-        return Ok(new
+
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult Me()
         {
-            UserId = userId,
-            Email = email
-        });
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (userId == null)
+                return Unauthorized();
+
+            return Ok(new
+            {
+                UserId = userId,
+                Email = email
+            });
+        }
+
+
     }
-
-
-}
 
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'ui/discover/discover_page.dart';
 import 'ui/login/login_page.dart';
 
 final globalNavigatorKey = GlobalKey<NavigatorState>();

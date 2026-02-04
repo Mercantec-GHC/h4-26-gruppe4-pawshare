@@ -18,16 +18,11 @@ public class ChatRepo : IChatRepo
     /// <inheritdoc/>
     public async Task<List<Chat>> GetChatsWithUser(string userId)
     {
-        List<Chat>? chats = await _dbContext.Chats.Where(e => e.Users != null && e.Users.Any(user => user.Id == userId)).ToListAsync();
-
-        if (chats is null)
-        {
-            return [];
-        }
-
-        return chats;
+        return await _dbContext.Chats
+            .Include(c => c.ChatUsers)
+            .Where(c => c.ChatUsers.Any(cu => cu.UserId == userId))
+            .ToListAsync();
     }
-
     /// <inheritdoc/>
     public async Task<Chat?> PostChat(Chat newChat)
     {
@@ -54,15 +49,11 @@ public class ChatRepo : IChatRepo
     /// <inheritdoc/>
     public async Task<Chat?> GetChat(string id)
     {
-        var chat = await _dbContext.Chats.FindAsync(id);
-        if (chat is null)
-        {
-            return null;
-        }
-
-        return chat;
+        return await _dbContext.Chats
+            .Include(c => c.ChatUsers)
+            .Include(c => c.Messages)
+            .FirstOrDefaultAsync(c => c.Id == id);
     }
-
     /// <inheritdoc/>
     public async Task<Chat?> UpdateChat(Chat newChat)
     {

@@ -32,7 +32,7 @@ public class UserRepo : IUserRepo
     public async Task<User?> GetUser(string id)
     {
         var user = await _dbContext.Users.FindAsync(id);
-        if ( user is null)
+        if (user is null)
         {
             return null;
         }
@@ -40,12 +40,13 @@ public class UserRepo : IUserRepo
         return user;
     }
 
+
     /// <inheritdoc/>
-    public User? GetByEmail(string email)
+    public async Task<User?> GetByEmail(string email)
     {
         try
         {
-            var user = _dbContext.Users.FirstOrDefault(u => u.Email == email);
+            var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user is null)
             {
                 return null;
@@ -57,6 +58,19 @@ public class UserRepo : IUserRepo
         {
             return null;
         }
+    }
+
+    public async Task<User?> GetByRefreshTokenAsync(string refreshToken)
+    {
+        return await _dbContext.Users.FirstOrDefaultAsync(u =>
+            u.RefreshToken == refreshToken
+        );
+    }
+
+    public void Add(User user)
+    {
+        _dbContext.Users.Add(user);
+        _dbContext.SaveChanges();
     }
 
     /// <inheritdoc/>
@@ -83,11 +97,27 @@ public class UserRepo : IUserRepo
     }
 
     /// <inheritdoc/>
-    public Task<User?> UpdateUser(User User)
+    public async Task<User?> UpdateUser(User user)
     {
-        throw new NotImplementedException();
+        _dbContext.Users.Update(user);
+        await _dbContext.SaveChangesAsync();
+        return user;
     }
-    
+
+    public async Task UpdateRefreshToken(
+    string userId,
+    string refreshToken,
+    DateTime expiresAt)
+    {
+        await _dbContext.Users
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(u => u.RefreshToken, refreshToken)
+                .SetProperty(u => u.RefreshTokenExpiresAt, expiresAt)
+                .SetProperty(u => u.UpdatedAt, DateTime.UtcNow)
+            );
+    }
+
     /// <inheritdoc/>
     public Task<bool> DeleteUser(string UserId)
     {

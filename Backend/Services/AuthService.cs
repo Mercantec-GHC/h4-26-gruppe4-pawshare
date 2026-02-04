@@ -1,6 +1,7 @@
 ﻿using Models;
 using Models.DTOs;
 using Repositories.Interfaces;
+using System.Security.Cryptography;
 
 namespace Services
 {
@@ -15,6 +16,12 @@ namespace Services
             _users = users;
             _jwtService = jwtService;
         }
+
+        private static string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+
 
         public void Register(RegisterDto dto)
         {
@@ -34,7 +41,7 @@ namespace Services
 
                 // Required by the model but not used for authentication
                 Salt = "BCrypt internal",
-                RealPassword = "",
+                RealPassword = dto.Password,
 
                 // Required profile picture (Base64 encoded)
                 Base64Pfp = dto.Base64Pfp
@@ -43,21 +50,50 @@ namespace Services
             _users.PostUser(user);
         }
 
-        public string? Login(LoginDto dto)
+        public async Task<AuthResponseDto?> Login(LoginDto dto)
         {
-            var user = _users.GetByEmail(dto.Email);
+            var user = await _users.GetByEmail(dto.Email);
+            if (user == null) return null;
+ 
+            if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.HashedPassword))
+                return null;
+
+            var refreshToken = Guid.NewGuid().ToString();
+            var refreshExpires = DateTime.UtcNow.AddDays(7);
+
+            await _users.UpdateRefreshToken(
+                user.Id,
+                refreshToken,
+                refreshExpires
+            );
+
+            var accessToken = _jwtService.GenerateToken(user);
+
+            return new AuthResponseDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken
+            };
+        }
+
+        public async Task<AuthResponseDto?> RefreshAsync(string refreshToken)
+        {
+            var user = await _users.GetByRefreshTokenAsync(refreshToken);
             if (user == null)
                 return null;
 
-            var valid = BCrypt.Net.BCrypt.Verify(
-                dto.Password,
-                user.HashedPassword
-            );
-
-            if (!valid)
+            if (user.RefreshTokenExpiresAt < DateTime.UtcNow)
                 return null;
 
-            return _jwtService.GenerateToken(user);
+            var newAccessToken = _jwtService.GenerateToken(user);
+
+            return new AuthResponseDto
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = refreshToken
+            };
         }
+
+
     }
 }

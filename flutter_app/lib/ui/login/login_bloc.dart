@@ -12,8 +12,4 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
     emit(const LoginTestState(isLoading: true));
   }
 
-  @override
-  Future<void> close() {
-    return super.close();
-  }
 }

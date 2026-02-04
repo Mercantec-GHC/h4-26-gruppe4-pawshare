@@ -22,7 +22,11 @@ namespace Models
         [Required(ErrorMessage = "Salt er påkrævet")]
         public required string Salt { get; set; }
 
-        public required string RealPassword { get; set; }
+        public string? RealPassword { get; set; }
+
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiresAt { get; set; }
+
 
         [Required(ErrorMessage = "Der skal tilføjes et billede")]
         [Base64String(ErrorMessage = "Billede er ikke et gyldigt base64 billede")]

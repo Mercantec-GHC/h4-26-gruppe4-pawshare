@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Models
 {
-    public class ChatUserConvo : Common
+    public class ChatUserConvo
     {
         [Required(ErrorMessage = "Der skal være mindst en tilkoblet chat")]
         public required string ChatId { get; set; }

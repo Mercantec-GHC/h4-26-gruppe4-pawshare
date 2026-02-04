@@ -11,6 +11,9 @@ permissions:
   checks: write
   pull-requests: write
 
+defaults:
+  run:
+    working-directory: ./Backend
 
 jobs:
   run-tests:
@@ -25,23 +28,19 @@ jobs:
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
-        working-directory: ./Backend
         with:
           dotnet-version: '10.x'
 
       - name: Restore dependencies
-        working-directory: ./Backend
         run: dotnet restore
 
       - name: Run Tests
-        working-directory: ./Backend
         run: |
           mkdir -p test-results
           dotnet test --logger "trx;LogFileName=test-results.trx" --results-directory ./test-results
         continue-on-error: true
 
       - name: Publish test results
-        working-directory: ./Backend
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:

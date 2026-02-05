@@ -94,7 +94,18 @@ namespace Services
                 RefreshToken = refreshToken
             };
         }
+        public async Task<bool> LogoutAsync(string refreshToken)
+        {
+            var user = await _users.GetByRefreshTokenAsync(refreshToken);
+            if (user == null)
+                return false;
 
+            user.RefreshToken = null;
+            user.RefreshTokenExpiresAt = null;
+
+            await _users.UpdateUser(user);
+            return true;
+        }
 
     }
 }

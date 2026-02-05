@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import '../objects/api_path.dart';
 
 class API {
-  // TODO: SETUP TO USE ENVIRONMENT STUFF
   static const String _url = 'https://api.com/';
   static const String _testUrl = 'https://dev-pawshare-api.mercantec.tech/api/';
 

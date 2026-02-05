@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'classes/helpers/theme_manager.dart';
+import 'ui/login/login_page.dart';
 import 'ui/profile/profile_page.dart';
 import 'ui/discover/discover_page.dart';
 

@@ -1,4 +1,0 @@
-
-class Profile {
-  Profile();
-}

@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart';
 
 import '../../classes/helpers/api.dart';
+import '../../classes/objects/animal.dart';
 import '../../classes/objects/api_path.dart';
 import 'discover_events_states.dart';
 

@@ -24,7 +24,7 @@ class SkeletonTile extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: theme.dividerColor.withOpacity(0.2),
+              color: theme.dividerColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(6),
             ),
           ),
@@ -35,7 +35,7 @@ class SkeletonTile extends StatelessWidget {
             child: Container(
               height: 16,
               decoration: BoxDecoration(
-                color: theme.dividerColor.withOpacity(0.2),
+                color: theme.dividerColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -48,7 +48,7 @@ class SkeletonTile extends StatelessWidget {
             width: 20,
             height: 20,
             decoration: BoxDecoration(
-              color: theme.dividerColor.withOpacity(0.2),
+              color: theme.dividerColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(4),
             ),
           ),

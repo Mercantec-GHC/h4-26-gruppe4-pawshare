@@ -14,6 +14,7 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
     on<LoadProfileEvent>(_onLoad);
     on<LogoutEvent>(_onLogout);
     on<ShowAccountSettingsEvent>(_onShowAccountSettings);
+    on<ShowNotificationsEvent>(_onShowNotifications);
     on<ShowChangePasswordEvent>(_onShowChangePassword);
     on<ShowConnectedAnimalsEvent>(_onShowConnectedAnimals);
   }
@@ -57,6 +58,9 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
   
   void _onShowConnectedAnimals(ShowConnectedAnimalsEvent event, Emitter<ProfileState> emit) {
     emit(const ShowConnectedAnimalsState());
+  }
+
+  void _onShowNotifications(ShowNotificationsEvent event, Emitter<ProfileState> emit) {
   }
 
   // endregion

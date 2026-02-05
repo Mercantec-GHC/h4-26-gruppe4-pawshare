@@ -7,13 +7,15 @@ class ProfileTile extends StatelessWidget {
     required this.context,
     required this.icon,
     required this.title,
-    required this.onTap,
+    this.onTap,
+    this.trailing,
   });
 
   final BuildContext context;
   final IconData icon;
   final String title;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +47,11 @@ class ProfileTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Icon(
-                  Icons.chevron_right,
-                  color: AppColors.accent,
-                  size: 28,
+                trailing ?? 
+                const Icon( 
+                  Icons.chevron_right, 
+                  color: AppColors.accent, 
+                  size: 28, 
                 ),
               ],
             ),

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../classes/helpers/theme_manager.dart';
-import '../../classes/objects/user_dto.dart';
-import '../../colors.dart';
 import '../../widgets/default_scaffold.dart';
-import '../../widgets/profile_tile.dart';
-import '../../widgets/profile_name.dart';
-import '../../widgets/skeleton_tile.dart';
 import 'profile_bloc.dart';
 import 'profile_events_states.dart';
+import 'views/account_settings_view.dart';
+import 'views/change_password_view.dart';
+import 'views/connected_animal_view.dart';
+import 'views/loading_profile_view.dart';
+import 'views/show_profile_view.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
-
+  
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
@@ -20,191 +19,42 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-
+    
     return BlocProvider(
       create: (_) => ProfileBloc()..add(const LoadProfileEvent()),
       child: BlocBuilder<ProfileBloc, ProfileState>(
-        builder: (context, state) => DefaultScaffold(
-          title: 'Profile',
-          showTitle: true,
-          child: Builder(
-            builder: (context) {
-              final theme = Theme.of(context);
-              final isLight = theme.brightness == Brightness.light;
-
-
-              switch (state.runtimeType) {
-                case const (ShowProfileState):
-                  return _buildShowProfileState(context, theme, isLight, (state as ShowProfileState).profile);
-
-                default:
-                  return _buildLoadingProfileState(context, theme, isLight);
+        builder: (context, state) => PopScope(
+          canPop: state is ShowProfileState, 
+          onPopInvokedWithResult: (didPop, result) async { 
+            final bloc = context.read<ProfileBloc>(); 
+            if (!didPop) { 
+              bloc.add(const LoadProfileEvent()); 
+            }          
+          },
+          child: DefaultScaffold(
+            title: 'Profile',
+            showTitle: true,
+            child: Builder(
+              builder: (context) {
+                switch (state.runtimeType) {
+                  case const (ShowProfileState):
+                    return ShowProfileView(context, profile: (state as ShowProfileState).profile);
+                  
+                  case const (ShowAccountSettingsState):
+                    return AccountSettingsView(context);
+                  
+                  case const (ShowChangePasswordState):
+                    return ChangePasswordView(context);
+                  
+                  case const (ShowConnectedAnimalsState):
+                    return ConnectedAnimalView(context);
+                  
+                  default:
+                    return LoadingProfileView(context);
+                }
               }
-            }
+            ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShowProfileState(BuildContext context, ThemeData theme, bool isLightMode, UserDTO profile) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-        child: Column(
-          children: [
-            // PROFILE CARD
-            ProfileName(theme: theme, isLightMode: isLightMode, profile: profile),
-            const SizedBox(height: 18),
-
-            ProfileTile(
-              context: context, 
-              icon: Icons.article_outlined, 
-              title: 'My Posts', 
-              onTap: () {
-                debugPrint('my posts');
-              },
-            ),
-
-            const SizedBox(height: 12),
-            ProfileTile(
-              context: context, 
-              icon: Icons.place_outlined, 
-              title: 'My Visits',
-              onTap: () {
-                debugPrint('my visits');
-              },
-            ),
-            const SizedBox(height: 12),
-              
-            ProfileTile(
-              context: context, 
-              icon: Icons.notifications_none, 
-              title: 'Notifications',
-              onTap: () {
-                debugPrint('Notifications');
-              },
-            ),
-            const SizedBox(height: 12),
-
-            // ACCOUNT SETTINGS WITH THEME SWITCH
-            ProfileTile(
-              context: context, 
-              icon: Icons.settings_outlined, 
-              title: 'Account Settings',
-              onTap: () {
-                debugPrint('account settings');
-              },
-            ),
-
-            // DARK/LIGHT MODE SWITCH
-            themeSwitchWidget(),
-            const SizedBox(height: 24),
-
-            // LOGOUT BUTTON
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.cardColor,
-                  elevation: isLightMode ? 4 : 0,
-                  shadowColor: isLightMode ? AppColors.lightShadow.color : null,
-                ),
-                onPressed: () {
-                  context.read<ProfileBloc>().add(LogoutEvent());
-                },
-                child: Text(
-                  'Log Out',
-                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 20),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoadingProfileState(BuildContext context, ThemeData theme, bool isLightMode) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-        child: Column(
-          children: [
-            // PROFILE CARD SKELETON
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: isLightMode ? [AppColors.lightShadow] : [],
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  // Avatar placeholder
-                  Container(
-                    width: 86,
-                    height: 86,
-                    decoration: const BoxDecoration(
-                      color: AppColors.avatarPlaceholder,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-  
-                  // Name + role placeholders
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 140,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: theme.dividerColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: 80,
-                        height: 16,
-                        decoration: BoxDecoration(
-                          color: theme.dividerColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-  
-            const SizedBox(height: 18),
-  
-            // TILES
-            SkeletonTile(),
-            const SizedBox(height: 12),
-            SkeletonTile(),
-            const SizedBox(height: 12),
-            SkeletonTile(),
-            const SizedBox(height: 12),
-            SkeletonTile(),
-  
-            const SizedBox(height: 24),
-  
-            // LOGOUT BUTTON SKELETON
-            Container(
-              width: double.infinity,
-              height: 52,
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: isLightMode ? [AppColors.lightShadow] : [],
-              ),
-            ),
-          ],
         ),
       ),
     );

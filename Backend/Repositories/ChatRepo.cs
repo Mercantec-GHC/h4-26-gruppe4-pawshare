@@ -1,9 +1,9 @@
 ﻿using Repositories.Context;
 using Repositories.Interfaces;
-namespace Repositories;
-
 using Microsoft.EntityFrameworkCore;
 using Models;
+
+namespace Repositories;
 
 
 public class ChatRepo : IChatRepo

@@ -19,9 +19,9 @@ namespace API.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register(RegisterDto dto)
+        public async Task<IActionResult> Register(RegisterDto dto)
         {
-            _auth.Register(dto);
+            await _auth.Register(dto);
             return Ok("User created");
         }
 
@@ -45,9 +45,15 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(LogoutDto dto)
+        {
+            var success = await _auth.LogoutAsync(dto.RefreshToken);
+            if (!success)
+                return Unauthorized();
 
-
-
+            return Ok();
+        }
 
         [Authorize]
         [HttpGet("me")]

@@ -12,8 +12,9 @@ namespace Models.DTOs
     public class RegisterDto
     {
         public required string Email { get; set; }
-        public required string Username { get; set; }
+        public required string Name { get; set; }
         public required string Password { get; set; }
+        
 
         public required string Base64Pfp { get; set; }
     }
@@ -33,5 +34,8 @@ namespace Models.DTOs
         public string AccessToken { get; set; } = null!;
         public string RefreshToken { get; set; } = null!;
     }
-
+    public class LogoutDto
+    {
+        public string RefreshToken { get; set; } = null!;
+    }
 }

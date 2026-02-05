@@ -7,6 +7,8 @@ namespace Models
         [Required(ErrorMessage = "Brugernavn er påkrævet.")]
         [Display(Name = "Navn")]
         public required string Name { get; set; }
+        public int RoleId { get; set; }
+        public Role Role { get; set; } = null!;
 
         [Required(ErrorMessage = "Email er påkrævet.")]
         [EmailAddress(ErrorMessage = "Email er ikke gyldig")]

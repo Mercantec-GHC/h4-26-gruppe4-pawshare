@@ -1,5 +1,8 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import '../classes/objects/user_dto.dart';
 import '../colors.dart';
 
 class ProfileName extends StatelessWidget {
@@ -7,13 +10,17 @@ class ProfileName extends StatelessWidget {
     super.key,
     required this.theme,
     required this.isLightMode,
+    required this.profile
   });
 
   final ThemeData theme;
   final bool isLightMode;
+  final UserDTO profile;
 
   @override
   Widget build(BuildContext context) {
+    final bool hasAvatar = profile.base64Pfp != null && profile.base64Pfp!.isNotEmpty;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -26,13 +33,15 @@ class ProfileName extends StatelessWidget {
         children: [
     
           // AVATAR
-          Container(
-            width: 86,
-            height: 86,
-            decoration: const BoxDecoration(
-              color: AppColors.avatarPlaceholder,
-              shape: BoxShape.circle,
-            ),
+          CircleAvatar(
+            radius: 43,
+            backgroundColor: AppColors.avatarPlaceholder,
+            backgroundImage: hasAvatar
+              ? MemoryImage(base64Decode(profile.base64Pfp!))
+              : null,
+            child: hasAvatar
+              ? null
+              : const Icon(Icons.person, size: 40, color: Colors.white),
           ),
     
           const SizedBox(width: 12),
@@ -42,14 +51,14 @@ class ProfileName extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'TESTTEST',
+                profile.name,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontSize: 20,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
-                'ROLE',
+                profile.email,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontSize: 14,
                 ),

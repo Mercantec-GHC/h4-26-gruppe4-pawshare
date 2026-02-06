@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   
   # HTTP Client
-  dio: ^5.4.0
+  http: ^1.6.0
   
   # State Management
   provider: ^6.1.1
@@ -55,6 +55,10 @@ dependencies:
   
   # Code highlighting
   flutter_highlight: ^0.7.0
+
+  flutter_secure_storage: ^10.0.0
+  fluttertoast: ^9.0.0
+  shared_preferences: ^2.5.4
 
 dev_dependencies:
   flutter_test:

@@ -18,8 +18,9 @@ builder.AddServiceDefaults();
 
 IConfiguration Configuration = builder.Configuration;
 
-string connectionString = builder.Configuration.GetConnectionString("db")
-    ?? throw new InvalidOperationException("Connection string 'db' not found.");
+string connectionString = builder.Configuration.GetConnectionString("db") 
+                          ?? builder.Configuration.GetConnectionString("DefaultConnection")
+                                                       ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
 builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connectionString));
 
@@ -28,11 +29,12 @@ builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connect
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IAnimalRepo, AnimalRepo>();
 builder.Services.AddScoped<IAnimalTypeRepo, AnimalTypeRepo>();
-builder.Services.AddScoped<IPostRepo, PostRepo>();
 builder.Services.AddScoped<IAppointmentRepo, AppointmentRepo>();
 builder.Services.AddScoped<IChatRepo, ChatRepo>();
 builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 builder.Services.AddScoped<IBookingRepo, BookingRepo>();
+builder.Services.AddScoped<IRoleRepo, RoleRepo>();
+
 
 // services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -40,10 +42,10 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IAnimalService, AnimalService>();
 builder.Services.AddScoped<IAnimalTypeService, AnimalTypeService>();
-builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -78,8 +80,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFlutterApp", policy =>
     {
         policy.WithOrigins(
-                "https://h4-flutter.mercantec.tech",
-                "https://h4-api.mercantec.tech"
+                "https://dev-pawshare-api.mercantec.tech",
+                "https://dev-pawshare.mercantec.tech",
+                "https://pawshare-api.mercantec.tech",
+                "https://pawshare.mercantec.tech",
+                "http://localhost:60947"
             )
             .AllowAnyMethod()               // Allow GET, POST, PUT, DELETE, etc.
             .AllowAnyHeader()               // Allow any headers
@@ -111,11 +116,11 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // 🔹 AUTOMATIC MIGRATIONS
-using (var scope = app.Services.CreateScope())
+ using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+    var dbContext = scope.ServiceProvider.    GetRequiredService<AppDBContext>();
     dbContext.Database.Migrate();
-}
+} 
 
 app.MapDefaultEndpoints();
 

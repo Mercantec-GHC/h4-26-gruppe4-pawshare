@@ -29,15 +29,12 @@ public class ChatService : IChatService
         {
             Id = chatId,
             Title = title,
-            Users = users,
             Messages = new List<Message>(),
-            chatUsers = users.Select(u => new ChatUserConvo
+            ChatUsers = users.Select(u => new ChatUserConvo
             {
-                Id = Guid.NewGuid().ToString(),
                 ChatId = chatId,
                 UserId = u.Id,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+
             }).ToList(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -59,10 +56,18 @@ public class ChatService : IChatService
         var chat = await _chatRepo.GetChat(chatId);
         if (chat == null) return null;
 
-        chat.Users ??= new List<User>();
-        chat.Users.Add(user);
-        chat.UpdatedAt = DateTime.UtcNow;
+        chat.ChatUsers ??= new List<ChatUserConvo>();
 
+        if (!chat.ChatUsers.Any(cu => cu.UserId == userId))
+        {
+            chat.ChatUsers.Add(new ChatUserConvo
+            {
+                ChatId = chatId,
+                UserId = userId
+            });
+        }
+
+        chat.UpdatedAt = DateTime.UtcNow;
         return await _chatRepo.UpdateChat(chat);
     }
 
@@ -71,7 +76,7 @@ public class ChatService : IChatService
         var chat = await _chatRepo.GetChat(chatId);
         if (chat == null) return null;
 
-        chat.Users?.RemoveAll(u => u.Id == userId);
+        chat.ChatUsers?.RemoveAll(cu => cu.UserId == userId);
         chat.UpdatedAt = DateTime.UtcNow;
 
         return await _chatRepo.UpdateChat(chat);

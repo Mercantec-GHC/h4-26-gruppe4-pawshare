@@ -15,11 +15,6 @@ public class UserRepo : IUserRepo
         _dbContext = dBContext;
     }
 
-
-
-    // Exempel kald:
-    // var usersNamedJonas = await _userRepo.GetAllUsers(u => u.Name == "Jonas");
-
     /// <inheritdoc/>
     public async Task<List<User>> GetAllUsers(Expression<Func<User, bool>>? filter = null)
     {
@@ -37,7 +32,7 @@ public class UserRepo : IUserRepo
     public async Task<User?> GetUser(string id)
     {
         var user = await _dbContext.Users.FindAsync(id);
-        if ( user is null)
+        if (user is null)
         {
             return null;
         }
@@ -45,9 +40,33 @@ public class UserRepo : IUserRepo
         return user;
     }
 
-    public User? GetByEmail(string email)
+
+    /// <inheritdoc/>
+    public async Task<User?> GetByEmail(string email)
     {
-        return _dbContext.Users.FirstOrDefault(u => u.Email == email);
+        try
+        {
+            var user = await _dbContext.Users
+                        .Include(u => u.Role)
+                        .FirstOrDefaultAsync(u => u.Email == email);
+            if (user is null)
+            {
+                return null;
+            }
+
+            return user;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    public async Task<User?> GetByRefreshTokenAsync(string refreshToken)
+    {
+        return await _dbContext.Users.FirstOrDefaultAsync(u =>
+            u.RefreshToken == refreshToken
+        );
     }
 
     public void Add(User user)
@@ -79,11 +98,29 @@ public class UserRepo : IUserRepo
         return newUser;
     }
 
-    public Task<User?> UpdateUser(User User)
+    /// <inheritdoc/>
+    public async Task<User?> UpdateUser(User user)
     {
-        throw new NotImplementedException();
+        _dbContext.Users.Update(user);
+        await _dbContext.SaveChangesAsync();
+        return user;
     }
-    
+
+    public async Task UpdateRefreshToken(
+    string userId,
+    string refreshToken,
+    DateTime expiresAt)
+    {
+        await _dbContext.Users
+            .Where(u => u.Id == userId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(u => u.RefreshToken, refreshToken)
+                .SetProperty(u => u.RefreshTokenExpiresAt, expiresAt)
+                .SetProperty(u => u.UpdatedAt, DateTime.UtcNow)
+            );
+    }
+
+    /// <inheritdoc/>
     public Task<bool> DeleteUser(string UserId)
     {
         throw new NotImplementedException();

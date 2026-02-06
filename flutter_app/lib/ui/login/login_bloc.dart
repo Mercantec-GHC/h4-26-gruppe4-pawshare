@@ -3,7 +3,6 @@ import 'dart:async';
 import 'login_events_states.dart';
 
 class LoginBloc extends Bloc<LoginEvents, LoginState> {
-  Timer? _gameCheckTimer;
 
   LoginBloc() : super(const LoginTestState()) {
     on<TestEvent>(_onCheckPin);
@@ -13,9 +12,4 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
     emit(const LoginTestState(isLoading: true));
   }
 
-  @override
-  Future<void> close() {
-    _gameCheckTimer?.cancel();
-    return super.close();
-  }
 }

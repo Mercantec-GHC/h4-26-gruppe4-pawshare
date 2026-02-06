@@ -1,5 +1,6 @@
-namespace Repositories.Interfaces;
 using Models;
+
+namespace Repositories.Interfaces;
 
 public interface IAnimalRepo
 {
@@ -15,7 +16,7 @@ public interface IAnimalRepo
     /// </summary>
     /// <param name="typeId">The wanted AnimalType Id</param>
     /// <returns>List of Animals of given AnimalType, empty list if none is found</returns>
-    public Task<List<Animal>> GetAnimalsFromType(string typeId);
+    public List<Animal> GetAnimalsFromType(string typeId);
 
     /// <summary>
     /// Posts a new Animal to the table

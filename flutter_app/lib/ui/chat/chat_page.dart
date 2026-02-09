@@ -214,7 +214,7 @@ class _ChatListTile extends StatelessWidget {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant,
+                  color: theme.colorScheme.surfaceContainerHighest,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Icons.pets, color: theme.colorScheme.onSurface),

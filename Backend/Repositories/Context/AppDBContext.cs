@@ -47,7 +47,13 @@ namespace Repositories.Context
                 .HasOne(u => u.Role)
                 .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId);
+
+            modelBuilder.Entity<Animal>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.Animals)
+                .HasForeignKey(a => a.UserId);
         }
+
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

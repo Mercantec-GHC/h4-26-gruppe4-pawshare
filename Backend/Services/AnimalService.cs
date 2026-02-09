@@ -1,6 +1,7 @@
-using Services.Interfaces;
 using Models;
+using Models.DTOs;
 using Repositories.Interfaces;
+using Services.Interfaces;
 
 namespace Services;
 
@@ -13,22 +14,22 @@ public class AnimalService : IAnimalService
         _animalRepo = animalRepo;
     }
 
-    public async Task<Animal?> GetAnimalAsync(string id)
+    public async Task<AnimalDto?> GetAnimalAsync(string id)
     {
         return await _animalRepo.GetAnimal(id);
     }
 
-    public async Task<List<Animal>> GetAllAnimalsAsync()
+    public async Task<List<AnimalDto>> GetAllAnimalsAsync()
     {
         return await _animalRepo.GetAllAnimals();
     }
 
-    public async Task<List<Animal>> GetAnimalsByTypeAsync(string typeId)
+    public async Task<List<AnimalDto>> GetAnimalsByTypeAsync(string typeId)
     {
         return _animalRepo.GetAnimalsFromType(typeId);
     }
 
-    public async Task<List<Animal>> GetAnimalsByUserAsync(string userId)
+    public async Task<List<AnimalDto>> GetAnimalsByUserAsync(string userId)
     {
         var allAnimals = await _animalRepo.GetAllAnimals();
         return allAnimals.Where(a => a.UserId == userId).ToList();
@@ -42,19 +43,16 @@ public class AnimalService : IAnimalService
         return await _animalRepo.PostAnimal(animal);
     }
 
-    public async Task<Animal?> UpdateAnimalAsync(string id, Animal animal)
+    public async Task<AnimalDto?> UpdateAnimalAsync(string id, AnimalDto dto)
     {
-        var existing = await _animalRepo.GetAnimal(id);
-        if (existing == null) return null;
+        var existing = await _animalRepo.GetAnimalEntity(id);
+        if (existing is null)
+            return null;
 
-        existing.Name = animal.Name;
-        existing.Description = animal.Description;
-        existing.Base64Image = animal.Base64Image;
-        existing.Age = animal.Age;
-        existing.TypeId = animal.TypeId;
-        existing.UpdatedAt = DateTime.UtcNow;
+        AnimalMapper.MapToEntity(dto, existing);
 
-        return await _animalRepo.UpdateAnimal(existing);
+        var updated = await _animalRepo.UpdateAnimal(existing);
+        return updated is null ? null : AnimalMapper.ToDto(updated);
     }
 
     public async Task<bool> DeleteAnimalAsync(string id)

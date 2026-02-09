@@ -1,7 +1,8 @@
-﻿using Repositories.Context;
-using Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.DTOs;
+using Repositories.Context;
+using Repositories.Interfaces;
 
 
 namespace Repositories;
@@ -17,34 +18,51 @@ public class AnimalRepo : IAnimalRepo
     }
 
     /// <inheritdoc/>
-    public async Task<List<Animal>> GetAllAnimals()
+    public async Task<Animal?> GetAnimalEntity(string id)
     {
-        return await _dbContext.Animals.ToListAsync();
+        return await _dbContext.Animals
+            .FirstOrDefaultAsync(a => a.Id == id);
     }
 
     /// <inheritdoc/>
-    public async Task<Animal?> GetAnimal(string id)
+    public async Task<List<AnimalDto>> GetAllAnimals()
     {
-        var animal = await _dbContext.Animals.FindAsync(id);
-        if (animal is null)
-        {
-            return null;
-        }
-
-        return animal;
+        return await _dbContext.Animals
+            .Include(a => a.User)
+            .Include(a => a.AnimalType)
+            .Include(a => a.Bookings)!
+                .ThenInclude(b => b.Appointment)
+            .Select(a => AnimalMapper.ToDto(a))
+            .ToListAsync();
     }
 
     /// <inheritdoc/>
-    public List<Animal> GetAnimalsFromType(string typeId)
+    public async Task<AnimalDto?> GetAnimal(string id)
     {
-        List<Animal> animal = _dbContext.Animals.Where(e => e.AnimalType != null && e.AnimalType.Id.Equals(typeId)).ToList();
-        if (animal is null)
-        {
-            return [];
-        }
+        var animal = await _dbContext.Animals
+            .Include(a => a.User)
+            .Include(a => a.AnimalType)
+            .Include(a => a.Bookings)!
+                .ThenInclude(b => b.Appointment)
+            .FirstOrDefaultAsync(a => a.Id == id);
 
-        return animal;
+        return animal is null ? null : AnimalMapper.ToDto(animal);
     }
+
+
+    /// <inheritdoc/>
+    public List<AnimalDto> GetAnimalsFromType(string typeId)
+    {
+        return _dbContext.Animals
+            .Include(a => a.User)
+            .Include(a => a.AnimalType)
+            .Include(a => a.Bookings)!
+                .ThenInclude(b => b.Appointment)
+            .Where(a => a.AnimalType != null && a.AnimalType.Id == typeId)
+            .Select(a => AnimalMapper.ToDto(a))
+            .ToList();
+    }
+
 
     /// <inheritdoc/>
     public async Task<Animal?> PostAnimal(Animal newAnimal)

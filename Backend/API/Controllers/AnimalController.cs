@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Models;
+using Models.DTOs;
 
 namespace API.Controllers;
 
@@ -101,7 +102,7 @@ public class AnimalController : ControllerBase
     /// <response code="200">Returns the updated animal.</response>
     /// <response code="404">If the animal is not found.</response>
     [HttpPut("{id}")]
-    public async Task<ActionResult<Animal>> UpdateAnimal(string id, [FromBody] Animal animal)
+    public async Task<ActionResult<Animal>> UpdateAnimal(string id, [FromBody] AnimalDto animal)
     {
         var updated = await _animalService.UpdateAnimalAsync(id, animal);
         if (updated == null)

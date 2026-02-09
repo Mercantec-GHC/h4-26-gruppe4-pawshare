@@ -1,4 +1,5 @@
 using Models;
+using Models.DTOs;
 
 namespace Repositories.Interfaces;
 
@@ -8,15 +9,23 @@ public interface IAnimalRepo
     /// Gets Animal with given Id from table
     /// </summary>
     /// <param name="id">The id of the wanted Animal</param>
-    /// <returns>Animal with given id, if not found returns null</returns>
-    public Task<Animal?> GetAnimal(string id);
+    /// <returns>Animal dto with given id, if not found returns null</returns>
+    public Task<AnimalDto?> GetAnimal(string id);
+
+    /// <summary>
+    /// Gets Animal with given Id from table
+    /// </summary>
+    /// <param name="id">The id of the wanted Animal</param>
+    /// <returns>Animal model NOT DTO with given id, if not found returns null</returns>
+    public Task<Animal?> GetAnimalEntity(string id);
+
 
     /// <summary>
     /// Gets all Animals in the table with given AnimalType
     /// </summary>
     /// <param name="typeId">The wanted AnimalType Id</param>
-    /// <returns>List of Animals of given AnimalType, empty list if none is found</returns>
-    public List<Animal> GetAnimalsFromType(string typeId);
+    /// <returns>List of Animaldtos of given AnimalType, empty list if none is found</returns>
+    public List<AnimalDto> GetAnimalsFromType(string typeId);
 
     /// <summary>
     /// Posts a new Animal to the table
@@ -28,8 +37,8 @@ public interface IAnimalRepo
     /// <summary>
     /// Gets all Animals in the table
     /// </summary>
-    /// <returns>List of Animals, empty list if none is found</returns>
-    public Task<List<Animal>> GetAllAnimals();
+    /// <returns>List of AnimalDtos, empty list if none is found</returns>
+    public Task<List<AnimalDto>> GetAllAnimals();
 
     /// <summary>
     /// Updates given Animal

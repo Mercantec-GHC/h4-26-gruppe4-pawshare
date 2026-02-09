@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Repositories;
@@ -9,6 +10,7 @@ using Services;
 using Services.Interfaces;
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +18,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 IConfiguration Configuration = builder.Configuration;
 
-string connectionString = builder.Configuration.GetConnectionString("db") 
-                          ?? builder.Configuration.GetConnectionString("DefaultConnection")
-                                                       ?? throw new InvalidOperationException("Connection string 'db' not found.");
+string connectionString = Configuration.GetConnectionString("db") 
+                          ?? Configuration.GetConnectionString("DefaultConnection")
+                                ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
 builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connectionString));
 
@@ -60,11 +69,11 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = Configuration["Jwt:Issuer"],
+        ValidAudience = Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
-                builder.Configuration["Jwt:SecretKey"]!
+                Configuration["Jwt:SecretKey"]!
             )
         )
     };

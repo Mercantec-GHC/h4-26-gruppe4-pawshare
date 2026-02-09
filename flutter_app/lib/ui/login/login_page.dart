@@ -4,6 +4,8 @@ import '../../widgets/default_scaffold.dart';
 import 'login_bloc.dart';
 import 'login_events_states.dart';
 import '../register/register_page.dart';
+import '../forgot_password/forgot_password_page.dart';
+import '../discover/discover_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,30 +17,65 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   
   bool _obscurePassword = true;
+
+  final TextEditingController _emailController =
+    TextEditingController();
+
+  final TextEditingController _passwordController =
+    TextEditingController();
   
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => LoginBloc(),
-      child: BlocBuilder<LoginBloc, LoginState>(
-        builder: (context, state) => DefaultScaffold(
-          child: SingleChildScrollView(
-           child: Column(
-             crossAxisAlignment: CrossAxisAlignment.stretch,
-             children: [
-              const SizedBox(height: 30),
+      child: BlocListener<LoginBloc, LoginState>(
+        listener: (context, state) {
+          if (state is LoginFormState && state.isSuccess) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const DiscoverPage(),
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<LoginBloc, LoginState>(
+          builder: (context, state) => DefaultScaffold(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 30),
 
-              if (state is LoginTestState) _buildTestState(context, state),
-             ],
-           ),
+                  if (state is LoginFormState) ...[
+                    if (state.isLoading)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                  ),
+
+                    if (!state.isLoading && !state.isSuccess)
+                      _buildTestState(context, state),
+
+                    if (state.errorMessage != null)
+                      Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Text(
+                        state.errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ),
-
         ),
       ),
-    );
+    );  
   }
 
-  Widget _buildTestState(BuildContext context, LoginTestState state) {
+  Widget _buildTestState(BuildContext context, LoginFormState state) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -58,15 +95,18 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 32),
 
           TextField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
               labelText: 'Email',
               border: OutlineInputBorder(),
             ),
-          ),
+      ),
 
           const SizedBox(height: 16),
 
          TextField(
+            controller: _passwordController,
             obscureText: _obscurePassword,
             decoration: InputDecoration(
               labelText: 'Password',
@@ -94,7 +134,14 @@ class _LoginPageState extends State<LoginPage> {
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            onPressed: () {},
+            onPressed: () {
+              context.read<LoginBloc>().add(
+                LoginSubmitted(
+                  email: _emailController.text,
+                  password: _passwordController.text,
+                ),
+              );
+            },
             child: const Text('Log in'),
           ),
 
@@ -129,11 +176,16 @@ class _LoginPageState extends State<LoginPage> {
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: () {
-                // later: forgot password
-              },
-              child: const Text('Forgot password?'),
-            ),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ForgotPasswordPage(),
+      ),
+    );
+  },
+  child: const Text('Forgot password?'),
+),
           ),
         ],
       ),

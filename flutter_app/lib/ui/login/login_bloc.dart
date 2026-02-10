@@ -1,9 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
+import '../../services/auth_service.dart';
 import 'login_events_states.dart';
 
+
 class LoginBloc extends Bloc<LoginEvents, LoginState> {
-  LoginBloc() : super(const LoginFormState()) {
+  final AuthService _authService;
+  
+  LoginBloc(this._authService) 
+      : super(const LoginFormState()) {
     on<LoginSubmitted>(_onLoginSubmitted);
   }
 
@@ -13,15 +18,14 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
   ) async {
     emit(const LoginFormState(isLoading: true));
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      await _authService.login(email: event.email, password: event.password);
 
-    if (event.email == 'test@test.com' &&
-        event.password == '123456') {
       emit(const LoginFormState(isSuccess: true));
-    } else {
-      emit(const LoginFormState(
-        errorMessage: 'Invalid email or password',
-      ));
+    } on AuthException catch (e) {
+      emit(LoginFormState(errorMessage: e.message));
+    } catch (_) {
+      emit(const LoginFormState(errorMessage: 'Something went wrong'));
     }
   }
 }

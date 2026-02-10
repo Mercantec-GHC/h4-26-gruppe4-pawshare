@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/default_scaffold.dart';
 import 'login_bloc.dart';
 import 'login_events_states.dart';
@@ -15,27 +16,22 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  
   bool _obscurePassword = true;
 
-  final TextEditingController _emailController =
-    TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
-  final TextEditingController _passwordController =
-    TextEditingController();
-  
+  final TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LoginBloc(),
+      create: (_) => LoginBloc(AuthService()),
       child: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginFormState && state.isSuccess) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (_) => const DiscoverPage(),
-              ),
+              MaterialPageRoute(builder: (_) => const DiscoverPage()),
             );
           }
         },
@@ -48,23 +44,18 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 30),
 
                   if (state is LoginFormState) ...[
-                    if (state.isLoading)
-                      const Center(
-                        child: CircularProgressIndicator(),
-                  ),
-
                     if (!state.isLoading && !state.isSuccess)
                       _buildTestState(context, state),
 
                     if (state.errorMessage != null)
                       Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: Text(
-                        state.errorMessage!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.red),
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          state.errorMessage!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
+                        ),
                       ),
-                    ),
                   ],
                 ],
               ),
@@ -72,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    );  
+    );
   }
 
   Widget _buildTestState(BuildContext context, LoginFormState state) {
@@ -83,8 +74,8 @@ class _LoginPageState extends State<LoginPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 40),
-            Image.asset('assets/pawshare_logo.png', height: 80),
-            const SizedBox(height: 24),
+          Image.asset('assets/pawshare_logo.png', height: 80),
+          const SizedBox(height: 24),
 
           const Text(
             'Welcome to PawShare!',
@@ -101,11 +92,11 @@ class _LoginPageState extends State<LoginPage> {
               labelText: 'Email',
               border: OutlineInputBorder(),
             ),
-      ),
+          ),
 
           const SizedBox(height: 16),
 
-         TextField(
+          TextField(
             controller: _passwordController,
             obscureText: _obscurePassword,
             decoration: InputDecoration(
@@ -129,20 +120,28 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 24),
 
           ElevatedButton(
-           style: ElevatedButton.styleFrom(
+            style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            onPressed: () {
-              context.read<LoginBloc>().add(
-                LoginSubmitted(
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                ),
-              );
-            },
-            child: const Text('Log in'),
+            onPressed: state.isLoading
+                ? null
+                : () {
+                    context.read<LoginBloc>().add(
+                      LoginSubmitted(
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                      ),
+                    );
+                  },
+            child: state.isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Log in'),
           ),
 
           const SizedBox(height: 16),
@@ -176,16 +175,14 @@ class _LoginPageState extends State<LoginPage> {
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const ForgotPasswordPage(),
-      ),
-    );
-  },
-  child: const Text('Forgot password?'),
-),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ForgotPasswordPage()),
+                );
+              },
+              child: const Text('Forgot password?'),
+            ),
           ),
         ],
       ),

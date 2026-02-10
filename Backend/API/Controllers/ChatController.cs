@@ -3,6 +3,8 @@ using Services.Interfaces;
 using Models;
 using Repositories.Interfaces;
 using Repositories;
+using Models.DTOs;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers;
 
@@ -14,41 +16,29 @@ namespace API.Controllers;
 public class ChatController : ControllerBase
 {
     private readonly IChatService _chatService;
+    private readonly IMessageService _messageService;
 
-    public ChatController(IChatService chatService)
+    public ChatController(IChatService chatService, IMessageService messageService)
     {
         _chatService = chatService;
-    }
-
-    /// <summary>
-    /// Gets a chat by its unique identifier.
-    /// </summary>
-    /// <param name="id">The unique identifier of the chat.</param>
-    /// <returns>The chat with the specified ID.</returns>
-    /// <response code="200">Returns the chat.</response>
-    /// <response code="404">If the chat is not found.</response>
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Chat>> GetChat(string id)
-    {
-        var chat = await _chatService.GetChatAsync(id);
-        if (chat == null)
-        {
-            return NotFound();
-        }
-        return Ok(chat);
+        _messageService = messageService;
     }
 
     /// <summary>
     /// Creates a new chat with the specified title and users.
     /// </summary>
-    /// <param name="request">The request containing the chat title and initial users.</param>
+    /// <param name="dto">The DTO containing the chat title and initial users.</param>
     /// <returns>The newly created chat.</returns>
-    /// <response code="201">Returns the newly created chat.</response>
+    /// <response code="200">Returns the newly created chat DTO.</response>
+    /// <response code="404">Returns bad request if not successfull.</response>
     [HttpPost]
-    public async Task<ActionResult<Chat>> CreateChat([FromBody] CreateChatRequest request)
+    public async Task<ActionResult<CreateChatDto>> CreateChat([Required] [FromBody] CreateChatDto dto)
     {
-        var chat = await _chatService.CreateChatAsync(request.Title, request.Users);
-        return CreatedAtAction(nameof(GetChat), new { id = chat.Id }, chat);
+        var chat = await _chatService.CreateChatAsync(dto);
+        if (chat is null)
+            return BadRequest();
+
+        return Ok(chat);
     }
 
     /// <summary>
@@ -58,111 +48,78 @@ public class ChatController : ControllerBase
     /// <returns>A list of chats the user belongs to.</returns>
     /// <response code="200">Returns the list of chats.</response>
     [HttpGet("user/{userId}")]
-    public async Task<ActionResult<List<Chat>>> GetUserChats(string userId)
+    public async Task<ActionResult<List<ChatListItemDto>>> GetChats(string userId, [FromQuery] int? limit, [FromQuery] int? offset)
     {
-        var chats = await _chatService.GetUserChatsAsync(userId);
+        var chats = await _chatService.GetChatsForUserAsync(userId, limit, offset);
         return Ok(chats);
     }
 
     /// <summary>
-    /// Adds a user to an existing chat.
+    /// Gets messages from given chat
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat.</param>
-    /// <param name="userId">The unique identifier of the user to add.</param>
-    /// <returns>The updated chat with the new user.</returns>
-    /// <response code="200">Returns the updated chat.</response>
-    /// <response code="404">If the chat or user is not found.</response>
-    [HttpPost("{chatId}/users/{userId}")]
-    public async Task<ActionResult<Chat>> AddUserToChat(string chatId, string userId)
-    {
-        var chat = await _chatService.AddUserToChatAsync(chatId, userId);
-        if (chat == null)
-        {
-            return NotFound();
-        }
-        return Ok(chat);
-    }
-
-    /// <summary>
-    /// Removes a user from an existing chat.
-    /// </summary>
-    /// <param name="chatId">The unique identifier of the chat.</param>
-    /// <param name="userId">The unique identifier of the user to remove.</param>
-    /// <returns>The updated chat without the removed user.</returns>
-    /// <response code="200">Returns the updated chat.</response>
-    /// <response code="404">If the chat or user is not found.</response>
-    [HttpDelete("{chatId}/users/{userId}")]
-    public async Task<ActionResult<Chat>> RemoveUserFromChat(string chatId, string userId)
-    {
-        var chat = await _chatService.RemoveUserFromChatAsync(chatId, userId);
-        if (chat == null)
-        {
-            return NotFound();
-        }
-        return Ok(chat);
-    }
-
-    /// <summary>
-    /// Gets all messages from a specific chat.
-    /// </summary>
-    /// <param name="chatId">The unique identifier of the chat.</param>
-    /// <returns>A list of messages in the chat.</returns>
-    /// <response code="200">Returns the list of messages.</response>
+    /// <param name="limit">The limit to amount of entries wanted.</param>
+    /// <param name="offset">The offset for how many entries to skip.</param>
+    /// <returns>The messages in the given chat.</returns>
+    /// <response code="200">Returns the list even if empty.</response>
+    /// <response code="404">If the messages are null.</response>
     [HttpGet("{chatId}/messages")]
-    public async Task<ActionResult<List<Message>>> GetChatMessages(string chatId)
+    public async Task<ActionResult<List<MessageDto>>> GetMessages(string chatId, [FromQuery] int? limit, [FromQuery] int? offset)
     {
-        var messages = await _chatService.GetChatMessagesAsync(chatId);
+        List<MessageDto> messages = await _chatService.GetMessagesAsync(chatId, limit, offset);
+        if (messages == null)
+            return NotFound();
+
         return Ok(messages);
     }
 
     /// <summary>
-    /// Sends a new message to a chat.
+    /// Sends a message to a given chat from a given user with a given message
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat.</param>
-    /// <param name="request">The request containing the sender ID and message content.</param>
-    /// <returns>The updated chat with the new message.</returns>
-    /// <response code="200">Returns the updated chat.</response>
-    /// <response code="404">If the chat is not found.</response>
+    /// <param name="userId">The unique identifier of the sender.</param>
+    /// <param name="content">The message to be sent.</param>
+    /// <returns>Success or bad request</returns>
+    /// <response code="204">Returns no content if successful.</response>
+    /// <response code="400">Bad request if not succesful sending.</response>
     [HttpPost("{chatId}/messages")]
-    public async Task<ActionResult<Chat>> SendMessage(string chatId, [FromBody] SendMessageRequest request)
+    public async Task<IActionResult> SendMessage(string chatId, [Required] [FromQuery] string userId, [Required] [FromQuery] string content)
     {
-        var chat = await _chatService.SendMessageAsync(chatId, request.SenderId, request.Content);
-        if (chat == null)
-        {
-            return NotFound();
-        }
-        return Ok(chat);
+        var sent = await _chatService.SendMessageAsync(chatId, userId, content);
+        if (!sent)
+            return BadRequest();
+
+        return NoContent();
     }
-}
-
-/// <summary>
-/// Request model for creating a new chat.
-/// </summary>
-public class CreateChatRequest
-{
-    /// <summary>
-    /// The title of the chat.
-    /// </summary>
-    public required string Title { get; set; }
 
     /// <summary>
-    /// The list of users to include in the chat.
+    /// Marks message as read.
     /// </summary>
-    public required List<User> Users { get; set; }
-}
+    /// <param name="messageId">The unique identifier of the message.</param>
+    /// <param name="userId">The unique identifier of the user who read the message.</param>
+    /// <returns>Success or bad request.</returns>
+    /// <response code="204">Returns no content if successful.</response>
+    /// <response code="400">Bad request if not succesful marking as read.</response>
+    [HttpPost("messages/{messageId}/read")]
+    public async Task<IActionResult> MarkRead(string messageId, [Required] [FromQuery] string userId)
+    {
+        var ok = await _messageService.MarkMessageReadAsync(messageId, userId);
+        if (!ok)
+            return BadRequest();
 
-/// <summary>
-/// Request model for sending a message.
-/// </summary>
-public class SendMessageRequest
-{
-    /// <summary>
-    /// The unique identifier of the user sending the message.
-    /// </summary>
-    public required string SenderId { get; set; }
+        return NoContent();
+    }
 
     /// <summary>
-    /// The content of the message.
+    /// Gets a list of all unread messages for a user.
     /// </summary>
-    public required string Content { get; set; }
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <returns>List of unread messages, empty if none is found.</returns>
+    /// <response code="200">Returns the list of messages even if null or empty.</response>
+    [HttpGet("unread/{userId}")]
+    public async Task<ActionResult<List<UnreadChatDto>>> GetUnreadList(string userId)
+    {
+        List<UnreadChatDto> result = await _chatService.GetUnreadChatsAsync(userId);
+        return Ok(result);
+    }
 }

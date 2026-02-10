@@ -1,50 +1,42 @@
-using Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using Repositories.Interfaces;
+using Services.Interfaces;
 
 namespace Services;
 
 public class MessageService : IMessageService
 {
     private readonly IMessageRepo _messageRepo;
-    private readonly IChatRepo _chatRepo;
-    private readonly IUserRepo _userRepo;
+    private readonly IMessageReadReceiptRepo _receiptRepo;
 
-    public MessageService(IMessageRepo messageRepo, IChatRepo chatRepo, IUserRepo userRepo)
+    public MessageService(IMessageRepo messageRepo, IMessageReadReceiptRepo receiptRepo)
     {
         _messageRepo = messageRepo;
-        _chatRepo = chatRepo;
-        _userRepo = userRepo;
+        _receiptRepo = receiptRepo;
     }
 
-    public async Task<List<Message>> GetMessagesByChatAsync(string chatId)
+    public async Task<bool> MarkMessageReadAsync(string messageId, string userId)
     {
-        return await _messageRepo.GetMessagesFromChat(chatId);
-    }
+        // Get message
+        bool exists = await _messageRepo.Query().AnyAsync(m => m.Id == messageId);
+        if (!exists)
+            return false;
 
-    public async Task<Message?> SendMessageAsync(string chatId, string userId, string content)
-    {
-        var user = await _userRepo.GetUser(userId);
-        if (user == null) return null;
-
-        var message = new Message
-        {
-            Id = Guid.NewGuid().ToString(),
-            Content = content,
-            UserId = userId,
-            User = user,
-            ChatId = chatId,
-            Chat = null!,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        return await _messageRepo.SendMessage(message);
-    }
-
-    public async Task<bool> DeleteMessageAsync(string id)
-    {
-        // Simple check - actual delete logic would go in repo
-        return true;
+        // Check if message was already read
+        if (await _receiptRepo.ExistsAsync(messageId, userId)) 
+            return true; 
+        
+        // Create new receipt
+        var receipt = new MessageReadReceipt { 
+            Id = Guid.NewGuid().ToString(), 
+            MessageId = messageId, 
+            UserId = userId, 
+            CreatedAt = DateTime.UtcNow, 
+            UpdatedAt = DateTime.UtcNow 
+        }; 
+        
+        await _receiptRepo.PostReceiptAsync(receipt); 
+        return true; 
     }
 }

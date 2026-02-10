@@ -35,12 +35,12 @@ public static class AnimalMapper
 
     public static void MapToEntity(AnimalDto dto, Animal entity)
     {
+        entity.Id = dto.Id;
         entity.Name = dto.Name;
         entity.Description = dto.Description;
         entity.Base64Image = dto.Base64Image;
         entity.Age = dto.Age;
         entity.TypeId = dto.TypeId;
-        entity.UpdatedAt = DateTime.UtcNow;
+        entity.UserId = dto.UserId;
     }
-
 }

@@ -16,65 +16,44 @@ public class ChatRepo : IChatRepo
     }
 
     /// <inheritdoc/>
-    public async Task<List<Chat>> GetChatsWithUser(string userId)
-    {
-        return await _dbContext.Chats
-            .Include(c => c.ChatUsers)
-            .Where(c => c.ChatUsers.Any(cu => cu.UserId == userId))
-            .ToListAsync();
-    }
+    public IQueryable<Chat> Query() => _dbContext.Chats.AsQueryable();
+
     /// <inheritdoc/>
     public async Task<Chat?> PostChat(Chat newChat)
     {
         _dbContext.Chats.Add(newChat);
-        try
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            if (_dbContext.Chats.Any(e => e.Id == newChat.Id))
-            {
-                return null;
-            }
-            else
-            {
-                throw;
-            }
-        }
-
+        await _dbContext.SaveChangesAsync();
         return newChat;
     }
 
     /// <inheritdoc/>
     public async Task<Chat?> GetChat(string id)
     {
-        return await _dbContext.Chats
-            .Include(c => c.ChatUsers)
-            .Include(c => c.Messages)
-            .FirstOrDefaultAsync(c => c.Id == id);
+        return await _dbContext.Chats.FindAsync(id);
     }
     /// <inheritdoc/>
     public async Task<Chat?> UpdateChat(Chat newChat)
     {
         _dbContext.Entry(newChat).State = EntityState.Modified;
-
-        try
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_dbContext.Chats.Any(e => e.Id == newChat.Id))
-            {
-                return null;
-            }
-            else
-            {
-                throw;
-            }
-        }
-
+        await _dbContext.SaveChangesAsync();
         return newChat;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DeleteChat(string id) { 
+        var chat = await _dbContext.Chats.FindAsync(id); 
+        if (chat is null) 
+            return false; 
+        
+        _dbContext.Chats.Remove(chat); 
+        await _dbContext.SaveChangesAsync(); 
+        return true; 
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> IsUserInChat(string chatId, string userId)
+    {
+        return await _dbContext.Chats
+            .AnyAsync(c => c.Id == chatId && c.ChatUsers.Any(cu => cu.UserId == userId));
     }
 }

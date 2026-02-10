@@ -28,11 +28,11 @@ public interface IAnimalTypeRepo
     /// Updates given appointment
     /// </summary>
     /// <param name="animalType">The new version of the animalType</param>
-    /// <returns>The AnimalType that was updated, returns null if not succesfull</returns>
+    /// <returns>The AnimalType that was updated, returns null if not successful</returns>
     public Task<AnimalType?> UpdateAnimalType(AnimalType animalType);
 
     /// <summary>
-    /// Delets AnimalType from table
+    /// Deletes AnimalType from table
     /// </summary>
     /// <param name="typeId">Id of the animaltype needed to be deleted</param>
     /// <returns>Boolean, true if succesful and false if not</returns>

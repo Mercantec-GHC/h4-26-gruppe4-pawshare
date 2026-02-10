@@ -18,6 +18,7 @@ namespace Repositories.Context
         public DbSet<AppointmentAnimalBooking> AppointmentAnimalBookings { get; set; } = default!;
         public DbSet<ChatUserConvo> ChatUserConvos { get; set; } = default!;
         public DbSet<Role> Roles { get; set; }
+        public DbSet<MessageReadReceipt> MessageReadReceipts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

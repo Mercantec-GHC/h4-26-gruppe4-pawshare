@@ -37,7 +37,7 @@ public interface IUserRepo
     /// Updates given User
     /// </summary>
     /// <param name="User">The new version of the User</param>
-    /// <returns>The User that was updated, returns null if not succesfull</returns>
+    /// <returns>The User that was updated, returns null if not successful</returns>
     public Task<User?> UpdateUser(User User);
 
     Task UpdateRefreshToken(
@@ -47,7 +47,7 @@ public interface IUserRepo
 );
 
     /// <summary>
-    /// Delets User from table
+    /// Deletes User from table
     /// </summary>
     /// <param name="UserId">Id of the User needed to be deleted</param>
     /// <returns>Boolean, true if succesful and false if not</returns>

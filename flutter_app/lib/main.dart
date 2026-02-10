@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'classes/helpers/theme_manager.dart';
-import 'ui/login/login_page.dart';
+import 'ui/auth/auth_gate.dart';
 
 
 final globalNavigatorKey = GlobalKey<NavigatorState>();
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
               secondary: Color(0xFFF5C84C),
             ),
           ),
-          home: const LoginPage(),
+          home: const AuthGate(),
         );
       },
     );

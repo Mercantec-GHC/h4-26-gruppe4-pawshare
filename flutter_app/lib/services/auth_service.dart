@@ -1,10 +1,13 @@
+import 'auth_storage.dart';
+
 class AuthService {
+  final AuthStorage _storage = AuthStorage();
+
   Future<void> login({required String email, required String password}) async {
-    // simulate API call
     await Future.delayed(const Duration(seconds: 1));
 
     if (email == 'test@test.com' && password == '123456') {
-      return; // success
+      await _storage.setLoggedIn(true);
     } else {
       throw AuthException('Invalid email or password');
     }
@@ -17,10 +20,18 @@ class AuthService {
     await Future.delayed(const Duration(seconds: 1));
 
     if (email.contains('@')) {
-      return; // success
-    } else {
       throw AuthException('Invalid email address');
     }
+    
+    await _storage.setLoggedIn(true);
+  }
+
+  Future<bool> isLoggedIn() {
+    return _storage.isLoggedIn();
+  }
+
+  Future<void> logout() {
+    return _storage.logout();
   }
 }
 

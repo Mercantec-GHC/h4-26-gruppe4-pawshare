@@ -3,15 +3,19 @@ import 'package:http/http.dart' as http;
 import '../objects/api_path.dart';
 
 class API {
-  static const String _url = 'https://api.com/';
-  static const String _testUrl = 'https://dev-pawshare-api.mercantec.tech/api/';
+  static const String _url = String.fromEnvironment(
+    'API_URL_HTTPS',
+    defaultValue: 'https://pawshare-api.mercantec.tech/',
+  );
+  static const String _testUrl = String.fromEnvironment(
+    'API_URL_HTTPS',
+    defaultValue: 'https://dev-pawshare-api.mercantec.tech/api/',
+  );
 
   // Get Request
   static Future<http.Response> getRequest(ApiPath action) async {
     // Create header with action
-    final header = {
-      'Accept': 'application/json',
-    };
+    final header = {'Accept': 'application/json'};
 
     // Get Request from url with header. To post change the get to post and add the body (the same way as you do the header).
     var temp = await http.get(
@@ -25,11 +29,12 @@ class API {
   }
 
   // Get Request
-  static Future<http.Response> getRequestWithId(ApiPath action, String id) async {
+  static Future<http.Response> getRequestWithId(
+    ApiPath action,
+    String id,
+  ) async {
     // Create header with action
-    final header = {
-      'Accept': 'application/json',
-    };
+    final header = {'Accept': 'application/json'};
 
     // Get Request from url with header and "/(id)"
     var temp = await http.get(

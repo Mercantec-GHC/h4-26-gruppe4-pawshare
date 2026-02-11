@@ -80,7 +80,8 @@ builder.Services.AddCors(options =>
                 "https://dev-pawshare-api.mercantec.tech",
                 "https://dev-pawshare.mercantec.tech",
                 "https://pawshare-api.mercantec.tech",
-                "https://pawshare.mercantec.tech"
+                "https://pawshare.mercantec.tech",
+                "http://localhost:60947"
             )
             .AllowAnyMethod()               // Allow GET, POST, PUT, DELETE, etc.
             .AllowAnyHeader()               // Allow any headers

@@ -1,25 +1,26 @@
-abstract class DiscoverEvents {
-  const DiscoverEvents();
+import 'package:flutter/widgets.dart';
+
+import '../../classes/objects/animal.dart';
+
+@immutable
+sealed class DiscoverState {}
+
+final class DiscoverAnimalsInitial extends DiscoverState {}
+
+final class DiscoverAnimalsLoading extends DiscoverState {}
+
+final class DiscoverAnimalsSuccess extends DiscoverState {
+  final List<Animal> animals;
+  DiscoverAnimalsSuccess({required this.animals});
 }
 
-class TestEvent extends DiscoverEvents {
-  const TestEvent();
+final class DiscoverAnimalsFailure extends DiscoverState {
+  final String errorMessage;
+
+  DiscoverAnimalsFailure({required this.errorMessage});
 }
 
+@immutable
+sealed class DiscoverEvents {}
 
-abstract class DiscoverState {
-  const DiscoverState();
-}
-
-class DiscoverAnimals extends DiscoverEvents {
-
-  const DiscoverAnimals();
-}
-
-
-
-
-class DiscoverTestState extends DiscoverState {
-  const DiscoverTestState();
-}
-
+final class DiscoverAnimals extends DiscoverEvents {}

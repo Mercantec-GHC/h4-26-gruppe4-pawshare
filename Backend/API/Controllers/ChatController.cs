@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
-using Models;
-using Repositories.Interfaces;
-using Repositories;
+using Microsoft.AspNetCore.Authorization; 
+using System.Security.Claims;
 using Models.DTOs;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,6 +10,7 @@ namespace API.Controllers;
 /// <summary>
 /// Controller for managing chat functionality including chat rooms, users, and messages.
 /// </summary>
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class ChatController : ControllerBase
@@ -47,9 +47,14 @@ public class ChatController : ControllerBase
     /// <param name="userId">The unique identifier of the user.</param>
     /// <returns>A list of chats the user belongs to.</returns>
     /// <response code="200">Returns the list of chats.</response>
-    [HttpGet("user/{userId}")]
-    public async Task<ActionResult<List<ChatListItemDto>>> GetChats(string userId, [FromQuery] int? limit, [FromQuery] int? offset)
+    /// <response code="400">Returns bad request if userid can't be found.</response>
+    [HttpGet("me")]
+    public async Task<ActionResult<List<ChatListItemDto>>> GetChats([FromQuery] int? limit, [FromQuery] int? offset)
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return BadRequest();
+
         var chats = await _chatService.GetChatsForUserAsync(userId, limit, offset);
         return Ok(chats);
     }
@@ -77,14 +82,18 @@ public class ChatController : ControllerBase
     /// Sends a message to a given chat from a given user with a given message
     /// </summary>
     /// <param name="chatId">The unique identifier of the chat.</param>
-    /// <param name="userId">The unique identifier of the sender.</param>
-    /// <param name="content">The message to be sent.</param>
+    /// <param name="request">The request dto.</param>
     /// <returns>Success or bad request</returns>
     /// <response code="204">Returns no content if successful.</response>
-    /// <response code="400">Bad request if not succesful sending.</response>
+    /// <response code="400">Bad request if not succesful sending or jwt not containing userid.</response>
     [HttpPost("{chatId}/messages")]
-    public async Task<IActionResult> SendMessage(string chatId, [Required] [FromQuery] string userId, [Required] [FromQuery] string content)
+    public async Task<IActionResult> SendMessage(string chatId, [Required] [FromBody] string content)
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId == null) 
+            return BadRequest();
+
         var sent = await _chatService.SendMessageAsync(chatId, userId, content);
         if (!sent)
             return BadRequest();
@@ -99,10 +108,15 @@ public class ChatController : ControllerBase
     /// <param name="userId">The unique identifier of the user who read the message.</param>
     /// <returns>Success or bad request.</returns>
     /// <response code="204">Returns no content if successful.</response>
-    /// <response code="400">Bad request if not succesful marking as read.</response>
+    /// <response code="400">Bad request if not succesful marking as read or if jwt not containing a userid.</response>
     [HttpPost("messages/{messageId}/read")]
-    public async Task<IActionResult> MarkRead(string messageId, [Required] [FromQuery] string userId)
+    public async Task<IActionResult> MarkRead(string messageId)
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId == null)
+            return BadRequest();
+
         var ok = await _messageService.MarkMessageReadAsync(messageId, userId);
         if (!ok)
             return BadRequest();
@@ -116,9 +130,15 @@ public class ChatController : ControllerBase
     /// <param name="userId">The unique identifier of the user.</param>
     /// <returns>List of unread messages, empty if none is found.</returns>
     /// <response code="200">Returns the list of messages even if null or empty.</response>
-    [HttpGet("unread/{userId}")]
-    public async Task<ActionResult<List<UnreadChatDto>>> GetUnreadList(string userId)
+    /// <response code="400">Returns bad request if jwt does not contain userid.</response>
+    [HttpGet("unread")]
+    public async Task<ActionResult<List<UnreadChatDto>>> GetUnreadList()
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId == null)
+            return BadRequest();
+
         List<UnreadChatDto> result = await _chatService.GetUnreadChatsAsync(userId);
         return Ok(result);
     }

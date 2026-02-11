@@ -22,13 +22,21 @@ class MessageDTO {
     required this.createdTimestamp,
   });
 
-  factory MessageDTO.fromJson(Map<String, dynamic> json) {
+  factory MessageDTO.fromJson(
+    Map<String, dynamic> json, {
+    required String chatId,
+  }) {
+    final createdAt = json['createdAt'] ?? json['createdTimestamp'];
+    final createdTimestamp = createdAt == null
+      ? DateTime.now()
+      : DateTime.parse(createdAt.toString());
+
     return MessageDTO(
-      id: json['id'] as String,
-      content: json['content'] as String,
-      senderId: json['senderId'] as String,
-      chatId: json['chatId'] as String,
-      createdTimestamp: DateTime.parse(json['createdAt'] as String),
+      id: (json['messageId'] ?? json['id'] ?? '').toString(),
+      content: (json['content'] ?? '').toString(),
+      senderId: (json['senderId'] ?? '').toString(),
+      chatId: chatId,
+      createdTimestamp: createdTimestamp,
     );
   }
 }
@@ -49,12 +57,27 @@ class ChatDto {
   });
 
   factory ChatDto.fromJson(Map<String, dynamic> json) {
+    final newestMessage = json['newestMessage'];
+    final lastUpdatedRaw = json['lastUpdated'] ??
+        (newestMessage is Map<String, dynamic>
+            ? newestMessage['createdAt']
+            : null);
+    final lastMessageRaw = newestMessage is Map<String, dynamic>
+        ? newestMessage['content']
+        : json['lastMessage'];
+    final unreadRaw = json['unreadCount'];
+    final unreadCount = unreadRaw is num
+        ? unreadRaw.toInt()
+        : int.tryParse(unreadRaw?.toString() ?? '') ?? 0;
+
     return ChatDto(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      lastMessage: json['lastMessage'] as String,
-      lastUpdated: DateTime.parse(json['lastUpdated'] as String),
-      unreadCount: json['unreadCount'] as int,
+      id: (json['chatId'] ?? json['id']).toString(),
+      title: (json['title'] ?? '').toString(),
+      lastMessage: (lastMessageRaw ?? '').toString(),
+      lastUpdated: lastUpdatedRaw == null
+          ? DateTime.now()
+          : DateTime.parse(lastUpdatedRaw.toString()),
+      unreadCount: unreadCount,
     );
   }
 }

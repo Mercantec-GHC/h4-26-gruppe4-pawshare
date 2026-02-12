@@ -29,7 +29,7 @@ public interface IAppointmentRepo
     /// </summary>
     /// <param name="appointmentId">The id of the appointment that needs updating</param>
     /// <param name="appointment">The new version of the appointment</param>
-    /// <returns>The Appointment that was updated, returns null if not succesfull</returns>
+    /// <returns>The Appointment that was updated, returns null if not successful</returns>
     public Task<Appointment?> UpdateAppointment(Appointment appointment);
 
     /// <summary>

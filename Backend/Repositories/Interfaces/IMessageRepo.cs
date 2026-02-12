@@ -5,28 +5,27 @@ namespace Repositories.Interfaces;
 public interface IMessageRepo
 {
     /// <summary>
-    /// Gets Messages from given Chat
+    /// Gets a queryable collection of Messages. (Can be used to include)
     /// </summary>
-    /// <param name="id">The id of the chat to get messages from</param>
-    /// <returns>Lists of messages from given chat or returns empty list if none is found</returns>
-    public Task<List<Message>> GetMessagesFromChat(string chatId);
+    /// <returns>An <see cref="IQueryable{Message}"/> representing the message table</returns>
+    public IQueryable<Message> Query();
 
     /// <summary>
     /// Posts a new message to the table
     /// </summary>
     /// <param name="newMessage">The new message that needs to be posted</param>
-    /// <returns>Message that was added, null if it already exists, and throws exception if error occurs under creation</returns>
+    /// <returns>Message that was added, and throws exception if error occurs under creation</returns>
     public Task<Message?> SendMessage(Message newMessage);
 
     /// <summary>
     /// Updates given Message
     /// </summary>
     /// <param name="Message">The new version of the Message</param>
-    /// <returns>The Message that was updated, returns null if not succesfull</returns>
+    /// <returns>The Message that was updated, returns null if not successful</returns>
     public Task<Message?> UpdateMessage(Message Message);
 
     /// <summary>
-    /// Delets Message from table
+    /// Deletes Message from table
     /// </summary>
     /// <param name="MessageId">Id of the Message needed to be deleted</param>
     /// <returns>Boolean, true if succesful and false if not</returns>

@@ -23,7 +23,12 @@
             "cwd": "flutter_app",
             "request": "launch",
             "type": "dart",
-            "deviceId": "edge"
+            "args": [
+                "-d",
+                "edge",
+                "--web-port",
+                "60947"
+            ]
         },
                 {
             "name": "flutter_app (Phone)",

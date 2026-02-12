@@ -1,5 +1,7 @@
+import 'dart:convert' as JSON;
 
 import 'animal_type.dart';
+import 'appointment_animal_booking.dart';
 import 'common.dart';
 import 'user.dart';
 
@@ -11,11 +13,15 @@ class Animal extends Common {
     required this.Age,
     required this.TypeId,
     required this.animalType,
+    required this.TypeDescription,
+    required this.TypeName,
     required this.UserId,
     required this.user,
+    required this.UserName,
     required this.createdAt,
     required this.updatedAt,
     required this.Base64Image,
+    required this.bookings,
   });
 
   final String Name;
@@ -28,11 +34,19 @@ class Animal extends Common {
 
   final String TypeId;
 
+  final String TypeName;
+
+  final String TypeDescription;
+
   final AnimalType? animalType;
 
   final String UserId;
 
+  final String UserName;
+
   final User? user;
+
+  final List<AppointmentAnimalBooking>? bookings;
 
   @override
   final String id;
@@ -43,19 +57,32 @@ class Animal extends Common {
   @override
   final DateTime? updatedAt;
 
+  List<Animal> listOfAnimals(String body) =>
+      List<Animal>.from(JSON.json.decode(body).map((x) => Animal.fromJson(x)));
+
   factory Animal.fromJson(Map<String, dynamic> json) {
     return Animal(
-      id: json['id'],
-      Name: json['Name'],
-      Description: json['Description'],
-      Base64Image: json['Base64Image'],
-      Age: json['Age'],
-      TypeId: json['TypeId'],
-      animalType: AnimalType.fromJson(json['AnimalType']),
-      UserId: json['UserId'],
-      user: User.fromJson(json['User']),
-      createdAt: DateTime.tryParse(json['CreatedAt']),
-      updatedAt: DateTime.tryParse(json['UpdatedAt']),
+      id: json['id'] as String,
+      Name: (json['name'] as String).replaceAll('"', ''),
+      Description: (json['description'] as String).replaceAll('"', ''),
+      Base64Image: (json['base64Image'] as String).replaceAll('"', ''),
+      Age: json['age'] as int,
+      TypeId: (json['typeId'] as String).replaceAll('"', ''),
+      TypeName: (json['typeName'] as String).replaceAll('"', ''),
+      TypeDescription: (json['typeDescription'] as String).replaceAll('"', ''),
+      animalType: json['animalType'] == null
+          ? null
+          : AnimalType.fromJson(json['animalType']),
+      UserId: (json['userId'] as String).replaceAll('"', ''),
+      UserName: (json['userName'] as String).replaceAll('"', ''),
+      user: json['user'] == null ? null : User.fromJson(json['user']),
+      createdAt: DateTime.tryParse(json['createdAt']),
+      updatedAt: DateTime.tryParse(json['updatedAt']),
+      bookings: json['bookings'] == null
+          ? []
+          : List<AppointmentAnimalBooking>.from(
+              json['bookings'].map((x) => AppointmentAnimalBooking.fromJson(x)),
+            ),
     );
   }
 }

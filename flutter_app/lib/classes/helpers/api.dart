@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../objects/api_path.dart';
+import 'auth.dart';
 
 class API {
   static const String _url = String.fromEnvironment(
@@ -11,17 +12,53 @@ class API {
     'API_URL_HTTPS',
     defaultValue: 'https://dev-pawshare-api.mercantec.tech/api/',
   );
+  static final Map<String, String> _headers = {'Accept': 'application/json'};
+
+  // Wraps API calls to automatically attempt token refresh on 401 responses
+  static Future<http.Response> _attemptApiWithRefresh(
+    Future<http.Response> Function() apiCall,
+    Function(http.Response)? onSuccess,
+  ) async {
+    var response = await apiCall();
+
+    if (response.statusCode == 401) {
+      var refreshSuccess = await _tryToRefreshToken();
+      if (refreshSuccess) {
+        response = await apiCall();
+      }
+    }
+
+    if (onSuccess != null) {
+      onSuccess(response);
+    }
+    return response;
+  }
+
+  // Attempts to refresh the JWT token using the refresh token. If successful, updates the Authorization header with the new token.
+  // Returns: True if token refresh was successful, false otherwise
+  static Future<bool> _tryToRefreshToken() async {
+    var refreshSuccess = await Auth.refresh();
+
+    if (refreshSuccess) {
+      var newToken = await Auth.getAccessToken();
+      _headers['Authorization'] = 'Bearer $newToken';
+      return true;
+    } else {
+      // TODO: Handle failed token refresh, e.g., by redirecting to login
+    }
+    return false;
+  }
 
   // Get Request
   static Future<http.Response> getRequest(ApiPath action) async {
-    // Create header with action
-    final header = {'Accept': 'application/json'};
-
     // Get Request from url with header. To post change the get to post and add the body (the same way as you do the header).
-    var temp = await http.get(
-      // Checks if it is release mode or debug mode. Uses Test URL on debug mode
-      Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
-      headers: header,
+    var temp = await _attemptApiWithRefresh(
+      () => http.get(
+        // Checks if it is release mode or debug mode. Uses Test URL on debug mode
+        Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
+        headers: _headers,
+      ),
+      null,
     );
 
     // Returns future response
@@ -33,35 +70,30 @@ class API {
     ApiPath action,
     String id,
   ) async {
-    // Create header with action
-    final header = {'Accept': 'application/json'};
-
     // Get Request from url with header and "/(id)"
-    var temp = await http.get(
-      Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
-      headers: header,
+    var temp = await _attemptApiWithRefresh(
+      () => http.get(
+        Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
+        headers: _headers,
+      ),
+      null,
     );
 
-    // Returns future response
     return temp;
   }
 
   // Post Request
-  static Future<http.Response> postRequest(
-    ApiPath action,
-    Object? body,
-  ) async {
-    // Create header with action
-    final header = {'Accept': 'application/json'};
-
+  static Future<http.Response> postRequest(ApiPath action, Object? body) async {
     // Post Request from url with header and body
-    var temp = await http.post(
-      Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
-      headers: header,
-      body: body,
+    var temp = await _attemptApiWithRefresh(
+      () => http.post(
+        Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
+        headers: _headers,
+        body: body,
+      ),
+      null,
     );
 
-    // Returns future response
     return temp;
   }
 
@@ -71,36 +103,31 @@ class API {
     String id,
     Object? body,
   ) async {
-    // Create header with action
-    final header = {'Accept': 'application/json'};
-
     // Post Request from url with header, body, and "/(id)"
-    var temp = await http.post(
-      Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
-      headers: header,
-      body: body,
+    var temp = await _attemptApiWithRefresh(
+      () => http.post(
+        Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
+        headers: _headers,
+        body: body,
+      ),
+      null,
     );
 
-    // Returns future response
     return temp;
   }
 
   // Put Request
-  static Future<http.Response> putRequest(
-    ApiPath action,
-    Object? body,
-  ) async {
-    // Create header with action
-    final header = {'Accept': 'application/json'};
-
+  static Future<http.Response> putRequest(ApiPath action, Object? body) async {
     // Put Request from url with header and body
-    var temp = await http.put(
-      Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
-      headers: header,
-      body: body,
+    var temp = await _attemptApiWithRefresh(
+      () => http.put(
+        Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
+        headers: _headers,
+        body: body,
+      ),
+      null,
     );
 
-    // Returns future response
     return temp;
   }
 
@@ -110,31 +137,28 @@ class API {
     String id,
     Object? body,
   ) async {
-    // Create header with action
-    final header = {'Accept': 'application/json'};
-
     // Put Request from url with header, body, and "/(id)"
-    var temp = await http.put(
-      Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
-      headers: header,
-      body: body,
+    var temp = await _attemptApiWithRefresh(
+      () => http.put(
+        Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
+        headers: _headers,
+        body: body,
+      ),
+      null,
     );
 
-    // Returns future response
     return temp;
   }
 
   // Delete Request
-  static Future<http.Response> deleteRequest(
-    ApiPath action,
-  ) async {
-    // Create header with action
-    final header = {'Accept': 'application/json'};
-
+  static Future<http.Response> deleteRequest(ApiPath action) async {
     // Delete Request from url with header
-    var temp = await http.delete(
-      Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
-      headers: header,
+    var temp = await _attemptApiWithRefresh(
+      () => http.delete(
+        Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
+        headers: _headers,
+      ),
+      null,
     );
 
     // Returns future response
@@ -146,13 +170,13 @@ class API {
     ApiPath action,
     String id,
   ) async {
-    // Create header with action
-    final header = {'Accept': 'application/json'};
-
     // Delete Request from url with header and "/(id)"
-    var temp = await http.delete(
-      Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
-      headers: header,
+    var temp = await _attemptApiWithRefresh(
+      () => http.delete(
+        Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
+        headers: _headers,
+      ),
+      null,
     );
 
     // Returns future response

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../classes/helpers/api.dart';
+import '../../classes/helpers/auth.dart';
 import '../../classes/objects/api_path.dart';
 import '../../classes/objects/message_dto.dart';
 import 'chat_events_states.dart';
@@ -15,12 +16,15 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     on<ChatSendMessageEvent>(_onChatSendMessage);
   }
 
-  static const String currentUserId = '331d511d-2ed3-4392-99e9-f31caf9097d4';
+  static String currentUserId = '';
 
   final List<ChatDto> _chats = [];
   final Map<String, List<MessageDTO>> _messages = {};
 
   Future<void> _onChatLoad(ChatLoadEvent event, Emitter<ChatState> emit) async {
+    await Auth.login('test@test.dk', 'test');
+    currentUserId = await Auth.getCurrentUserId();
+
     final chats = await _fetchChats();
     _chats
       ..clear()
@@ -132,12 +136,11 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     return messages;
   }
 
-  // TODO: This should be changed when the api is ready to accept message content in the body instead of query parameters, and to not require userId as a parameter (it should be taken from the auth token instead)
   Future<bool> _sendMessage(String chatId, String content) async {
     final response = await API.postRequestWithId(
       ApiPath.chat,
-      '$chatId/messages?userId=$currentUserId&content=${Uri.encodeComponent(content)}',
-      null,
+      '$chatId/messages',
+      content,
     );
 
     return response.statusCode == 204;

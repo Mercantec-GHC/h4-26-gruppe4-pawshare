@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Moq;
 using Repositories;
 using Repositories.Context;
 using Services;
@@ -55,7 +56,8 @@ public class UserServiceTest
             await db.SaveChangesAsync();
 
             var userRepo = new UserRepo(db);
-            var userService = new UserService(userRepo);
+            var mockRoleRepo = new Mock<RoleRepo>();
+            var userService = new UserService(userRepo, mockRoleRepo.Object);
             var user = await userService.GetUser("1");
             
             Assert.That(user.Id, Is.EqualTo("1"));

@@ -40,7 +40,6 @@ public class UserDBIntegrationTest2
             });
 
         db = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<AppDBContext>();
-        await db.Database.MigrateAsync();
     }
 
     [Test]

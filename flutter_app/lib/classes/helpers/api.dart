@@ -1,18 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../objects/api_path.dart';
 import 'auth.dart';
 
 class API {
-  static const String _url = String.fromEnvironment(
-    'API_URL_HTTPS',
-    defaultValue: 'https://pawshare-api.mercantec.tech/',
-  );
-  static const String _testUrl = String.fromEnvironment(
-    'API_URL_HTTPS',
-    defaultValue: 'https://dev-pawshare-api.mercantec.tech/api/',
-  );
-  static final Map<String, String> _headers = {'Accept': 'application/json'};
+  static const String _url =
+      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/api/';
+  static const String _testUrl =
+      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://dev-pawshare-api.mercantec.tech')}/api/';
+
+  static final Map<String, String> _headers = {};
+
+  static Map<String, String> _jsonHeaders() {
+    return {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      ..._headers,
+    };
+  }
 
   // Wraps API calls to automatically attempt token refresh on 401 responses
   static Future<http.Response> _attemptApiWithRefresh(
@@ -51,12 +58,17 @@ class API {
 
   // Get Request
   static Future<http.Response> getRequest(ApiPath action) async {
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
+    }
+
     // Get Request from url with header. To post change the get to post and add the body (the same way as you do the header).
     var temp = await _attemptApiWithRefresh(
       () => http.get(
         // Checks if it is release mode or debug mode. Uses Test URL on debug mode
         Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
-        headers: _headers,
+        headers: {'Accept': 'application/json', ..._headers},
       ),
       null,
     );
@@ -70,11 +82,16 @@ class API {
     ApiPath action,
     String id,
   ) async {
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
+    }
+
     // Get Request from url with header and "/(id)"
     var temp = await _attemptApiWithRefresh(
       () => http.get(
         Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
-        headers: _headers,
+        headers: {'Accept': 'application/json', ..._headers},
       ),
       null,
     );
@@ -84,12 +101,17 @@ class API {
 
   // Post Request
   static Future<http.Response> postRequest(ApiPath action, Object? body) async {
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
+    }
+
     // Post Request from url with header and body
     var temp = await _attemptApiWithRefresh(
       () => http.post(
         Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
-        headers: _headers,
-        body: body,
+        headers: _jsonHeaders(),
+        body: body == null ? null : jsonEncode(body),
       ),
       null,
     );
@@ -103,12 +125,17 @@ class API {
     String id,
     Object? body,
   ) async {
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
+    }
+
     // Post Request from url with header, body, and "/(id)"
     var temp = await _attemptApiWithRefresh(
       () => http.post(
         Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
-        headers: _headers,
-        body: body,
+        headers: _jsonHeaders(),
+        body: body == null ? null : jsonEncode(body),
       ),
       null,
     );
@@ -118,12 +145,17 @@ class API {
 
   // Put Request
   static Future<http.Response> putRequest(ApiPath action, Object? body) async {
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
+    }
+
     // Put Request from url with header and body
     var temp = await _attemptApiWithRefresh(
       () => http.put(
         Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
-        headers: _headers,
-        body: body,
+        headers: _jsonHeaders(),
+        body: body == null ? null : jsonEncode(body),
       ),
       null,
     );
@@ -137,12 +169,17 @@ class API {
     String id,
     Object? body,
   ) async {
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
+    }
+
     // Put Request from url with header, body, and "/(id)"
     var temp = await _attemptApiWithRefresh(
       () => http.put(
         Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
-        headers: _headers,
-        body: body,
+        headers: _jsonHeaders(),
+        body: body == null ? null : jsonEncode(body),
       ),
       null,
     );
@@ -152,6 +189,11 @@ class API {
 
   // Delete Request
   static Future<http.Response> deleteRequest(ApiPath action) async {
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
+    }
+
     // Delete Request from url with header
     var temp = await _attemptApiWithRefresh(
       () => http.delete(
@@ -170,6 +212,11 @@ class API {
     ApiPath action,
     String id,
   ) async {
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
+    }
+
     // Delete Request from url with header and "/(id)"
     var temp = await _attemptApiWithRefresh(
       () => http.delete(

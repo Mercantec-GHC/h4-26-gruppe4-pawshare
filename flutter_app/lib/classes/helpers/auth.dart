@@ -14,10 +14,10 @@ class Auth {
 
     if (resp.statusCode == 200) {
       var decoded = json.decode(resp.body);
-      String token = decoded['AccessToken'];
-      String refreshToken = decoded['RefreshToken'];
-      SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, token);
-      SecureStorageHelper.saveToStorage(
+      String token = decoded['accessToken'];
+      String refreshToken = decoded['refreshToken'];
+      await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, token);
+      await SecureStorageHelper.saveToStorage(
         SecureStorageKey.refreshToken,
         refreshToken,
       );
@@ -26,8 +26,11 @@ class Auth {
 
       if (meResponse.statusCode == 200) {
         var meDecoded = json.decode(meResponse.body);
-        String userId = meDecoded['UserId'];
-        SecureStorageHelper.saveToStorage(SecureStorageKey.userId, userId);
+        String userId = meDecoded['userId'];
+        await SecureStorageHelper.saveToStorage(
+          SecureStorageKey.userId,
+          userId,
+        );
       }
 
       return true;
@@ -39,9 +42,12 @@ class Auth {
     var resp = await API.postRequestWithId(ApiPath.auth, 'logout', null);
 
     if (resp.statusCode == 204) {
-      SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
-      SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
-      SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
+      await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
+      await SecureStorageHelper.saveToStorage(
+        SecureStorageKey.refreshToken,
+        '',
+      );
+      await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
     }
   }
 
@@ -64,13 +70,16 @@ class Auth {
 
     if (resp.statusCode == 200) {
       var decoded = json.decode(resp.body);
-      String newToken = decoded['AccessToken'];
-      String refreshToken = decoded['RefreshToken'];
-      SecureStorageHelper.saveToStorage(
+      String newToken = decoded['accessToken'];
+      String refreshToken = decoded['refreshToken'];
+      await SecureStorageHelper.saveToStorage(
         SecureStorageKey.refreshToken,
         refreshToken,
       );
-      SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, newToken);
+      await SecureStorageHelper.saveToStorage(
+        SecureStorageKey.jwtToken,
+        newToken,
+      );
       return true;
     }
 

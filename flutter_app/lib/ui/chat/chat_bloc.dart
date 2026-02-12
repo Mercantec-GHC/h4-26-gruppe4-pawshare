@@ -23,6 +23,7 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
 
   Future<void> _onChatLoad(ChatLoadEvent event, Emitter<ChatState> emit) async {
     await Auth.login('test@test.dk', 'test');
+  
     currentUserId = await Auth.getCurrentUserId();
 
     final chats = await _fetchChats();
@@ -92,10 +93,7 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
   }
 
   Future<List<ChatDto>> _fetchChats() async {
-    final response = await API.getRequestWithId(
-      ApiPath.chat,
-      'user/$currentUserId',
-    );
+    final response = await API.getRequestWithId(ApiPath.chat, 'me');
 
     if (response.statusCode != 200) {
       return [];

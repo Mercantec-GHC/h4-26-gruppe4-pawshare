@@ -1,3 +1,4 @@
+import 'dart:convert' as JSON;
 
 import 'animal_type.dart';
 import 'appointment_animal_booking.dart';
@@ -12,12 +13,15 @@ class Animal extends Common {
     required this.Age,
     required this.TypeId,
     required this.animalType,
+    required this.TypeDescription,
+    required this.TypeName,
     required this.UserId,
     required this.user,
+    required this.UserName,
     required this.createdAt,
     required this.updatedAt,
     required this.Base64Image,
-    required this.booking
+    required this.bookings,
   });
 
   final String Name;
@@ -30,13 +34,19 @@ class Animal extends Common {
 
   final String TypeId;
 
+  final String TypeName;
+
+  final String TypeDescription;
+
   final AnimalType? animalType;
 
   final String UserId;
 
+  final String UserName;
+
   final User? user;
 
-  final AppointmentAnimalBooking? booking;
+  final List<AppointmentAnimalBooking>? bookings;
 
   @override
   final String id;
@@ -47,6 +57,9 @@ class Animal extends Common {
   @override
   final DateTime? updatedAt;
 
+  List<Animal> listOfAnimals(String body) =>
+      List<Animal>.from(JSON.json.decode(body).map((x) => Animal.fromJson(x)));
+
   factory Animal.fromJson(Map<String, dynamic> json) {
     return Animal(
       id: json['id'] as String,
@@ -55,12 +68,21 @@ class Animal extends Common {
       Base64Image: (json['base64Image'] as String).replaceAll('"', ''),
       Age: json['age'] as int,
       TypeId: (json['typeId'] as String).replaceAll('"', ''),
-      animalType: json['animalType'] == null ? null : AnimalType.fromJson(json['animalType']),
+      TypeName: (json['typeName'] as String).replaceAll('"', ''),
+      TypeDescription: (json['typeDescription'] as String).replaceAll('"', ''),
+      animalType: json['animalType'] == null
+          ? null
+          : AnimalType.fromJson(json['animalType']),
       UserId: (json['userId'] as String).replaceAll('"', ''),
-      user: json['user'] == null ? null :  User.fromJson(json['user']),
+      UserName: (json['userName'] as String).replaceAll('"', ''),
+      user: json['user'] == null ? null : User.fromJson(json['user']),
       createdAt: DateTime.tryParse(json['createdAt']),
       updatedAt: DateTime.tryParse(json['updatedAt']),
-      booking: json['bookings'] == null ? null : AppointmentAnimalBooking.fromJson(json['bookings'])
+      bookings: json['bookings'] == null
+          ? []
+          : List<AppointmentAnimalBooking>.from(
+              json['bookings'].map((x) => AppointmentAnimalBooking.fromJson(x)),
+            ),
     );
   }
 }

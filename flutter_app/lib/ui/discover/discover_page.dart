@@ -41,10 +41,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
           ],
         ),
       ),
-      body: Expanded(
-        child: Center(
-          child: BlocBuilder(
-            bloc: DiscoverBloc()..add(DiscoverAnimals()),
+      body: BlocProvider(
+        create: (_) => DiscoverBloc()..add(DiscoverAnimals()),
+          child: BlocBuilder<DiscoverBloc, DiscoverState>(
             builder: (context, state) {
               switch (state.runtimeType) {
                 case DiscoverAnimalsInitial:
@@ -66,7 +65,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
             },
           ),
         ),
-      ),
     );
   }
 

@@ -21,8 +21,7 @@ public class AnimalService : IAnimalService
         var entity = await _animalRepo.Query()
             .Include(a => a.User)
             .Include(a => a.AnimalType)
-            .Include(a => a.Bookings)!
-                .ThenInclude(b => b.Appointment)
+            .Include(a => a.Bookings)!.ThenInclude(b => b.Appointment)
             .FirstOrDefaultAsync(a => a.Id == id);
 
         return entity is null ? null : AnimalMapper.ToDto(entity);
@@ -47,9 +46,8 @@ public class AnimalService : IAnimalService
         var entities = await _animalRepo.Query()
             .Include(a => a.User)
             .Include(a => a.AnimalType)
-            .Include(a => a.Bookings)!
-                .ThenInclude(b => b.Appointment)
-            .Where(a => a.AnimalType != null && a.AnimalType.Id == typeId)
+            .Include(a => a.Bookings)!.ThenInclude(b => b.Appointment)
+            .Where(a => a.TypeId == typeId)
             .ToListAsync();
 
         return entities.Select(AnimalMapper.ToDto).ToList();
@@ -61,9 +59,8 @@ public class AnimalService : IAnimalService
         var entities = await _animalRepo.Query()
             .Include(a => a.User)
             .Include(a => a.AnimalType)
-            .Include(a => a.Bookings)!
-                .ThenInclude(b => b.Appointment)
-            .Where(a => a.User != null && a.User.Id == userId)
+            .Include(a => a.Bookings)!.ThenInclude(b => b.Appointment)
+            .Where(a => a.UserId == userId)
             .ToListAsync();
 
         return entities.Select(AnimalMapper.ToDto).ToList();

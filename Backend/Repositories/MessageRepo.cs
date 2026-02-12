@@ -17,38 +17,13 @@ public class MessageRepo : IMessageRepo
     }
 
     /// <inheritdoc/>
-    public async Task<List<Message>> GetMessagesFromChat(string chatId)
-    {
-        List<Message> messages = await _dbContext.Messages.Where(e => e.ChatId.Equals(chatId)).ToListAsync();
-        if (messages is null)
-        {
-            return [];
-        }
-
-        return messages;
-    }
+    public IQueryable<Message> Query() => _dbContext.Messages.AsQueryable();
 
     /// <inheritdoc/>
     public async Task<Message?> SendMessage(Message newMessage)
     {
         _dbContext.Messages.Add(newMessage);
-
-        try
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            if (_dbContext.Messages.Any(e => e.Id == newMessage.Id))
-            {
-                return null;
-            }
-            else
-            {
-                throw;
-            }
-        }
-
+        await _dbContext.SaveChangesAsync();
         return newMessage;
     }
 
@@ -56,23 +31,7 @@ public class MessageRepo : IMessageRepo
     public async Task<Message?> UpdateMessage(Message NewMessage)
     {
         _dbContext.Entry(NewMessage).State = EntityState.Modified;
-
-        try
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_dbContext.Messages.Any(e => e.Id == NewMessage.Id))
-            {
-                return null;
-            }
-            else
-            {
-                throw;
-            }
-        }
-
+        await _dbContext.SaveChangesAsync();
         return NewMessage;
     }
 
@@ -81,9 +40,7 @@ public class MessageRepo : IMessageRepo
     {
         Message? message = await _dbContext.Messages.FindAsync(MessageId);
         if (message == null)
-        {
             return false;
-        }
 
         _dbContext.Messages.Remove(message);
         await _dbContext.SaveChangesAsync();

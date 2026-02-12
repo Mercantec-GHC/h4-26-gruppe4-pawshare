@@ -18,6 +18,7 @@ namespace Repositories.Context
         public DbSet<AppointmentAnimalBooking> AppointmentAnimalBookings { get; set; } = default!;
         public DbSet<ChatUserConvo> ChatUserConvos { get; set; } = default!;
         public DbSet<Role> Roles { get; set; }
+        public DbSet<MessageReadReceipt> MessageReadReceipts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,7 +48,13 @@ namespace Repositories.Context
                 .HasOne(u => u.Role)
                 .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId);
+
+            modelBuilder.Entity<Animal>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.Animals)
+                .HasForeignKey(a => a.UserId);
         }
+
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

@@ -3,6 +3,7 @@
 // TODO: ADD ALL ENDPOINTS
 enum ApiPath {
   animal,
+  animalType,
   user
 }
 
@@ -13,8 +14,11 @@ extension PathExtension on ApiPath {
     switch (this) {
       case ApiPath.animal:
         name = 'Animal';
+      case ApiPath.animalType:
+        name = 'AnimalType';
       case ApiPath.user:
         name = 'Users';
+        break;
     }
     return name;
   }

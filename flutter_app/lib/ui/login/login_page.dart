@@ -4,7 +4,7 @@ import '../../services/auth_service.dart';
 import '../../widgets/default_scaffold.dart';
 import 'login_bloc.dart';
 import 'login_events_states.dart';
-import '../register/register_page.dart';
+import '../register/role_selection_page.dart';
 import '../forgot_password/forgot_password_page.dart';
 import '../discover/discover_page.dart';
 
@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const RegisterPage()),
+                MaterialPageRoute(builder: (_) => const RoleSelectionPage()),
               );
             },
             child: const Text('Create account'),

@@ -10,13 +10,15 @@ namespace Services
         private readonly IUserRepo _users;
         private readonly JwtService _jwtService;
         private readonly IRoleRepo _roleRepo;
+        private readonly IAnimalRepo _animalRepo;
 
-        
-        public AuthService(IUserRepo users, JwtService jwtService, IRoleRepo roleRepo)
+
+        public AuthService(IUserRepo users, JwtService jwtService, IRoleRepo roleRepo, IAnimalRepo animalRepo)
         {
             _users = users;
             _roleRepo = roleRepo;
             _jwtService = jwtService;
+            _animalRepo = animalRepo;
         }
 
         private static string GenerateRefreshToken()
@@ -33,7 +35,7 @@ namespace Services
                 ?? throw new Exception("Default role not found");
 
             var user = new User
-            { 
+            {
                 Id = Guid.NewGuid().ToString(),
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
@@ -41,6 +43,7 @@ namespace Services
                 Email = dto.Email,
                 HashedPassword = hashedPassword,
                 RoleId = role.Id,
+                City = dto.City,
 
                 // Required by the model but not used for authentication
                 Salt = "BCrypt internal",
@@ -50,12 +53,76 @@ namespace Services
 
             await _users.PostUser(user);
         }
+        public async Task RegisterOwner(RegisterOwnerDto dto)
+        {
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+            var role = await _roleRepo.GetByNameAsync("AnimalOwner")
+                ?? throw new Exception("Role not found");
+
+            var user = new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Name = dto.Name,
+                Email = dto.Email,
+                HashedPassword = hashedPassword,
+                RoleId = role.Id,
+                City = dto.City,
+                Base64Pfp = dto.Base64Pfp,
+                Salt = "BCrypt internal",
+                RealPassword = dto.Password
+            };
+
+            await _users.PostUser(user);
+
+            var animal = new Animal
+            {
+                Id = Guid.NewGuid().ToString(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Name = dto.AnimalName,
+                Description = dto.AnimalDescription,
+                Age = dto.AnimalAge,
+                TypeId = dto.AnimalTypeId,
+                UserId = user.Id,
+                Base64Image = ""
+            };
+
+            await _animalRepo.PostAnimal(animal);
+        }
+
+        public async Task RegisterInstitution(RegisterInstitutionDto dto)
+        {
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+            var role = await _roleRepo.GetByNameAsync("Institution")
+                ?? throw new Exception("Role not found");
+
+            var user = new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Name = dto.Name,
+                Email = dto.Email,
+                HashedPassword = hashedPassword,
+                RoleId = role.Id,
+                City = dto.City,
+                Base64Pfp = dto.Base64Pfp,
+                Salt = "BCrypt internal",
+                RealPassword = dto.Password
+            };
+
+            await _users.PostUser(user);
+        }
 
         public async Task<AuthResponseDto?> Login(LoginDto dto)
         {
             var user = await _users.GetByEmail(dto.Email);
             if (user == null) return null;
- 
+
             if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.HashedPassword))
                 return null;
 

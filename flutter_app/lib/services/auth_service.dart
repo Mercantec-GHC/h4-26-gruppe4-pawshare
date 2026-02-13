@@ -1,30 +1,102 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../config/api_config.dart';
 import 'auth_storage.dart';
 
 class AuthService {
   final AuthStorage _storage = AuthStorage();
 
-  Future<void> login({required String email, required String password}) async {
-    await Future.delayed(const Duration(seconds: 1));
+  final String baseUrl =
+      'http://localhost:5197'; 
 
-    if (email == 'test@test.com' && password == '123456') {
-      await _storage.setLoggedIn(true);
+  Future<void> login({
+    required String email,
+    required String password,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/auth/login'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      final accessToken = data['accessToken'];
+      final refreshToken = data['refreshToken'];
+
+      await _storage.saveTokens(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
     } else {
       throw AuthException('Invalid email or password');
     }
   }
 
-  Future<void> register({
-    required String email,
-    required String password,
-  }) async {
-    await Future.delayed(const Duration(seconds: 1));
+Future<void> register({
+  required String email,
+  required String password,
+}) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/api/auth/register'),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      "email": email,
+      "name": email,       // 
+      "password": password,
+      "base64Pfp": ""     // 
+    }),
+  );
 
-    if (email.contains('@')) {
-      throw AuthException('Invalid email address');
-    }
-    
-    await _storage.setLoggedIn(true);
+  print("REGISTER STATUS: ${response.statusCode}");
+  print("REGISTER BODY: ${response.body}");
+
+  if (response.statusCode == 200) {
+    await login(email: email, password: password);
+  } else {
+    throw AuthException('Registration failed');
   }
+}
+
+Future<void> registerOwner({
+  required String email,
+  required String name,
+  required String password,
+  required String city,
+  required String base64Pfp,
+  required String animalName,
+  required String animalDescription,
+  required int animalAge,
+  required String animalTypeId,
+}) async {
+  final response = await http.post(
+    Uri.parse('${ApiConfig.baseUrl}/api/auth/register-owner'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      "email": email,
+      "name": name,
+      "password": password,
+      "city": city,
+      "base64Pfp": base64Pfp,
+      "animalName": animalName,
+      "animalDescription": animalDescription,
+      "animalAge": animalAge,
+      "animalTypeId": animalTypeId,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Register failed');
+  }
+}
 
   Future<bool> isLoggedIn() {
     return _storage.isLoggedIn();

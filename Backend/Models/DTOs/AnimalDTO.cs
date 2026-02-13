@@ -20,4 +20,10 @@ namespace Models.DTOs
 
         public required List<AnimalBookingDto> Bookings { get; set; }
     }
+
+    public class CreateAnimalTypeDto
+{
+    public string Name { get; set; } = default!;
+    public string Description { get; set; } = default!;
+}
 }

@@ -1,6 +1,12 @@
 // Name all paths
 // TODO: ADD ALL ENDPOINTS
-enum ApiPath { animal, user, chat, auth }
+enum ApiPath {
+  animal,
+  animalType,
+  chat,
+  auth,
+  user
+}
 
 // Specify the string needed for each path. Avoids accidental misspellings and ensures consistency
 extension PathExtension on ApiPath {
@@ -9,12 +15,15 @@ extension PathExtension on ApiPath {
     switch (this) {
       case ApiPath.animal:
         name = 'Animal';
+      case ApiPath.animalType:
+        name = 'AnimalType';
       case ApiPath.user:
         name = 'Users';
       case ApiPath.chat:
         name = 'Chat';
       case ApiPath.auth:
         name = 'Auth';
+        break;
     }
     return name;
   }

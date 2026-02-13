@@ -14,7 +14,8 @@ namespace Models.DTOs
         public required string Email { get; set; }
         public required string Name { get; set; }
         public required string Password { get; set; }
-        
+        public required string City { get; set; }
+
 
         public required string Base64Pfp { get; set; }
     }
@@ -37,5 +38,28 @@ namespace Models.DTOs
     public class LogoutDto
     {
         public string RefreshToken { get; set; } = null!;
+    }
+
+    public class RegisterOwnerDto
+    {
+        public required string Email { get; set; }
+        public required string Name { get; set; }
+        public required string Password { get; set; }
+        public required string City { get; set; }
+        public required string Base64Pfp { get; set; }
+
+        public required string AnimalName { get; set; }
+        public required string AnimalDescription { get; set; }
+        public required int AnimalAge { get; set; }
+        public required string AnimalTypeId { get; set; }
+    }
+
+    public class RegisterInstitutionDto
+    {
+        public required string Email { get; set; }
+        public required string Name { get; set; }
+        public required string Password { get; set; }
+        public required string City { get; set; }
+        public required string Base64Pfp { get; set; }
     }
 }

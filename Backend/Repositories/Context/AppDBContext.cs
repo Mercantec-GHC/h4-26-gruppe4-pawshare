@@ -39,10 +39,12 @@ namespace Repositories.Context
 
             modelBuilder.Entity<Role>().HasData(
                 new Role { Id = 1, Name = "Admin" },
-                new Role { Id = 2, Name = "AnimalUser" },
+                new Role { Id = 2, Name = "AnimalOwner" },
                 new Role { Id = 3, Name = "Institution" },
                 new Role { Id = 4, Name = "Moderator" }
             );
+
+            
 
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Role)

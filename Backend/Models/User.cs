@@ -38,5 +38,6 @@ namespace Models
         public List<UserAppointmentBooking>? Bookings { get; set; }
         public List<ChatUserConvo>? Chats { get; set; }
         public List<MessageReadReceipt>? readMessages { get; set; }
+        public required string City { get; set; }
     }
 }

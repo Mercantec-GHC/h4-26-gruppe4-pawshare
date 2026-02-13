@@ -25,6 +25,20 @@ namespace API.Controllers
             return Ok("User created");
         }
 
+        [HttpPost("register-owner")]
+        public async Task<IActionResult> RegisterOwner(RegisterOwnerDto dto)
+        {
+            await _auth.RegisterOwner(dto);
+            return Ok("Owner created");
+        }
+
+        [HttpPost("register-institution")]
+        public async Task<IActionResult> RegisterInstitution(RegisterInstitutionDto dto)
+        {
+            await _auth.RegisterInstitution(dto);
+            return Ok("Institution created");
+        }
+
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponseDto>> Login(LoginDto dto)
         {
@@ -34,7 +48,7 @@ namespace API.Controllers
 
             return Ok(result);
         }
-        
+
         [HttpPost("refresh")]
         public async Task<ActionResult<AuthResponseDto>> Refresh(RefreshTokenDto dto)
         {

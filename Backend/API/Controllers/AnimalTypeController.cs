@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Models;
+using Models.DTOs;
 
 namespace API.Controllers;
 
@@ -55,16 +56,24 @@ public class AnimalTypeController : ControllerBase
     /// <returns>The newly created animal type.</returns>
     /// <response code="201">Returns the newly created animal type.</response>
     /// <response code="400">If the animal type data is invalid.</response>
-    [HttpPost]
-    public async Task<ActionResult<AnimalType>> CreateAnimalType([FromBody] AnimalType animalType)
+   [HttpPost]
+public async Task<ActionResult<AnimalType>> CreateAnimalType(
+    [FromBody] CreateAnimalTypeDto dto)
+{
+    var animalType = new AnimalType
     {
-        var created = await _animalTypeService.CreateAnimalTypeAsync(animalType);
-        if (created == null)
-        {
-            return BadRequest();
-        }
-        return CreatedAtAction(nameof(GetAnimalType), new { id = created.Id }, created);
-    }
+        Id = Guid.NewGuid().ToString(),
+        Name = dto.Name,
+        Description = dto.Description,
+        CreatedAt = DateTime.UtcNow,
+        UpdatedAt = DateTime.UtcNow
+    };
+
+    var created = await _animalTypeService.CreateAnimalTypeAsync(animalType);
+
+    return CreatedAtAction(nameof(GetAnimalType),
+        new { id = created!.Id }, created);
+}
 
     /// <summary>
     /// Updates an existing animal type.

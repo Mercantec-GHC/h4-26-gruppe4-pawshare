@@ -44,7 +44,8 @@ public class UserService : IUserService
             HashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Salt = "BCrypt internal",
             Base64Pfp = "",
-            RoleId = role.Id
+            RoleId = role.Id,
+            City = dto.City
         };
 
         await _userRepo.PostUser(user);

@@ -3,13 +3,14 @@ import 'common.dart';
 class AnimalType extends Common {
   AnimalType({
     required this.id,
-    required this.Name,
-    required this.Description,
+    required this.name,
+    required this.description,
     this.createdAt,
     this.updatedAt,
   });
-  final String Name;
-  final String Description;
+
+  final String name;
+  final String description;
 
   @override
   final String id;
@@ -22,11 +23,11 @@ class AnimalType extends Common {
 
   factory AnimalType.fromJson(Map<String, dynamic> json) {
     return AnimalType(
-      id: json['Id'],
-      Name: json['Name'],
-      Description: json['Description'],
-      createdAt: DateTime.tryParse(json['CreatedAt']),
-      updatedAt: DateTime.tryParse(json['UpdatedAt']),
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      createdAt: DateTime.tryParse(json['createdAt'] ?? ''),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? ''),
     );
   }
 }

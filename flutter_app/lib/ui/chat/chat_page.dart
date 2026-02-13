@@ -14,7 +14,6 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  static const String _currentUserId = 'me';
   final TextEditingController _messageController = TextEditingController();
 
   @override
@@ -113,7 +112,7 @@ class _ChatPageState extends State<ChatPage> {
                       itemBuilder: (context, index) {
                         final message =
                             state.messages[state.messages.length - 1 - index];
-                        final isMe = message.senderId == _currentUserId;
+                        final isMe = message.senderId == ChatBloc.currentUserId;
                         return _ChatMessageBubble(
                           message: message,
                           isMe: isMe,
@@ -214,7 +213,7 @@ class _ChatListTile extends StatelessWidget {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant,
+                  color: theme.colorScheme.surfaceContainerHighest,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Icons.pets, color: theme.colorScheme.onSurface),
@@ -321,7 +320,7 @@ class _ChatMessageBubble extends StatelessWidget {
                   Text(
                     timeLabel,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: textColor?.withOpacity(0.7),
+                      color: textColor?.withValues(alpha: 0.7),
                     ),
                   ),
                 ],

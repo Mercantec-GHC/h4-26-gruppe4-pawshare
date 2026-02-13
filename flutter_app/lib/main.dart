@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'classes/helpers/theme_manager.dart';
-import 'ui/profile/profile_page.dart';
+import 'ui/auth/auth_gate.dart';
+
 
 final globalNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -21,10 +22,27 @@ class MyApp extends StatelessWidget {
       valueListenable: themeNotifier,
       builder: (_, mode, __) {
         return MaterialApp(
-          theme: buildLightTheme(),
-          darkTheme: buildDarkTheme(),
-          themeMode: mode,
-          home: const ProfilePage(),
+          title: 'PawShare',
+          themeMode: ThemeMode.system, 
+          theme: ThemeData(
+            useMaterial3: true,
+            brightness: Brightness.light,
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFFF5C84C), 
+              onPrimary: Colors.black,
+              secondary: Color(0xFFF5C84C),
+            ),
+          ),
+          darkTheme: ThemeData(
+            useMaterial3: true,
+            brightness: Brightness.dark,
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFFF5C84C),
+              onPrimary: Colors.black,
+              secondary: Color(0xFFF5C84C),
+            ),
+          ),
+          home: const AuthGate(),
         );
       },
     );

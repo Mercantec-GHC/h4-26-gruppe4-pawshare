@@ -1,7 +1,7 @@
-﻿using Repositories.Context;
-using Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Models;
+using Repositories.Context;
+using Repositories.Interfaces;
 
 
 namespace Repositories;
@@ -11,9 +11,21 @@ public class AnimalRepo : IAnimalRepo
 {
     private readonly AppDBContext _dbContext;
 
-    public AnimalRepo(AppDBContext dBContext)
+    public AnimalRepo(AppDBContext dbContext)
     {
-        _dbContext = dBContext;
+        _dbContext = dbContext;
+    }
+
+    /// <inheritdoc/>
+    public IQueryable<Animal> Query()
+    {
+        return _dbContext.Animals.AsQueryable();
+    }
+
+    /// <inheritdoc/>
+    public async Task<Animal?> GetAnimal(string id)
+    {
+        return await _dbContext.Animals.FindAsync(id);
     }
 
     /// <inheritdoc/>
@@ -22,75 +34,21 @@ public class AnimalRepo : IAnimalRepo
         return await _dbContext.Animals.ToListAsync();
     }
 
-    /// <inheritdoc/>
-    public async Task<Animal?> GetAnimal(string id)
-    {
-        var animal = await _dbContext.Animals.FindAsync(id);
-        if (animal is null)
-        {
-            return null;
-        }
-
-        return animal;
-    }
 
     /// <inheritdoc/>
-    public List<Animal> GetAnimalsFromType(string typeId)
-    {
-        List<Animal> animal = _dbContext.Animals.Where(e => e.AnimalType != null && e.AnimalType.Id.Equals(typeId)).ToList();
-        if (animal is null)
-        {
-            return [];
-        }
-
-        return animal;
-    }
-
-    /// <inheritdoc/>
-    public async Task<Animal?> PostAnimal(Animal newAnimal)
+    public async Task<Animal> PostAnimal(Animal newAnimal)
     {
         _dbContext.Animals.Add(newAnimal);
-        try
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            if (_dbContext.Users.Any(e => e.Id == newAnimal.Id))
-            {
-                return null;
-            }
-            else
-            {
-                throw;
-            }
-        }
-
+        await _dbContext.SaveChangesAsync();
         return newAnimal;
     }
 
     /// <inheritdoc/>
-    public async Task<Animal?> UpdateAnimal(Animal newAnimal)
+    public async Task<Animal> UpdateAnimal(Animal animal)
     {
-        _dbContext.Entry(newAnimal).State = EntityState.Modified;
-
-        try
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!_dbContext.Animals.Any(e => e.Id == newAnimal.Id))
-            {
-                return null;
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return newAnimal;
+        _dbContext.Animals.Update(animal);
+        await _dbContext.SaveChangesAsync();
+        return animal;
     }
 
     /// <inheritdoc/>
@@ -98,13 +56,10 @@ public class AnimalRepo : IAnimalRepo
     {
         Animal? animal = await _dbContext.Animals.FindAsync(AnimalId);
         if (animal == null)
-        {
             return false;
-        }
 
         _dbContext.Animals.Remove(animal);
         await _dbContext.SaveChangesAsync();
-
         return true;
     }
 }

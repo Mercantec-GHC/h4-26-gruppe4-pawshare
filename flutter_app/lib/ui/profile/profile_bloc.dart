@@ -41,9 +41,9 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
   void _onLogout(LogoutEvent event, Emitter<ProfileState> emit) async {
     SecureStorageHelper.clearSecureStorage();
     
-    Navigator.pushAndRemoveUntil(
-      globalNavigatorKey.currentContext!, 
-      MaterialPageRoute(builder: (context) => LoginPage()),
+    // Use navigatorKey.currentState to perform navigation from non-widget code
+    globalNavigatorKey.currentState?.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => LoginPage()),
       (route) => false,
     );
   }

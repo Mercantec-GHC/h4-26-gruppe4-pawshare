@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../classes/helpers/general_helper.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/default_scaffold.dart';
 import 'login_bloc.dart';
@@ -29,10 +30,7 @@ class _LoginPageState extends State<LoginPage> {
       child: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginFormState && state.isSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const DiscoverPage()),
-            );
+            GeneralUtil.goToPage(context, DiscoverPage(), keepRoute: false);
           }
         },
         child: BlocBuilder<LoginBloc, LoginState>(

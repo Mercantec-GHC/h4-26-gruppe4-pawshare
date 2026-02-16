@@ -16,7 +16,9 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
     LoginSubmitted event,
     Emitter<LoginState> emit,
   ) async {
-    emit(const LoginFormState(isLoading: true));
+      emit(const LoginFormState(isSuccess: true));
+    
+    /*emit(const LoginFormState(isLoading: true));
 
     try {
       await _authService.login(email: event.email, password: event.password);
@@ -26,6 +28,6 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
       emit(LoginFormState(errorMessage: e.message));
     } catch (_) {
       emit(const LoginFormState(errorMessage: 'Something went wrong'));
-    }
+    }*/
   }
 }

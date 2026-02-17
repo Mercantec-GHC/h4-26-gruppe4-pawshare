@@ -59,6 +59,26 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
     emit(const ShowNotificationsState());
   }
 
+  void _onChangePassword(ChangePasswordEvent event, Emitter<ProfileState> emit) async {
+    try {
+      final resp = await API.postRequest(
+        ApiPath.changePassword,
+        {
+          'currentPassword': event.currentPassword,
+          'newPassword': event.newPassword,
+        },
+      );
+
+      if (resp.statusCode == 200) {
+        emit(PasswordChangedState(true));
+      } else {
+        emit(PasswordChangedState(false));
+      }
+    } catch (e) {
+      emit(PasswordChangedState(false));
+    }
+  }
+
   // endregion
 
   // region seperate functions

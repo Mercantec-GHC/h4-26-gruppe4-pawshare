@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'classes/helpers/theme_manager.dart';
 import 'ui/auth/auth_gate.dart';
 import 'ui/discover/discover_page.dart';
+import 'ui/profile/profile_page.dart';
 
 
 final globalNavigatorKey = GlobalKey<NavigatorState>();

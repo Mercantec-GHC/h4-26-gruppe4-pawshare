@@ -1,8 +1,10 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+
+import '../classes/helpers/api.dart';
+import '../classes/objects/api_path.dart';
 import '../classes/helpers/secure_storage_helper.dart';
 import '../classes/objects/secure_storage_key.dart';
-import '../config/api_config.dart';
 
 class AuthService {
   final String baseUrl =
@@ -12,15 +14,12 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/api/auth/login'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
+    final response = await API.postRequest(
+      ApiPath.login,
+      {
         'email': email,
         'password': password,
-      }),
+      },
     );
 
     if (response.statusCode == 200) {
@@ -53,21 +52,18 @@ Future<void> register({
   required String email,
   required String password,
 }) async {
-  final response = await http.post(
-    Uri.parse('$baseUrl/api/auth/register'),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: jsonEncode({
+  final response = await API.postRequest(
+    ApiPath.register,
+    {
       'email': email,
-      'name': email,       // 
+      'name': email,
       'password': password,
-      'base64Pfp': ''     // 
-    }),
+      'base64Pfp': ''
+    }
   );
 
-  print('REGISTER STATUS: ${response.statusCode}');
-  print('REGISTER BODY: ${response.body}');
+  debugPrint('REGISTER STATUS: ${response.statusCode}');
+  debugPrint('REGISTER BODY: ${response.body}');
 
   if (response.statusCode == 200) {
     await login(email: email, password: password);
@@ -87,10 +83,9 @@ Future<void> registerOwner({
   required int animalAge,
   required String animalTypeId,
 }) async {
-  final response = await http.post(
-    Uri.parse('${ApiConfig.baseUrl}/api/auth/register-owner'),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({
+  final response = await API.postRequest(
+    ApiPath.registerOwner,
+    {
       'email': email,
       'name': name,
       'password': password,
@@ -100,7 +95,7 @@ Future<void> registerOwner({
       'animalDescription': animalDescription,
       'animalAge': animalAge,
       'animalTypeId': animalTypeId,
-    }),
+    },
   );
 
   if (response.statusCode != 200) {

@@ -91,7 +91,7 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
   
       if (userId != null) {
         // Sends get request to api/users/(userId)
-        Response resp = await API.getRequestWithId(ApiPath.user, userId);
+        Response resp = await API.getRequest(ApiPath.user);
 
         if (resp.statusCode != 200) {
           return null;

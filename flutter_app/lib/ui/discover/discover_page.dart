@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../classes/helpers/general_helper.dart';
 import '../../classes/objects/animal.dart';
+import '../chat/chat_page.dart';
+import '../login/login_page.dart';
+import '../profile/profile_page.dart';
 import 'discover_bloc.dart';
 import 'discover_events_states.dart';
 
@@ -36,6 +40,28 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(builder: (context) => DiscoverPage()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.account_circle),
+              title: Text('Profile'),
+              onTap: () {
+                GeneralUtil.goToPage(context, ProfilePage());
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.chat),
+              title: Text('Chats'),
+              onTap: () {
+                GeneralUtil.goToPage(context, ChatPage());
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.lock),
+              title: Text('Log out'),
+              onTap: () {
+                // TODO: ADD FUNCTIONALITY
+                GeneralUtil.goToPage(context, LoginPage());
               },
             ),
           ],
@@ -129,76 +155,79 @@ class _DiscoverCardState extends State<DiscoverCard> {
   Widget build(BuildContext context) {
     // TODO: implement build
 
-    return Container(
-      width: 376,
-      height: 134,
-      padding: const EdgeInsets.all(16),
-      decoration: ShapeDecoration(
-        color: const Color(0xFFFFFCF5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        shadows: [
-          BoxShadow(
-            color: Color(0x3F000000),
-            blurRadius: 4,
-            offset: Offset(0, 4),
-            spreadRadius: 10,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 12,
-        children: [
-          Container(
-            width: 67,
-            height: 99,
-            decoration: ShapeDecoration(
-              color: const Color(0xFF2A3038),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+    return GestureDetector(
+      onTap: () => GeneralUtil.goToPage(context, ChatPage()),
+      child: Container(
+        width: 376,
+        height: 134,
+        padding: const EdgeInsets.all(16),
+        decoration: ShapeDecoration(
+          color: const Color(0xFFFFFCF5),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shadows: [
+            BoxShadow(
+              color: Color(0x3F000000),
+              blurRadius: 4,
+              offset: Offset(0, 4),
+              spreadRadius: 10,
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 12,
+          children: [
+            Container(
+              width: 67,
+              height: 99,
+              decoration: ShapeDecoration(
+                color: const Color(0xFF2A3038),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
-          ),
-          Container(
-            width: 212,
-            height: 99,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 12,
-              children: [
-                SizedBox(
-                  width: 45,
-                  child: Text(
-                    super.widget.name,
-                    style: TextStyle(
-                      color: const Color(0xFF0C0C0C),
-                      fontSize: 16,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
+            Container(
+              width: 212,
+              height: 99,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 12,
+                children: [
+                  SizedBox(
+                    width: 45,
+                    child: Text(
+                      super.widget.name,
+                      style: TextStyle(
+                        color: const Color(0xFF0C0C0C),
+                        fontSize: 16,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: 65,
-                  child: Text(
-                    super.widget.description,
-                    style: TextStyle(
-                      color: const Color(0xFF7F7F7F),
-                      fontSize: 12,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
+                  SizedBox(
+                    width: 65,
+                    child: Text(
+                      super.widget.description,
+                      style: TextStyle(
+                        color: const Color(0xFF7F7F7F),
+                        fontSize: 12,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

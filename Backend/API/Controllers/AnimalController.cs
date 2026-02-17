@@ -1,13 +1,17 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Models;
 using Models.DTOs;
+using Services.Interfaces;
+using System.Security.Claims;
 
 namespace API.Controllers;
 
 /// <summary>
 /// Controller for managing animals in Pawshare.
 /// </summary>
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class AnimalController : ControllerBase
@@ -65,12 +69,17 @@ public class AnimalController : ControllerBase
     /// <summary>
     /// Gets all animals belonging to a specific user.
     /// </summary>
-    /// <param name="userId">The unique identifier of the user.</param>
     /// <returns>A list of animals owned by the specified user.</returns>
     /// <response code="200">Returns the list of animals.</response>
-    [HttpGet("user/{userId}")]
-    public async Task<ActionResult<List<Animal>>> GetAnimalsByUser(string userId)
+    [HttpGet("user")]
+    public async Task<ActionResult<List<Animal>>> GetAnimalsByUser()
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId is null)
+        {
+            return BadRequest();
+        }
+
         var animals = await _animalService.GetAnimalsByUserAsync(userId);
         return Ok(animals);
     }

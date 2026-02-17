@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../classes/helpers/secure_storage_helper.dart';
+import '../classes/objects/secure_storage_key.dart';
 import '../config/api_config.dart';
-import 'auth_storage.dart';
 
 class AuthService {
-  final AuthStorage _storage = AuthStorage();
-
   final String baseUrl =
-      'http://localhost:5197'; 
+      'https://localhost:7258'; 
 
   Future<void> login({
     required String email,
@@ -30,10 +29,21 @@ class AuthService {
       final accessToken = data['accessToken'];
       final refreshToken = data['refreshToken'];
 
-      await _storage.saveTokens(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
+      await SecureStorageHelper.saveToStorage(
+        SecureStorageKey.jwtToken,
+        accessToken,
       );
+      
+      await SecureStorageHelper.saveToStorage(
+        SecureStorageKey.refreshToken,
+        refreshToken,
+      );
+
+      await SecureStorageHelper.saveToStorage(
+        SecureStorageKey.userId, 
+        data['userId'].toString(),
+      );
+
     } else {
       throw AuthException('Invalid email or password');
     }
@@ -49,15 +59,15 @@ Future<void> register({
       'Content-Type': 'application/json',
     },
     body: jsonEncode({
-      "email": email,
-      "name": email,       // 
-      "password": password,
-      "base64Pfp": ""     // 
+      'email': email,
+      'name': email,       // 
+      'password': password,
+      'base64Pfp': ''     // 
     }),
   );
 
-  print("REGISTER STATUS: ${response.statusCode}");
-  print("REGISTER BODY: ${response.body}");
+  print('REGISTER STATUS: ${response.statusCode}');
+  print('REGISTER BODY: ${response.body}');
 
   if (response.statusCode == 200) {
     await login(email: email, password: password);
@@ -81,15 +91,15 @@ Future<void> registerOwner({
     Uri.parse('${ApiConfig.baseUrl}/api/auth/register-owner'),
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode({
-      "email": email,
-      "name": name,
-      "password": password,
-      "city": city,
-      "base64Pfp": base64Pfp,
-      "animalName": animalName,
-      "animalDescription": animalDescription,
-      "animalAge": animalAge,
-      "animalTypeId": animalTypeId,
+      'email': email,
+      'name': name,
+      'password': password,
+      'city': city,
+      'base64Pfp': base64Pfp,
+      'animalName': animalName,
+      'animalDescription': animalDescription,
+      'animalAge': animalAge,
+      'animalTypeId': animalTypeId,
     }),
   );
 
@@ -98,12 +108,12 @@ Future<void> registerOwner({
   }
 }
 
-  Future<bool> isLoggedIn() {
-    return _storage.isLoggedIn();
+  Future<bool> isLoggedIn() async {
+    return await SecureStorageHelper.readFromStorage(SecureStorageKey.jwtToken) != null;
   }
 
-  Future<void> logout() {
-    return _storage.logout();
+  Future<void> logout() async {
+    await SecureStorageHelper.clearSecureStorage();
   }
 }
 

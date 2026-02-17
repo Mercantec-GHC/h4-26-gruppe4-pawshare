@@ -7,9 +7,9 @@ import 'auth.dart';
 
 class API {
   static const String _url =
-      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://localhost:7258')}/api/';
+      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/api/';
   static const String _testUrl =
-      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://localhost:7258')}/api/';
+      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://dev-pawshare-api.mercantec.tech')}/api/';
 
   static final Map<String, String> _headers = {};
 
@@ -100,22 +100,14 @@ class API {
   }
 
   // Post Request
-  static Future<http.Response> postRequest(
-    ApiPath action, 
-    Object? body,
-    {bool? isRefresh}
-  ) async {
-    if (isRefresh ?? false) {
-      _headers.remove('Authorization');
-    } else {
-      final token = await Auth.getAccessToken();
-      if (token.isNotEmpty) {
-        _headers['Authorization'] = 'Bearer $token';
-      }
+  static Future<http.Response> postRequest(ApiPath action, Object? body) async {
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 
     // Post Request from url with header and body
-    return await _attemptApiWithRefresh(
+    var temp = await _attemptApiWithRefresh(
       () => http.post(
         Uri.parse((kReleaseMode ? _url : _testUrl) + action.value),
         headers: _jsonHeaders(),
@@ -123,6 +115,8 @@ class API {
       ),
       null,
     );
+
+    return temp;
   }
 
   // Post Request
@@ -131,13 +125,13 @@ class API {
     String id,
     Object? body,
   ) async {
-    final token = await Auth.getAccessToken();
-    if (token.isNotEmpty) {
-      _headers['Authorization'] = 'Bearer $token';
+    if (await Auth.getAccessToken() != null &&
+        await Auth.getAccessToken() != '') {
+      _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 
     // Post Request from url with header, body, and "/(id)"
-    return await _attemptApiWithRefresh(
+    var temp = await _attemptApiWithRefresh(
       () => http.post(
         Uri.parse('${kReleaseMode ? _url : _testUrl}${action.value}/$id'),
         headers: _jsonHeaders(),
@@ -145,6 +139,8 @@ class API {
       ),
       null,
     );
+
+    return temp;
   }
 
   // Put Request

@@ -139,7 +139,6 @@ namespace Services
 
             return new AuthResponseDto
             {
-                UserId = user.Id,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken
             };

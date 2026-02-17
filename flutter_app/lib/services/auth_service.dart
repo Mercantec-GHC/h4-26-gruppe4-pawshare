@@ -1,14 +1,10 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../classes/helpers/api.dart';
-import '../classes/helpers/secure_storage_helper.dart';
 import '../classes/objects/api_path.dart';
-import '../classes/objects/secure_storage_key.dart';
-import '../config/api_config.dart';
+import 'auth_storage.dart';
 
 class AuthService {
-  final String baseUrl =
-      'https://localhost:7258'; 
+  final AuthStorage _storage = AuthStorage();
 
   Future<void> login({
     required String email,
@@ -28,21 +24,10 @@ class AuthService {
       final accessToken = data['accessToken'];
       final refreshToken = data['refreshToken'];
 
-      await SecureStorageHelper.saveToStorage(
-        SecureStorageKey.jwtToken,
-        accessToken,
+      await _storage.saveTokens(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
       );
-      
-      await SecureStorageHelper.saveToStorage(
-        SecureStorageKey.refreshToken,
-        refreshToken,
-      );
-
-      await SecureStorageHelper.saveToStorage(
-        SecureStorageKey.userId, 
-        data['userId'].toString(),
-      );
-
     } else {
       throw AuthException('Invalid email or password');
     }
@@ -103,12 +88,12 @@ Future<void> registerOwner({
   }
 }
 
-  Future<bool> isLoggedIn() async {
-    return await SecureStorageHelper.readFromStorage(SecureStorageKey.jwtToken) != null;
+  Future<bool> isLoggedIn() {
+    return _storage.isLoggedIn();
   }
 
-  Future<void> logout() async {
-    await SecureStorageHelper.clearSecureStorage();
+  Future<void> logout() {
+    return _storage.logout();
   }
 }
 

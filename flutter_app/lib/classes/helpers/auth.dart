@@ -64,13 +64,9 @@ class Auth {
   }
 
   static Future<bool> refresh() async {
-    var resp = await API.postRequest(
-      ApiPath.refresh, 
-      {
-        'refreshToken': await getRefreshToken(),
-      },
-      isRefresh: true,
-    );
+    var resp = await API.postRequestWithId(ApiPath.auth, 'refresh', {
+      'RefreshToken': await getRefreshToken(),
+    });
 
     if (resp.statusCode == 200) {
       var decoded = json.decode(resp.body);

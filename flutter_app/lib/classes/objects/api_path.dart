@@ -1,4 +1,5 @@
 // Name all paths
+// TODO: ADD ALL ENDPOINTS
 enum ApiPath {
   animal,
   animalType,
@@ -7,10 +8,7 @@ enum ApiPath {
   user,
   login,
   register,
-  registerOwner,
-  refresh,
-  animalUser,
-  changePassword,
+  registerOwner
 }
 
 // Specify the string needed for each path. Avoids accidental misspellings and ensures consistency
@@ -24,8 +22,5 @@ extension PathExtension on ApiPath {
     ApiPath.login => 'auth/login',
     ApiPath.register => 'auth/register',
     ApiPath.registerOwner => 'auth/register-owner',
-    ApiPath.refresh => 'Auth/Refresh',
-    ApiPath.animalUser => 'Animal/User',
-    ApiPath.changePassword => 'Users/change-password',
   };
 }

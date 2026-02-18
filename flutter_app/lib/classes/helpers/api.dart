@@ -1,15 +1,14 @@
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../objects/api_path.dart';
 import 'auth.dart';
+import '../../config/api_config.dart';
 
 class API {
   static const String _url =
       '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/api/';
-  static const String _testUrl =
-      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://dev-pawshare-api.mercantec.tech')}/api/';
+  static const String _testUrl = '${ApiConfig.baseUrl}/api/';
 
   static final Map<String, String> _headers = {};
 
@@ -30,6 +29,7 @@ class API {
 
     if (response.statusCode == 401) {
       var refreshSuccess = await _tryToRefreshToken();
+      
       if (refreshSuccess) {
         response = await apiCall();
       }
@@ -37,29 +37,34 @@ class API {
 
     if (onSuccess != null) {
       onSuccess(response);
+    } else {
+
     }
+     if (onSuccess != null) {
+    onSuccess(response);
+  }
     return response;
   }
 
   // Attempts to refresh the JWT token using the refresh token. If successful, updates the Authorization header with the new token.
   // Returns: True if token refresh was successful, false otherwise
-  static Future<bool> _tryToRefreshToken() async {
-    var refreshSuccess = await Auth.refresh();
+ static Future<bool> _tryToRefreshToken() async {
+  var refreshSuccess = await Auth.refresh();
 
-    if (refreshSuccess) {
-      var newToken = await Auth.getAccessToken();
-      _headers['Authorization'] = 'Bearer $newToken';
-      return true;
-    } else {
-      // TODO: Handle failed token refresh, e.g., by redirecting to login
-    }
+  if (refreshSuccess) {
+    var newToken = await Auth.getAccessToken();
+    _headers['Authorization'] = 'Bearer $newToken';
+    return true;
+  } else {
+    await Auth.logout();           
+    _headers.remove('Authorization'); 
     return false;
   }
+}
 
   // Get Request
   static Future<http.Response> getRequest(ApiPath action) async {
-    if (await Auth.getAccessToken() != null &&
-        await Auth.getAccessToken() != '') {
+    if (await Auth.getAccessToken() != '') {
       _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 
@@ -82,8 +87,7 @@ class API {
     ApiPath action,
     String id,
   ) async {
-    if (await Auth.getAccessToken() != null &&
-        await Auth.getAccessToken() != '') {
+    if (await Auth.getAccessToken() != '') {
       _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 
@@ -101,8 +105,7 @@ class API {
 
   // Post Request
   static Future<http.Response> postRequest(ApiPath action, Object? body) async {
-    if (await Auth.getAccessToken() != null &&
-        await Auth.getAccessToken() != '') {
+    if (await Auth.getAccessToken() != '') {
       _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 
@@ -125,8 +128,7 @@ class API {
     String id,
     Object? body,
   ) async {
-    if (await Auth.getAccessToken() != null &&
-        await Auth.getAccessToken() != '') {
+    if (await Auth.getAccessToken() != '') {
       _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 
@@ -145,8 +147,7 @@ class API {
 
   // Put Request
   static Future<http.Response> putRequest(ApiPath action, Object? body) async {
-    if (await Auth.getAccessToken() != null &&
-        await Auth.getAccessToken() != '') {
+    if (await Auth.getAccessToken() != '') {
       _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 
@@ -169,8 +170,7 @@ class API {
     String id,
     Object? body,
   ) async {
-    if (await Auth.getAccessToken() != null &&
-        await Auth.getAccessToken() != '') {
+    if (await Auth.getAccessToken() != '') {
       _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 
@@ -189,8 +189,7 @@ class API {
 
   // Delete Request
   static Future<http.Response> deleteRequest(ApiPath action) async {
-    if (await Auth.getAccessToken() != null &&
-        await Auth.getAccessToken() != '') {
+    if (await Auth.getAccessToken() != '') {
       _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 
@@ -212,8 +211,7 @@ class API {
     ApiPath action,
     String id,
   ) async {
-    if (await Auth.getAccessToken() != null &&
-        await Auth.getAccessToken() != '') {
+    if (await Auth.getAccessToken() != '') {
       _headers['Authorization'] = 'Bearer ${await Auth.getAccessToken()}';
     }
 

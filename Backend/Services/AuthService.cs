@@ -84,7 +84,7 @@ namespace Services
                 UpdatedAt = DateTime.UtcNow,
                 Name = dto.AnimalName,
                 Description = dto.AnimalDescription,
-                Age = dto.AnimalAge,
+                DateOfBirth = dto.DateOfBirth,
                 TypeId = dto.AnimalTypeId,
                 UserId = user.Id,
                 Base64Image = ""

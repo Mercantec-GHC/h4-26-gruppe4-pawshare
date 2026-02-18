@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import '../objects/api_path.dart';
 import '../objects/secure_storage_key.dart';
 import 'api.dart';
@@ -39,17 +38,14 @@ class Auth {
   }
 
   static Future<void> logout() async {
-    var resp = await API.postRequestWithId(ApiPath.auth, 'logout', null);
+  try {
+    await API.postRequestWithId(ApiPath.auth, 'logout', null);
+  } catch (_) {}
 
-    if (resp.statusCode == 204) {
-      await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
-      await SecureStorageHelper.saveToStorage(
-        SecureStorageKey.refreshToken,
-        '',
-      );
-      await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
-    }
-  }
+  await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
+  await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
+  await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
+}
 
   static Future<bool> register(String email, String password) async {
     var resp = await API.postRequestWithId(ApiPath.auth, 'register', {
@@ -104,4 +100,30 @@ class Auth {
         ) ??
         '';
   }
+
+  static Future<bool> registerOwner(Map<String, dynamic> body) async {
+    var resp = await API.postRequestWithId(
+      ApiPath.auth,
+      'register-owner',
+      body,
+    );
+
+    return resp.statusCode == 200;
+  }
+
+  static Future<bool> registerInstitution(Map<String, dynamic> body) async {
+    var resp = await API.postRequestWithId(
+      ApiPath.auth,
+      'register-institution',
+      body,
+    );
+
+    return resp.statusCode == 200;
+  }
+
+  static Future<void> forceLogout() async {
+  await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
+  await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
+  await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
+}
 }

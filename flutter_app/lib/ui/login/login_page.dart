@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/auth_service.dart';
 import '../../widgets/default_scaffold.dart';
 import 'login_bloc.dart';
 import 'login_events_states.dart';
@@ -25,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LoginBloc(AuthService()),
+      create: (_) => LoginBloc(),
       child: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginFormState && state.isSuccess) {

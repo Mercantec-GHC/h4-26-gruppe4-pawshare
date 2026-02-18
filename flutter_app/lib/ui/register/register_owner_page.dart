@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../classes/objects/animal_type.dart';
 import '../../services/animal_type_service.dart';
-import '../../services/auth_service.dart';
+import '../../classes/helpers/auth.dart';
 
 class RegisterOwnerPage extends StatefulWidget {
   const RegisterOwnerPage({super.key});
@@ -19,8 +19,9 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
 
   final _animalNameController = TextEditingController();
   final _animalDescriptionController = TextEditingController();
-  final _animalAgeController = TextEditingController();
   final _animalTypeService = AnimalTypeService();
+  DateTime? _selectedBirthDate;
+  final TextEditingController _birthDateController = TextEditingController();
 
   List<AnimalType> _animalTypes = [];
   AnimalType? _selectedType;
@@ -43,7 +44,7 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
         _confirmPasswordController.text.isNotEmpty &&
         _cityController.text.isNotEmpty &&
         _animalNameController.text.isNotEmpty &&
-        _animalAgeController.text.isNotEmpty &&
+        _selectedBirthDate != null &&
         _passwordError == null &&
         _emailError == null;
   }
@@ -52,6 +53,23 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
   void initState() {
     super.initState();
     _loadAnimalTypes();
+  }
+
+  Future<void> _pickBirthDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2020),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedBirthDate = picked;
+        _birthDateController.text =
+            "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      });
+    }
   }
 
   Future<void> _loadAnimalTypes() async {
@@ -100,6 +118,7 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
                 ),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: TextField(
@@ -128,6 +147,7 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
                 ),
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: TextField(
@@ -157,6 +177,7 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
                 ),
               ),
             ),
+
             _buildField('City', _cityController),
 
             const SizedBox(height: 24),
@@ -173,10 +194,21 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
 
             _buildField('Animal Name', _animalNameController),
             _buildField('Description', _animalDescriptionController),
-            _buildField(
-              'Age',
-              _animalAgeController,
-              keyboardType: TextInputType.number,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: TextField(
+                controller: _birthDateController,
+                readOnly: true,
+                onTap: _pickBirthDate,
+                decoration: InputDecoration(
+                  labelText: 'Date of Birth',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: const Icon(Icons.calendar_today),
+                  hintText: _selectedBirthDate == null
+                      ? 'Select date'
+                      : '${_selectedBirthDate!.day}.${_selectedBirthDate!.month}.${_selectedBirthDate!.year}',
+                ),
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -184,7 +216,7 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
               const Center(child: CircularProgressIndicator())
             else
               DropdownButtonFormField<AnimalType>(
-                value: _selectedType,
+                initialValue: _selectedType,
                 decoration: const InputDecoration(
                   labelText: 'Animal type',
                   border: OutlineInputBorder(),
@@ -212,25 +244,36 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
                       }
 
                       try {
-                        await AuthService().registerOwner(
-                          email: _emailController.text,
-                          name: _nameController.text,
-                          password: _passwordController.text,
-                          city: _cityController.text,
-                          base64Pfp: '',
-                          animalName: _animalNameController.text,
-                          animalDescription: _animalDescriptionController.text,
-                          animalAge: int.parse(_animalAgeController.text),
-                          animalTypeId: _selectedType!.id,
-                        );
+                        bool success = await Auth.registerOwner({
+                          'Email': _emailController.text,
+                          'Name': _nameController.text,
+                          'Password': _passwordController.text,
+                          'City': _cityController.text,
+                          'Base64Pfp': '',
+                          'AnimalName': _animalNameController.text,
+                          'AnimalDescription':
+                              _animalDescriptionController.text,
+                          'DateOfBirth':
+                              "${_selectedBirthDate!.year.toString().padLeft(4, '0')}-"
+                              "${_selectedBirthDate!.month.toString().padLeft(2, '0')}-"
+                              "${_selectedBirthDate!.day.toString().padLeft(2, '0')}",
+                          'AnimalTypeId': _selectedType!.id,
+                        });
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Registration successful'),
-                          ),
-                        );
+                        if (success) {
+                          await Auth.login(
+                            _emailController.text,
+                            _passwordController.text,
+                          );
 
-                        Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/discover');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Registration failed'),
+                            ),
+                          );
+                        }
                       } catch (e) {
                         ScaffoldMessenger.of(
                           context,

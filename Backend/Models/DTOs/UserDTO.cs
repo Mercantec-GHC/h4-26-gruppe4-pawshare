@@ -50,7 +50,7 @@ namespace Models.DTOs
 
         public required string AnimalName { get; set; }
         public required string AnimalDescription { get; set; }
-        public required int AnimalAge { get; set; }
+        public required DateOnly DateOfBirth { get; set; }
         public required string AnimalTypeId { get; set; }
     }
 

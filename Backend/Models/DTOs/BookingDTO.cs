@@ -6,9 +6,9 @@ namespace Models.DTOs
 {
     public class AnimalBookingDto
     {
-        public required string AppointmentId { get; set; }
-        public required DateTime Start { get; set; }
-        public required DateTime End { get; set; }
-        public required string Address { get; set; }
+        public string? AppointmentId { get; set; }
+        public DateTime? Start { get; set; }
+        public DateTime? End { get; set; }
+        public string? Address { get; set; }
     }
 }

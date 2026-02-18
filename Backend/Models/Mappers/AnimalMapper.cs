@@ -17,19 +17,19 @@ public static class AnimalMapper
             DateOfBirth = a.DateOfBirth,
 
             UserId = a.UserId,
-            UserName = a.User!.Name,
+            UserName = a.User?.Name,
 
             TypeId = a.TypeId,
-            TypeName = a.AnimalType!.Name,
-            TypeDescription = a.AnimalType!.Description,
+            TypeName = a.AnimalType?.Name,
+            TypeDescription = a.AnimalType?.Description,
 
-            Bookings = a.Bookings!.Select(b => new AnimalBookingDto
+            Bookings = a.Bookings?.Select(b => new AnimalBookingDto
             {
                 AppointmentId = b.AppointmentId,
-                Start = b.Appointment!.Start,
-                End = b.Appointment!.End,
-                Address = b.Appointment!.Address
-            }).ToList()
+                Start = b.Appointment?.Start,
+                End = b.Appointment?.End,
+                Address = b.Appointment?.Address
+            }).ToList() ?? new List<AnimalBookingDto>()
         };
     }
 

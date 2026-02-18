@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../classes/helpers/auth.dart';
+import '../../classes/services/chat_service.dart';
 
 class RegisterInstitutionPage extends StatefulWidget {
   const RegisterInstitutionPage({super.key});
@@ -14,7 +16,15 @@ class _RegisterInstitutionPageState extends State<RegisterInstitutionPage> {
   final _passwordController = TextEditingController();
   final _cityController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   String? _passwordError;
+  String? _emailError;
+  bool _isValidEmail(String email) {
+    final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return regex.hasMatch(email);
+  }
 
   bool get _isFormValid {
     return _nameController.text.isNotEmpty &&
@@ -34,22 +44,63 @@ class _RegisterInstitutionPageState extends State<RegisterInstitutionPage> {
         child: Column(
           children: [
             _buildField('Institution Name', _nameController),
-            _buildField('Email', _emailController),
-            _buildField(
-              'Password',
-              _passwordController,
-              obscure: true,
-              onChanged: (_) {
-                setState(() {
-                  _validatePasswords();
-                });
-              },
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                onChanged: (value) {
+                  setState(() {
+                    if (value.isEmpty) {
+                      _emailError = null;
+                    } else if (!_isValidEmail(value)) {
+                      _emailError = 'Invalid email address';
+                    } else {
+                      _emailError = null;
+                    }
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: const OutlineInputBorder(),
+                  errorText: _emailError,
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: TextField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                onChanged: (_) {
+                  setState(() {
+                    _validatePasswords();
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: TextField(
                 controller: _confirmPasswordController,
-                obscureText: true,
+                obscureText: _obscureConfirmPassword,
                 onChanged: (_) {
                   setState(() {
                     _validatePasswords();
@@ -59,17 +110,61 @@ class _RegisterInstitutionPageState extends State<RegisterInstitutionPage> {
                   labelText: 'Confirm Password',
                   border: const OutlineInputBorder(),
                   errorText: _passwordError,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirmPassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
+
             _buildField('City', _cityController),
 
             const SizedBox(height: 24),
 
             ElevatedButton(
               onPressed: _isFormValid
-                  ? () {
-                      // TODO: call API later
+                  ? () async {
+                      try {
+                        bool success = await Auth.registerInstitution({
+                          'Email': _emailController.text,
+                          'Name': _nameController.text,
+                          'Password': _passwordController.text,
+                          'City': _cityController.text,
+                          'Base64Pfp': '',
+                        });
+
+                        if (success) {
+                          final loginSuccess = await Auth.login(
+                            _emailController.text,
+                            _passwordController.text,
+                          );
+
+                          if (loginSuccess) {
+                            await ChatService.instance.connect();
+                          }
+
+                          Navigator.pushReplacementNamed(context, '/discover');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Registration failed'),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                      }
                     }
                   : null,
               child: const Text('Create Account'),

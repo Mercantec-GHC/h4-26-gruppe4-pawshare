@@ -50,8 +50,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.chat),
-              title: Text('Chats'),
+              leading: Icon(Icons.chat_bubble),
+              title: Text('Chat'),
               onTap: () {
                 GeneralUtil.goToPage(context, ChatPage());
               },
@@ -69,28 +69,25 @@ class _DiscoverPageState extends State<DiscoverPage> {
       ),
       body: BlocProvider(
         create: (_) => DiscoverBloc()..add(DiscoverAnimals()),
-          child: BlocBuilder<DiscoverBloc, DiscoverState>(
-            builder: (context, state) {
-              switch (state.runtimeType) {
-                case DiscoverAnimalsInitial:
-                case DiscoverAnimalsLoading:
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                case DiscoverAnimalsSuccess:
-                  var animals = (state as DiscoverAnimalsSuccess).animals;
-                  return _buildCards(animals);
-                case DiscoverAnimalsFailure:
-                  var errorMessage = (state as DiscoverAnimalsFailure).errorMessage;
-                  return Center(
-                    child: Text(errorMessage),
-                  );
-                default:
-                  return Container();
-              }
-            },
-          ),
+        child: BlocBuilder<DiscoverBloc, DiscoverState>(
+          builder: (context, state) {
+            switch (state.runtimeType) {
+              case DiscoverAnimalsInitial:
+              case DiscoverAnimalsLoading:
+                return const Center(child: CircularProgressIndicator());
+              case DiscoverAnimalsSuccess:
+                var animals = (state as DiscoverAnimalsSuccess).animals;
+                return _buildCards(animals);
+              case DiscoverAnimalsFailure:
+                var errorMessage =
+                    (state as DiscoverAnimalsFailure).errorMessage;
+                return Center(child: Text(errorMessage));
+              default:
+                return Container();
+            }
+          },
         ),
+      ),
     );
   }
 

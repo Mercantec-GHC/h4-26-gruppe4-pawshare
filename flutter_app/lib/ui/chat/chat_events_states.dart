@@ -25,6 +25,12 @@ class ChatSendMessageEvent extends ChatEvents {
   final String text;
 }
 
+class ChatRealtimeMessageReceivedEvent extends ChatEvents {
+  const ChatRealtimeMessageReceivedEvent(this.message);
+
+  final MessageDTO message;
+}
+
 abstract class ChatState {
   const ChatState();
 }

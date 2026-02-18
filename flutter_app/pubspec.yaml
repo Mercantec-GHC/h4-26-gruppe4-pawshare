@@ -60,6 +60,7 @@ dependencies:
   flutter_secure_storage: ^10.0.0
   fluttertoast: ^9.0.0
   shared_preferences: ^2.5.4
+  signalr_netcore: ^1.4.4
 
 dev_dependencies:
   flutter_test:

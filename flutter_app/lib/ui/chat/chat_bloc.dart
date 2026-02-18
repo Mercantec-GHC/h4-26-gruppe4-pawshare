@@ -1,11 +1,10 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../classes/helpers/api.dart';
 import '../../classes/helpers/auth.dart';
-import '../../classes/objects/api_path.dart';
 import '../../classes/objects/message_dto.dart';
+import '../../classes/services/chat_service.dart';
 import 'chat_events_states.dart';
 
 class ChatBloc extends Bloc<ChatEvents, ChatState> {
@@ -14,19 +13,28 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     on<ChatOpenEvent>(_onChatOpen);
     on<ChatBackToListEvent>(_onChatBackToList);
     on<ChatSendMessageEvent>(_onChatSendMessage);
+    on<ChatRealtimeMessageReceivedEvent>(_onRealtimeMessageReceived);
   }
 
   static String currentUserId = '';
 
+  final ChatService _chatService = ChatService.instance;
   final List<ChatDto> _chats = [];
   final Map<String, List<MessageDTO>> _messages = {};
+  String? _activeChatId;
+  StreamSubscription<MessageDTO>? _messageSubscription;
 
   Future<void> _onChatLoad(ChatLoadEvent event, Emitter<ChatState> emit) async {
-    await Auth.login('test@test.dk', 'test');
-  
     currentUserId = await Auth.getCurrentUserId();
 
-    final chats = await _fetchChats();
+    await _chatService.connect();
+
+    _messageSubscription?.cancel();
+    _messageSubscription = _chatService.messageStream.listen((message) {
+      add(ChatRealtimeMessageReceivedEvent(message));
+    });
+
+    final chats = await _chatService.getInitialChats();
     _chats
       ..clear()
       ..addAll(chats);
@@ -41,20 +49,39 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     }
 
     final currentChat = _chats[chatIndex];
-    final updatedChat = ChatDto(
-      id: currentChat.id,
-      title: currentChat.title,
-      lastMessage: currentChat.lastMessage,
-      lastUpdated: currentChat.lastUpdated,
-      unreadCount: 0,
-    );
-    _chats[chatIndex] = updatedChat;
-    final messages = await _fetchMessages(event.chatId);
+
+    if (_activeChatId != null && _activeChatId != event.chatId) {
+      await _chatService.leaveChat(_activeChatId!);
+    }
+
+    _activeChatId = event.chatId;
+    await _chatService.joinChat(event.chatId);
+
+    final messages = await _chatService.getMessages(event.chatId);
     _messages[event.chatId] = messages;
+    final unreadByChat = await _chatService.getUnreadCounts();
+    final unreadCount = unreadByChat[event.chatId] ?? 0;
+    final unreadMessages = _getNewestUnreadMessages(messages, unreadCount);
+    await _chatService.markMessagesAsRead(unreadMessages);
+    _setUnreadCount(event.chatId, 0);
+
+    final updatedChat = _chats.firstWhere(
+      (item) => item.id == event.chatId,
+      orElse: () => currentChat,
+    );
+
     emit(ChatDetailState(chat: updatedChat, messages: messages));
   }
 
-  void _onChatBackToList(ChatBackToListEvent event, Emitter<ChatState> emit) {
+  Future<void> _onChatBackToList(
+    ChatBackToListEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    if (_activeChatId != null) {
+      await _chatService.leaveChat(_activeChatId!);
+      _activeChatId = null;
+    }
+
     emit(ChatListState(List.unmodifiable(_chats)));
   }
 
@@ -66,82 +93,93 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     if (trimmedText.isEmpty) {
       return;
     }
-    final sent = await _sendMessage(event.chatId, trimmedText);
+    final sent = await _chatService.sendMessage(event.chatId, trimmedText);
     if (!sent) {
       return;
     }
+  }
 
-    final refreshedMessages = await _fetchMessages(event.chatId);
-    _messages[event.chatId] = refreshedMessages;
+  Future<void> _onRealtimeMessageReceived(
+    ChatRealtimeMessageReceivedEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    final message = event.message;
+    final chatMessages = _addMessageIfMissing(message);
 
-    if (refreshedMessages.isNotEmpty) {
-      _updateChatPreview(event.chatId, refreshedMessages.last);
+    _updateChatPreview(message.chatId, message);
+
+    if (message.senderId != currentUserId) {
+      if (_activeChatId == message.chatId) {
+        await _chatService.markRead(message.id);
+      } else {
+        _incrementUnreadCount(message.chatId);
+      }
     }
 
-    if (state is ChatDetailState) {
+    if (state is ChatDetailState && _activeChatId == message.chatId) {
+      final detailState = state as ChatDetailState;
       final chat = _chats.firstWhere(
-        (item) => item.id == event.chatId,
-        orElse: () => (state as ChatDetailState).chat,
+        (item) => item.id == message.chatId,
+        orElse: () => detailState.chat,
       );
       emit(
-        ChatDetailState(
-          chat: chat,
-          messages: List.unmodifiable(refreshedMessages),
-        ),
+        ChatDetailState(chat: chat, messages: List.unmodifiable(chatMessages)),
+      );
+      return;
+    }
+
+    if (state is ChatListState) {
+      emit(ChatListState(List.unmodifiable(_chats)));
+    }
+  }
+
+  List<MessageDTO> _addMessageIfMissing(MessageDTO message) {
+    final chatMessages = _messages.putIfAbsent(message.chatId, () => []);
+    final alreadyExists = chatMessages.any((item) => item.id == message.id);
+
+    if (!alreadyExists) {
+      chatMessages.add(message);
+      chatMessages.sort(
+        (a, b) => a.createdTimestamp.compareTo(b.createdTimestamp),
       );
     }
+
+    return chatMessages;
   }
 
-  Future<List<ChatDto>> _fetchChats() async {
-    final response = await API.getRequestWithId(ApiPath.chat, 'me');
-
-    if (response.statusCode != 200) {
+  List<MessageDTO> _getNewestUnreadMessages(
+    List<MessageDTO> messages,
+    int unreadCount,
+  ) {
+    if (unreadCount <= 0) {
       return [];
     }
 
-    final decoded = json.decode(response.body);
-    if (decoded is! List) {
-      return [];
-    }
+    final unreadCandidates =
+        messages.where((message) => message.senderId != currentUserId).toList()
+          ..sort((a, b) => b.createdTimestamp.compareTo(a.createdTimestamp));
 
-    return decoded
-        .whereType<Map<String, dynamic>>()
-        .map(ChatDto.fromJson)
-        .toList();
+    return unreadCandidates.take(unreadCount).toList();
   }
 
-  Future<List<MessageDTO>> _fetchMessages(String chatId) async {
-    final response = await API.getRequestWithId(
-      ApiPath.chat,
-      '$chatId/messages',
-    );
-
-    if (response.statusCode != 200) {
-      return [];
+  void _incrementUnreadCount(String chatId) {
+    final chatIndex = _chats.indexWhere((chat) => chat.id == chatId);
+    if (chatIndex == -1) {
+      return;
     }
 
-    final decoded = json.decode(response.body);
-    if (decoded is! List) {
-      return [];
-    }
-
-    final messages = decoded
-        .whereType<Map<String, dynamic>>()
-        .map((json) => MessageDTO.fromJson(json, chatId: chatId))
-        .toList();
-
-    messages.sort((a, b) => a.createdTimestamp.compareTo(b.createdTimestamp));
-    return messages;
+    final chat = _chats[chatIndex];
+    _chats[chatIndex] = _copyChatWith(chat, unreadCount: chat.unreadCount + 1);
   }
 
-  Future<bool> _sendMessage(String chatId, String content) async {
-    final response = await API.postRequestWithId(
-      ApiPath.chat,
-      '$chatId/messages',
-      content,
-    );
+  void _setUnreadCount(String chatId, int unreadCount) {
+    final chatIndex = _chats.indexWhere((chat) => chat.id == chatId);
+    if (chatIndex == -1) {
+      return;
+    }
 
-    return response.statusCode == 204;
+    final chat = _chats[chatIndex];
+    _chats[chatIndex] = _copyChatWith(chat, unreadCount: unreadCount);
   }
 
   void _updateChatPreview(String chatId, MessageDTO latestMessage) {
@@ -151,12 +189,38 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     }
 
     final chat = _chats[chatIndex];
-    _chats[chatIndex] = ChatDto(
-      id: chat.id,
-      title: chat.title,
+    _chats[chatIndex] = _copyChatWith(
+      chat,
       lastMessage: latestMessage.content,
       lastUpdated: latestMessage.createdTimestamp,
-      unreadCount: chat.unreadCount,
     );
+  }
+
+  ChatDto _copyChatWith(
+    ChatDto chat, {
+    String? lastMessage,
+    DateTime? lastUpdated,
+    int? unreadCount,
+  }) {
+    return ChatDto(
+      id: chat.id,
+      title: chat.title,
+      lastMessage: lastMessage ?? chat.lastMessage,
+      lastUpdated: lastUpdated ?? chat.lastUpdated,
+      unreadCount: unreadCount ?? chat.unreadCount,
+    );
+  }
+
+  @override
+  Future<void> close() async {
+    if (_activeChatId != null) {
+      await _chatService.leaveChat(_activeChatId!);
+      _activeChatId = null;
+    }
+
+    await _messageSubscription?.cancel();
+    _messageSubscription = null;
+
+    return super.close();
   }
 }

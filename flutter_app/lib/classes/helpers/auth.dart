@@ -38,14 +38,18 @@ class Auth {
   }
 
   static Future<void> logout() async {
-  try {
-    await API.postRequestWithId(ApiPath.auth, 'logout', null);
-  } catch (_) {}
+    try {
+      await API.postRequestWithId(ApiPath.auth, 'logout', null);
+    } catch (_) {}
 
-  await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
-  await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
-  await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
-}
+    try {
+      await WebSocketAPI().disconnect();
+    } catch (_) {}
+
+    await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
+    await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
+    await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
+  }
 
   static Future<bool> register(String email, String password) async {
     var resp = await API.postRequestWithId(ApiPath.auth, 'register', {
@@ -122,8 +126,12 @@ class Auth {
   }
 
   static Future<void> forceLogout() async {
-  await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
-  await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
-  await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
-}
+    try {
+      await WebSocketAPI().disconnect();
+    } catch (_) {}
+
+    await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
+    await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
+    await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
+  }
 }

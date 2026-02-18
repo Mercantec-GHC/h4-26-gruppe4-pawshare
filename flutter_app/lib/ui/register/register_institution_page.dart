@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../classes/helpers/auth.dart';
+import '../../classes/services/chat_service.dart';
 
 class RegisterInstitutionPage extends StatefulWidget {
   const RegisterInstitutionPage({super.key});
@@ -94,7 +95,7 @@ class _RegisterInstitutionPageState extends State<RegisterInstitutionPage> {
                 ),
               ),
             ),
-            
+
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: TextField(
@@ -124,7 +125,7 @@ class _RegisterInstitutionPageState extends State<RegisterInstitutionPage> {
                 ),
               ),
             ),
-            
+
             _buildField('City', _cityController),
 
             const SizedBox(height: 24),
@@ -142,10 +143,14 @@ class _RegisterInstitutionPageState extends State<RegisterInstitutionPage> {
                         });
 
                         if (success) {
-                          await Auth.login(
+                          final loginSuccess = await Auth.login(
                             _emailController.text,
                             _passwordController.text,
                           );
+
+                          if (loginSuccess) {
+                            await ChatService.instance.connect();
+                          }
 
                           Navigator.pushReplacementNamed(context, '/discover');
                         } else {

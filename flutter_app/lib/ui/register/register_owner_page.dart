@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../classes/objects/animal_type.dart';
 import '../../services/animal_type_service.dart';
 import '../../classes/helpers/auth.dart';
+import '../../classes/services/chat_service.dart';
 
 class RegisterOwnerPage extends StatefulWidget {
   const RegisterOwnerPage({super.key});
@@ -261,10 +262,14 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
                         });
 
                         if (success) {
-                          await Auth.login(
+                          final loginSuccess = await Auth.login(
                             _emailController.text,
                             _passwordController.text,
                           );
+
+                          if (loginSuccess) {
+                            await ChatService.instance.connect();
+                          }
 
                           Navigator.pushReplacementNamed(context, '/discover');
                         } else {

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../classes/objects/animal_type.dart';
 import 'register_bloc.dart';
 import 'register_events_states.dart';
+import '../../classes/services/chat_service.dart';
 
 class RegisterOwnerPage extends StatefulWidget {
   const RegisterOwnerPage({super.key});

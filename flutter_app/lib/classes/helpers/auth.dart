@@ -44,6 +44,10 @@ class Auth {
       await API.postRequestWithId(ApiPath.auth, 'logout', null);
     } catch (_) {}
 
+    try {
+      await WebSocketAPI().disconnect();
+    } catch (_) {}
+
     await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
     await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
     await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
@@ -127,10 +131,14 @@ class Auth {
   }
 
   static Future<void> forceLogout() async {
+    try {
+      await WebSocketAPI().disconnect();
+    } catch (_) {}
+
     await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
     await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
     await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
-
-    API.clearAuthHeader();
   }
+
+  
 }

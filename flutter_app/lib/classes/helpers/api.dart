@@ -24,12 +24,13 @@ class API {
   static Future<http.Response> _attemptApiWithRefresh(
     Future<http.Response> Function() apiCall,
     Function(http.Response)? onSuccess,
+    {bool skipRefresh = false}
   ) async {
     var response = await apiCall();
 
-    if (response.statusCode == 401) {
-      var refreshSuccess = await _tryToRefreshToken();
-      
+    if (!skipRefresh && response.statusCode == 401) {
+    var refreshSuccess = await _tryToRefreshToken();
+
       if (refreshSuccess) {
         response = await apiCall();
       }
@@ -37,30 +38,25 @@ class API {
 
     if (onSuccess != null) {
       onSuccess(response);
-    } else {
-
-    }
-     if (onSuccess != null) {
-    onSuccess(response);
-  }
+    } 
     return response;
   }
 
   // Attempts to refresh the JWT token using the refresh token. If successful, updates the Authorization header with the new token.
   // Returns: True if token refresh was successful, false otherwise
- static Future<bool> _tryToRefreshToken() async {
-  var refreshSuccess = await Auth.refresh();
+  static Future<bool> _tryToRefreshToken() async {
+    var refreshSuccess = await Auth.refresh();
 
-  if (refreshSuccess) {
-    var newToken = await Auth.getAccessToken();
-    _headers['Authorization'] = 'Bearer $newToken';
-    return true;
-  } else {
-    await Auth.logout();           
-    _headers.remove('Authorization'); 
-    return false;
+    if (refreshSuccess) {
+      var newToken = await Auth.getAccessToken();
+      _headers['Authorization'] = 'Bearer $newToken';
+      return true;
+    } else {
+      await Auth.forceLogout();
+      _headers.remove('Authorization');
+      return false;
+    }
   }
-}
 
   // Get Request
   static Future<http.Response> getRequest(ApiPath action) async {
@@ -226,5 +222,13 @@ class API {
 
     // Returns future response
     return temp;
+  }
+
+  static void setAuthHeader(String token) {
+    _headers['Authorization'] = 'Bearer $token';
+  }
+
+  static void clearAuthHeader() {
+    _headers.remove('Authorization');
   }
 }

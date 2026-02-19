@@ -126,7 +126,7 @@ namespace Services
             if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.HashedPassword))
                 return null;
 
-            var refreshToken = Guid.NewGuid().ToString();
+            var refreshToken = GenerateRefreshToken();
             var refreshExpires = DateTime.UtcNow.AddDays(7);
 
             await _users.UpdateRefreshToken(
@@ -150,15 +150,25 @@ namespace Services
             if (user == null)
                 return null;
 
-            if (user.RefreshTokenExpiresAt < DateTime.UtcNow)
+            if (user.RefreshTokenExpiresAt == null ||
+                user.RefreshTokenExpiresAt < DateTime.UtcNow)
                 return null;
 
             var newAccessToken = _jwtService.GenerateToken(user);
 
+            var newRefreshToken = GenerateRefreshToken();
+            var newRefreshExpires = DateTime.UtcNow.AddDays(7);
+
+            await _users.UpdateRefreshToken(
+                user.Id,
+                newRefreshToken,
+                newRefreshExpires
+            );
+
             return new AuthResponseDto
             {
                 AccessToken = newAccessToken,
-                RefreshToken = refreshToken
+                RefreshToken = newRefreshToken
             };
         }
         public async Task<bool> LogoutAsync(string refreshToken)
@@ -173,6 +183,8 @@ namespace Services
             await _users.UpdateUser(user);
             return true;
         }
+
+       
 
     }
 }

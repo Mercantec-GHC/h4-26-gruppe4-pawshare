@@ -31,6 +31,13 @@ class RegisterOwnerSubmitted extends RegisterEvent {
   @override
   List<Object?> get props => [body, email, password];
 }
+
+class RegisterSubmitted extends RegisterEvent {
+  final String email;
+  final String password;
+
+   RegisterSubmitted({required this.email, required this.password});
+}
 class LoadAnimalTypes extends RegisterEvent {}
 
 // STATES

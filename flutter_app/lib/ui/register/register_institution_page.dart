@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'register_bloc.dart';
 import 'register_events_states.dart';
-import '../../classes/services/chat_service.dart';
 
 class RegisterInstitutionPage extends StatefulWidget {
   const RegisterInstitutionPage({super.key});

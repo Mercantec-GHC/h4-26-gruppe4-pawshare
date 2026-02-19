@@ -3,7 +3,6 @@ import '../../classes/helpers/auth.dart';
 import '../../services/animal_type_service.dart';
 import '../../classes/services/chat_service.dart';
 import 'register_events_states.dart';
-import '../../services/auth_service.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 

@@ -3,6 +3,7 @@ using Models;
 using Moq;
 using Repositories;
 using Repositories.Context;
+using Repositories.Interfaces;
 using Services;
 
 namespace Backend.Test.Unit_Tests.Services;
@@ -56,7 +57,7 @@ public class UserServiceTest
             await db.SaveChangesAsync();
 
             var userRepo = new UserRepo(db);
-            var mockRoleRepo = new Mock<RoleRepo>();
+            var mockRoleRepo = new Mock<IRoleRepo>();
             var userService = new UserService(userRepo, mockRoleRepo.Object);
             var user = await userService.GetUser("1");
             

@@ -63,7 +63,7 @@ public class UserDBIntegrationTest
             Base64Pfp = "profile_picture.png",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
-
+            RoleId = 1,
         };
 
         db.Users.Add(user);
@@ -88,12 +88,13 @@ public class UserDBIntegrationTest
         // db.Users.Remove(user);
         // await db.SaveChangesAsync();
 
+
     }
 
     [Test]
     public async Task Check_If_It_Exists_And_If_It_Does_Delete_It()
     {
-        /*
+
         var user = new User()
         {
             Id = "1",
@@ -105,13 +106,14 @@ public class UserDBIntegrationTest
             Base64Pfp = "profile_picture.png",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
+            RoleId = 1,
 
         };
 
         db.Users.Add(user);
 
         await db.SaveChangesAsync();
-        */
+
 
         Console.WriteLine(_connectionString);
 

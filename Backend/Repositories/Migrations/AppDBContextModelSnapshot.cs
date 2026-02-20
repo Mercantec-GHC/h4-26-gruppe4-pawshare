@@ -65,7 +65,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Animals");
+                    b.ToTable("Animals", (string)null);
                 });
 
             modelBuilder.Entity("Models.AnimalType", b =>
@@ -89,7 +89,7 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AnimalTypes");
+                    b.ToTable("AnimalTypes", (string)null);
                 });
 
             modelBuilder.Entity("Models.Appointment", b =>
@@ -119,7 +119,7 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("Models.AppointmentAnimalBooking", b =>
@@ -147,7 +147,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("AppointmentId");
 
-                    b.ToTable("AppointmentAnimalBookings");
+                    b.ToTable("AppointmentAnimalBookings", (string)null);
                 });
 
             modelBuilder.Entity("Models.Chat", b =>
@@ -167,7 +167,7 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Chats");
+                    b.ToTable("Chats", (string)null);
                 });
 
             modelBuilder.Entity("Models.ChatUserConvo", b =>
@@ -182,7 +182,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("ChatUserConvos");
+                    b.ToTable("ChatUserConvos", (string)null);
                 });
 
             modelBuilder.Entity("Models.Message", b =>
@@ -214,7 +214,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("Models.MessageReadReceipt", b =>
@@ -242,7 +242,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MessageReadReceipts");
+                    b.ToTable("MessageReadReceipts", (string)null);
                 });
 
             modelBuilder.Entity("Models.Role", b =>
@@ -259,7 +259,7 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -335,7 +335,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Models.UserAppointmentBooking", b =>
@@ -363,7 +363,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserAppointmentBooking");
+                    b.ToTable("UserAppointmentBooking", (string)null);
                 });
 
             modelBuilder.Entity("Models.Animal", b =>

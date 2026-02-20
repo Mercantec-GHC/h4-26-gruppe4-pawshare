@@ -1,4 +1,3 @@
-// TODO: ADD ALL KEYS
 enum SecureStorageKey { userId, jwtToken, refreshToken }
 
 extension PathExtension on SecureStorageKey {

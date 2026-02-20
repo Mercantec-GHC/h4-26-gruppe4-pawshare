@@ -114,16 +114,17 @@ public class UserRepo : IUserRepo
             );
     }
 
-    public async Task<bool> DeleteUser(string userId)
+    /// <inheritdoc/>
+    public async Task<bool> DeleteUser(string UserId)
     {
-        var user = await _dbContext.Users.FindAsync(userId);
-
-        if (user == null)
+        var user = await _dbContext.Users.FindAsync(UserId);
+        if (user is null)
+        {
             return false;
+        }
 
         _dbContext.Users.Remove(user);
         await _dbContext.SaveChangesAsync();
-
-        return true;
+        return true;   
     }
 }

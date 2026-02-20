@@ -17,6 +17,7 @@ public class UserDBIntegrationTest2
     [OneTimeSetUp]
     public async Task Setup()
     {
+        
         var builder = new ConfigurationBuilder()
             .AddEnvironmentVariables();
 
@@ -40,7 +41,7 @@ public class UserDBIntegrationTest2
             });
 
         db = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<AppDBContext>();
-        await db.Database.MigrateAsync();
+        
     }
 
     [Test]
@@ -57,6 +58,7 @@ public class UserDBIntegrationTest2
             Base64Pfp = "profile_picture.png",
             CreatedAt =  DateTime.UtcNow,
             UpdatedAt =  DateTime.UtcNow,
+            RoleId = 1
             
         };
         

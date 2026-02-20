@@ -12,6 +12,7 @@ class UserDTO {
     required this.base64Pfp,
   });
 
+
   factory UserDTO.fromJson(Map<String, dynamic> json) {
     return UserDTO(
       id: json['id'] as String,

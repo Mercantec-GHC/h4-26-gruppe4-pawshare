@@ -29,6 +29,13 @@ class ShowConnectedAnimalsEvent extends ProfileEvents {
   const ShowConnectedAnimalsEvent();
 }
 
+class ChangePasswordEvent extends ProfileEvents {
+  final String currentPassword;
+  final String newPassword;
+
+  ChangePasswordEvent(this.currentPassword, this.newPassword);
+}
+
 
 // STATES
 abstract class ProfileState {
@@ -40,7 +47,6 @@ class LoadingProfileState extends ProfileState {
 }
 
 class ShowProfileState extends ProfileState {
-  // TODO: REPLACE WITH REAL MODEL
   final UserDTO profile;
   const ShowProfileState({required this.profile});
 }
@@ -55,4 +61,17 @@ class ShowChangePasswordState extends ProfileState {
 
 class ShowConnectedAnimalsState extends ProfileState {
   const ShowConnectedAnimalsState();
+}
+
+class ShowNotificationsState extends ProfileState {
+  const ShowNotificationsState();
+}
+
+class LoggedOutState extends ProfileState {
+  const LoggedOutState();
+}
+
+class PasswordChangedState extends ProfileState {
+  final bool success;
+  PasswordChangedState(this.success);
 }

@@ -26,25 +26,10 @@ class MyApp extends StatelessWidget {
       builder: (_, mode, __) {
         return MaterialApp(
           title: 'PawShare',
-          themeMode: ThemeMode.system,
-          theme: ThemeData(
-            useMaterial3: true,
-            brightness: Brightness.light,
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFFF5C84C),
-              onPrimary: Colors.black,
-              secondary: Color(0xFFF5C84C),
-            ),
-          ),
-          darkTheme: ThemeData(
-            useMaterial3: true,
-            brightness: Brightness.dark,
-            colorScheme: const ColorScheme.dark(
-              primary: Color(0xFFF5C84C),
-              onPrimary: Colors.black,
-              secondary: Color(0xFFF5C84C),
-            ),
-          ),
+          navigatorKey: globalNavigatorKey,
+          themeMode: mode, 
+          theme: buildLightTheme(), 
+          darkTheme: buildDarkTheme(),
           home: const AuthGate(),
           routes: {
             '/login': (context) => const LoginPage(),

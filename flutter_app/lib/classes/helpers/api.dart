@@ -107,11 +107,19 @@ class API {
   }
 
   // Post Request
-  static Future<http.Response> postRequest(ApiPath action, Object? body) async {
-    await _applyAuthHeader();
+  static Future<http.Response> postRequest(
+    ApiPath action, 
+    Object? body,
+    {bool? isRefresh}
+  ) async {
+    if (isRefresh ?? false) {
+      _headers.remove('Authorization');
+    } else {
+      await _applyAuthHeader();
+    }
 
     // Post Request from url with header and body
-    var temp = await _attemptApiWithRefresh(
+    return await _attemptApiWithRefresh(
       () => http.post(
         _buildUri(action),
         headers: _jsonHeaders(),
@@ -119,8 +127,6 @@ class API {
       ),
       null,
     );
-
-    return temp;
   }
 
   // Post Request
@@ -132,7 +138,7 @@ class API {
     await _applyAuthHeader();
 
     // Post Request from url with header, body, and "/(id)"
-    var temp = await _attemptApiWithRefresh(
+    return await _attemptApiWithRefresh(
       () => http.post(
         _buildUri(action, id),
         headers: _jsonHeaders(),
@@ -140,8 +146,6 @@ class API {
       ),
       null,
     );
-
-    return temp;
   }
 
   // Put Request

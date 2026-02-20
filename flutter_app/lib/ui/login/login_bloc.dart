@@ -1,4 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+  import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import '../../classes/helpers/auth.dart';
 import '../../classes/services/chat_service.dart';

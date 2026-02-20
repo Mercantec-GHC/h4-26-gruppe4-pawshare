@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'register_bloc.dart';
+import 'register_events_states.dart';
 
 class RegisterInstitutionPage extends StatefulWidget {
   const RegisterInstitutionPage({super.key});
@@ -8,108 +11,134 @@ class RegisterInstitutionPage extends StatefulWidget {
       _RegisterInstitutionPageState();
 }
 
-class _RegisterInstitutionPageState extends State<RegisterInstitutionPage> {
+class _RegisterInstitutionPageState
+    extends State<RegisterInstitutionPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _cityController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  String? _passwordError;
 
-  bool get _isFormValid {
-    return _nameController.text.isNotEmpty &&
-        _emailController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty &&
-        _confirmPasswordController.text.isNotEmpty &&
-        _cityController.text.isNotEmpty &&
-        _passwordError == null;
-  }
+  String? _passwordError;
+  String? _emailError;
+
+  bool get _isFormValid =>
+      _nameController.text.isNotEmpty &&
+      _emailController.text.isNotEmpty &&
+      _passwordController.text.isNotEmpty &&
+      _confirmPasswordController.text.isNotEmpty &&
+      _cityController.text.isNotEmpty &&
+      _passwordError == null &&
+      _emailError == null;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Register Institution')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            _buildField('Institution Name', _nameController),
-            _buildField('Email', _emailController),
-            _buildField(
-              'Password',
-              _passwordController,
-              obscure: true,
-              onChanged: (_) {
-                setState(() {
-                  _validatePasswords();
-                });
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: TextField(
-                controller: _confirmPasswordController,
-                obscureText: true,
-                onChanged: (_) {
-                  setState(() {
-                    _validatePasswords();
-                  });
-                },
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  border: const OutlineInputBorder(),
-                  errorText: _passwordError,
+    return BlocProvider(
+      create: (_) => RegisterBloc(),
+      child: BlocListener<RegisterBloc, RegisterState>(
+        listener: (context, state) {
+          if (state.isSuccess) {
+            Navigator.pushReplacementNamed(context, '/discover');
+          }
+
+          if (state.errorMessage != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.errorMessage!)),
+            );
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(title: const Text('Register Institution')),
+          body: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Institution Name',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => setState(() {}),
                 ),
-              ),
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: const OutlineInputBorder(),
+                    errorText: _emailError,
+                  ),
+                  onChanged: (_) => setState(() {}),
+                ),
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => setState(() {}),
+                ),
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: _confirmPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm Password',
+                    border: const OutlineInputBorder(),
+                    errorText: _passwordError,
+                  ),
+                  onChanged: (_) => setState(() {
+                    _passwordError =
+                        _passwordController.text !=
+                                _confirmPasswordController.text
+                            ? 'Passwords do not match'
+                            : null;
+                  }),
+                ),
+                const SizedBox(height: 16),
+
+                TextField(
+                  controller: _cityController,
+                  decoration: const InputDecoration(
+                    labelText: 'City',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => setState(() {}),
+                ),
+
+                const SizedBox(height: 24),
+
+                BlocBuilder<RegisterBloc, RegisterState>(
+                  builder: (context, state) {
+                    return ElevatedButton(
+                      onPressed: !_isFormValid || state.isLoading
+                          ? null
+                          : () {
+                              context.read<RegisterBloc>().add(
+                                    RegisterInstitutionSubmitted(
+                                      name: _nameController.text,
+                                      email: _emailController.text,
+                                      password:
+                                          _passwordController.text,
+                                      city: _cityController.text,
+                                    ),
+                                  );
+                            },
+                      child: state.isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text('Create Account'),
+                    );
+                  },
+                ),
+              ],
             ),
-            _buildField('City', _cityController),
-
-            const SizedBox(height: 24),
-
-            ElevatedButton(
-              onPressed: _isFormValid
-                  ? () {
-                      // TODO: call API later
-                    }
-                  : null,
-              child: const Text('Create Account'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _validatePasswords() {
-    if (_confirmPasswordController.text.isEmpty) {
-      _passwordError = null;
-      return;
-    }
-
-    if (_passwordController.text != _confirmPasswordController.text) {
-      _passwordError = 'Passwords do not match';
-    } else {
-      _passwordError = null;
-    }
-  }
-
-  Widget _buildField(
-    String label,
-    TextEditingController controller, {
-    bool obscure = false,
-    TextInputType keyboardType = TextInputType.text,
-    void Function(String)? onChanged,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: TextField(
-        controller: controller,
-        obscureText: obscure,
-        keyboardType: keyboardType,
-        onChanged: onChanged ?? (_) => setState(() {}),
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
+          ),
         ),
       ),
     );

@@ -1,30 +1,31 @@
 // Name all paths
-// TODO: ADD ALL ENDPOINTS
 enum ApiPath {
   animal,
   animalType,
   chat,
   auth,
-  user
+  refresh,
+  user,
+  animalUser,
+  changePassword,
+  login,
+  register,
+  registerOwner
 }
 
 // Specify the string needed for each path. Avoids accidental misspellings and ensures consistency
 extension PathExtension on ApiPath {
-  String get value {
-    String name;
-    switch (this) {
-      case ApiPath.animal:
-        name = 'Animal';
-      case ApiPath.animalType:
-        name = 'AnimalType';
-      case ApiPath.user:
-        name = 'Users';
-      case ApiPath.chat:
-        name = 'Chat';
-      case ApiPath.auth:
-        name = 'Auth';
-        break;
-    }
-    return name;
-  }
+  String get value => switch (this) {
+    ApiPath.animal =>'Animal',
+    ApiPath.animalType => 'AnimalType',
+    ApiPath.user => 'Users',
+    ApiPath.chat => 'Chat',
+    ApiPath.auth => 'Auth',
+    ApiPath.refresh => 'Auth/Refresh',
+    ApiPath.animalUser => 'Animal/User',
+    ApiPath.changePassword => 'Users/change-password',
+    ApiPath.login => 'auth/login',
+    ApiPath.register => 'auth/register',
+    ApiPath.registerOwner => 'auth/register-owner',
+  };
 }

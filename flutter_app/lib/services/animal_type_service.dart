@@ -1,16 +1,11 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../classes/objects/animal_type.dart';
 import '../classes/objects/api_path.dart';
-import '../config/api_config.dart';
+import '../classes/helpers/api.dart';
 
 class AnimalTypeService {
   Future<List<AnimalType>> getAllAnimalTypes() async {
-    final response = await http.get(
-      Uri.parse(
-        '${ApiConfig.baseUrl}/api/${ApiPath.animal.value}Type',
-      ),
-    );
+    final response = await API.getRequest(ApiPath.animalType);
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);

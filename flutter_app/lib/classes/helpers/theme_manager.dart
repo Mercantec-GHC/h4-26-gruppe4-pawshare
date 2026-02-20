@@ -116,6 +116,13 @@ ThemeData buildLightTheme() {
       iconColor: AppColors.primaryText,
       textColor: AppColors.primaryText,
     ),
+    colorScheme: const ColorScheme.light(
+      primary: AppColors.accent,
+      secondary: AppColors.lightCard,
+      surface: AppColors.lightCard,
+      onPrimary: Colors.black,
+      onSurface: AppColors.primaryText,
+    ),
   );
 }
 
@@ -139,6 +146,13 @@ ThemeData buildDarkTheme() {
       tileColor: AppColors.darkTile,
       iconColor: Colors.white,
       textColor: Colors.white,
+    ),
+    colorScheme: const ColorScheme.dark(
+      primary: AppColors.accent,
+      secondary: AppColors.darkCard,
+      surface: AppColors.darkCard,
+      onPrimary: Colors.black,
+      onSurface: Colors.white,
     ),
   );
 }

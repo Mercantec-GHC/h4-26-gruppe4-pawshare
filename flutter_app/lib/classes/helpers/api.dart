@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:signalr_netcore/signalr_client.dart';
-import '../../config/api_config.dart';
 import '../objects/api_path.dart';
 import 'auth.dart';
 
@@ -10,7 +9,7 @@ class API {
   static const String _url =
       '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/api/';
   static const String _testUrl =
-      '${ApiConfig.baseUrl}/api/';
+      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://dev-pawshare-api.mercantec.tech')}/api/';
 
   static final Map<String, String> _headers = {};
 

@@ -21,6 +21,7 @@ class Auth {
         refreshToken,
       );
 
+      API.setAuthHeader(token);
       var meResponse = await API.getRequestWithId(ApiPath.auth, 'me');
 
       if (meResponse.statusCode == 200) {
@@ -33,8 +34,9 @@ class Auth {
       }
 
       return true;
-    } else {}
-    return false;
+    }
+    if (resp.statusCode == 401) return false;
+    throw Exception('Login failed: ${resp.statusCode}');
   }
 
   static Future<void> logout() async {
@@ -49,6 +51,8 @@ class Auth {
     await SecureStorageHelper.saveToStorage(SecureStorageKey.jwtToken, '');
     await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
     await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
+
+    API.clearAuthHeader();
   }
 
   static Future<bool> register(String email, String password) async {
@@ -64,12 +68,10 @@ class Auth {
   }
 
   static Future<bool> refresh() async {
-    var resp = await API.postRequest(
-      ApiPath.refresh, 
-      {
-        'refreshToken': await getRefreshToken(),
+    var resp = await API.postRequestWithId(ApiPath.auth, 'refresh', {
+        'RefreshToken': await getRefreshToken(),
       },
-      isRefresh: true,
+      skipRefresh: true,
     );
 
     if (resp.statusCode == 200) {
@@ -84,9 +86,10 @@ class Auth {
         SecureStorageKey.jwtToken,
         newToken,
       );
+      API.setAuthHeader(newToken);
       return true;
     }
-
+    await forceLogout();
     return false;
   }
 
@@ -116,7 +119,7 @@ class Auth {
       body,
     );
 
-    return resp.statusCode == 200;
+    return resp.statusCode == 200 || resp.statusCode == 201;
   }
 
   static Future<bool> registerInstitution(Map<String, dynamic> body) async {
@@ -126,7 +129,7 @@ class Auth {
       body,
     );
 
-    return resp.statusCode == 200;
+    return resp.statusCode == 200 || resp.statusCode == 201;
   }
 
   static Future<void> forceLogout() async {
@@ -138,4 +141,6 @@ class Auth {
     await SecureStorageHelper.saveToStorage(SecureStorageKey.refreshToken, '');
     await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
   }
+
+  
 }

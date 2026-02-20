@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:signalr_netcore/signalr_client.dart';
+import '../../config/api_config.dart';
 import '../objects/api_path.dart';
 import 'auth.dart';
 
@@ -9,7 +10,7 @@ class API {
   static const String _url =
       '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/api/';
   static const String _testUrl =
-      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://dev-pawshare-api.mercantec.tech')}/api/';
+      '${ApiConfig.baseUrl}/api/';
 
   static final Map<String, String> _headers = {};
 
@@ -39,23 +40,27 @@ class API {
   static Future<http.Response> _attemptApiWithRefresh(
     Future<http.Response> Function() apiCall,
     Function(http.Response)? onSuccess,
+    {bool skipRefresh = false}
   ) async {
     var response = await apiCall();
 
-    if (response.statusCode == 401) {
-      var refreshSuccess = await _tryToRefreshToken();
+    if (!skipRefresh && response.statusCode == 401) {
+    var refreshSuccess = await _tryToRefreshToken();
 
       if (refreshSuccess) {
         response = await apiCall();
       }
     }
 
-    onSuccess?.call(response);
+    if (onSuccess != null) {
+      onSuccess(response);
+    } 
     return response;
   }
 
   // Attempts to refresh the JWT token using the refresh token. If successful, updates the Authorization header with the new token.
   // Returns: True if token refresh was successful, false otherwise
+  
   static Future<bool> _tryToRefreshToken() async {
     var refreshSuccess = await Auth.refresh();
 
@@ -64,7 +69,7 @@ class API {
       _headers['Authorization'] = 'Bearer $newToken';
       return true;
     } else {
-      await Auth.logout();
+      await Auth.forceLogout();
       _headers.remove('Authorization');
       return false;
     }
@@ -134,6 +139,7 @@ class API {
     ApiPath action,
     String id,
     Object? body,
+    {bool skipRefresh = false}
   ) async {
     await _applyAuthHeader();
 
@@ -145,6 +151,7 @@ class API {
         body: body == null ? null : jsonEncode(body),
       ),
       null,
+      skipRefresh: skipRefresh,
     );
   }
 
@@ -215,6 +222,14 @@ class API {
 
     // Returns future response
     return temp;
+  }
+
+  static void setAuthHeader(String token) {
+    _headers['Authorization'] = 'Bearer $token';
+  }
+
+  static void clearAuthHeader() {
+    _headers.remove('Authorization');
   }
 }
 

@@ -6,7 +6,7 @@ import 'login_bloc.dart';
 import 'login_events_states.dart';
 import '../register/role_selection_page.dart';
 import '../forgot_password/forgot_password_page.dart';
-import '../discover/discover_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
       child: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state is LoginFormState && state.isSuccess) {
-            GeneralUtil.goToPage(context, DiscoverPage(), keepRoute: false);
+            Navigator.pushReplacementNamed(context, '/discover');
           }
         },
         child: BlocBuilder<LoginBloc, LoginState>(
@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                 : () {
                     context.read<LoginBloc>().add(
                       LoginSubmitted(
-                        email: _emailController.text,
+                        email: _emailController.text.trim(),
                         password: _passwordController.text,
                       ),
                     );
@@ -184,5 +184,12 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }

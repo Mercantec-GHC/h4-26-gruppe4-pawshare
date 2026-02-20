@@ -146,13 +146,7 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// 🔹 AUTOMATIC MIGRATIONS
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
-    dbContext.Database.Migrate();
-    await SeedInitialDataAsync(dbContext);
-} 
+
 
 app.MapDefaultEndpoints();
 

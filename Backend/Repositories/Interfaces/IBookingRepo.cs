@@ -15,7 +15,7 @@ namespace Repositories.Interfaces
         public Task<AppointmentAnimalBooking?> CreateBooking(string AppointmentId, string AnimalId);
 
         /// <summary>
-        /// Delets Booking from table
+        /// Deletes Booking from table
         /// </summary>
         /// <param name="BookingId">Id of the Booking needed to be deleted</param>
         /// <returns>Boolean, true if succesful and false if not</returns>

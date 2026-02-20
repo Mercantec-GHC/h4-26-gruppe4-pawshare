@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'classes/helpers/theme_manager.dart';
-import 'ui/profile/profile_page.dart';
+import 'ui/auth/auth_gate.dart';
+import 'ui/discover/discover_page.dart';
+import 'ui/login/login_page.dart';
+import 'ui/register/register_institution_page.dart';
+import 'ui/register/register_owner_page.dart';
 
 final globalNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -21,10 +25,19 @@ class MyApp extends StatelessWidget {
       valueListenable: themeNotifier,
       builder: (_, mode, __) {
         return MaterialApp(
-          theme: buildLightTheme(),
+          title: 'PawShare',
+          navigatorKey: globalNavigatorKey,
+          themeMode: mode, 
+          theme: buildLightTheme(), 
           darkTheme: buildDarkTheme(),
-          themeMode: mode,
-          home: const ProfilePage(),
+          home: const AuthGate(),
+          routes: {
+            '/login': (context) => const LoginPage(),
+            '/discover': (context) => const DiscoverPage(),
+            '/register-owner': (context) => const RegisterOwnerPage(),
+            '/register-institution': (context) =>
+                const RegisterInstitutionPage(),
+          },
         );
       },
     );

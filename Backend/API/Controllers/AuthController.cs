@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Models.DTOs;
+using Repositories.Interfaces;
 using Services;
 using System.Security.Claims;
 
@@ -16,13 +17,28 @@ namespace API.Controllers
         public AuthController(AuthService auth)
         {
             _auth = auth;
+            
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
             await _auth.Register(dto);
-            return Ok("User created");
+            return Created("", null);
+        }
+
+        [HttpPost("register-owner")]
+        public async Task<IActionResult> RegisterOwner(RegisterOwnerDto dto)
+        {
+            await _auth.RegisterOwner(dto);
+            return Ok("Owner created");
+        }
+
+        [HttpPost("register-institution")]
+        public async Task<IActionResult> RegisterInstitution(RegisterInstitutionDto dto)
+        {
+            await _auth.RegisterInstitution(dto);
+            return Ok("Institution created");
         }
 
         [HttpPost("login")]
@@ -34,7 +50,7 @@ namespace API.Controllers
 
             return Ok(result);
         }
-        
+
         [HttpPost("refresh")]
         public async Task<ActionResult<AuthResponseDto>> Refresh(RefreshTokenDto dto)
         {
@@ -45,6 +61,7 @@ namespace API.Controllers
             return Ok(result);
         }
 
+
         [HttpPost("logout")]
         public async Task<IActionResult> Logout(LogoutDto dto)
         {
@@ -52,7 +69,7 @@ namespace API.Controllers
             if (!success)
                 return Unauthorized();
 
-            return Ok();
+            return NoContent();
         }
 
         [Authorize]

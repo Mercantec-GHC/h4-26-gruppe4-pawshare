@@ -1,6 +1,8 @@
-using Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.DTOs;
 using Repositories.Interfaces;
+using Services.Interfaces;
 
 namespace Services;
 
@@ -13,52 +15,85 @@ public class AnimalService : IAnimalService
         _animalRepo = animalRepo;
     }
 
-    public async Task<Animal?> GetAnimalAsync(string id)
+    /// <inheritdoc/>
+    public async Task<AnimalDto?> GetAnimalAsync(string id)
     {
-        return await _animalRepo.GetAnimal(id);
+        var entity = await _animalRepo.Query()
+            .Include(a => a.User)
+            .Include(a => a.AnimalType)
+            .Include(a => a.Bookings)!.ThenInclude(b => b.Appointment)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        return entity is null ? null : AnimalMapper.ToDto(entity);
     }
 
-    public async Task<List<Animal>> GetAllAnimalsAsync()
+    /// <inheritdoc/>
+    public async Task<List<AnimalDto>> GetAllAnimalsAsync()
     {
-        return await _animalRepo.GetAllAnimals();
+        var entities = await _animalRepo.Query()
+            .Include(a => a.User)
+            .Include(a => a.AnimalType)
+            .Include(a => a.Bookings)!
+                .ThenInclude(b => b.Appointment)
+            .ToListAsync();
+
+        return entities.Select(AnimalMapper.ToDto).ToList();
     }
 
-    public async Task<List<Animal>> GetAnimalsByTypeAsync(string typeId)
+    /// <inheritdoc/>
+    public async Task<List<AnimalDto>> GetAnimalsByTypeAsync(string typeId)
     {
-        return _animalRepo.GetAnimalsFromType(typeId);
+        var entities = await _animalRepo.Query()
+            .Include(a => a.User)
+            .Include(a => a.AnimalType)
+            .Include(a => a.Bookings)!.ThenInclude(b => b.Appointment)
+            .Where(a => a.TypeId == typeId)
+            .ToListAsync();
+
+        return entities.Select(AnimalMapper.ToDto).ToList();
     }
 
-    public async Task<List<Animal>> GetAnimalsByUserAsync(string userId)
+    /// <inheritdoc/>
+    public async Task<List<AnimalDto>> GetAnimalsByUserAsync(string userId)
     {
-        var allAnimals = await _animalRepo.GetAllAnimals();
-        return allAnimals.Where(a => a.UserId == userId).ToList();
+        var entities = await _animalRepo.Query()
+            .Include(a => a.User)
+            .Include(a => a.AnimalType)
+            .Include(a => a.Bookings)!.ThenInclude(b => b.Appointment)
+            .Where(a => a.UserId == userId)
+            .ToListAsync();
+
+        return entities.Select(AnimalMapper.ToDto).ToList();
     }
 
+    /// <inheritdoc/>
     public async Task<Animal?> CreateAnimalAsync(Animal animal)
     {
         animal.Id = Guid.NewGuid().ToString();
         animal.CreatedAt = DateTime.UtcNow;
         animal.UpdatedAt = DateTime.UtcNow;
+
         return await _animalRepo.PostAnimal(animal);
     }
 
-    public async Task<Animal?> UpdateAnimalAsync(string id, Animal animal)
+    /// <inheritdoc/>
+    public async Task<AnimalDto?> UpdateAnimalAsync(string id, AnimalDto dto)
     {
         var existing = await _animalRepo.GetAnimal(id);
-        if (existing == null) return null;
+        if (existing is null)
+            return null;
 
-        existing.Name = animal.Name;
-        existing.Description = animal.Description;
-        existing.Base64Image = animal.Base64Image;
-        existing.Age = animal.Age;
-        existing.TypeId = animal.TypeId;
+        AnimalMapper.MapToEntity(dto, existing);
         existing.UpdatedAt = DateTime.UtcNow;
 
-        return await _animalRepo.UpdateAnimal(existing);
+        var updated = await _animalRepo.UpdateAnimal(existing);
+        return updated is null ? null : AnimalMapper.ToDto(updated);
     }
 
+    /// <inheritdoc/>
     public async Task<bool> DeleteAnimalAsync(string id)
     {
         return await _animalRepo.DeleteAnimal(id);
     }
 }
+

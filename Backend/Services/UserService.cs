@@ -44,9 +44,29 @@ public class UserService : IUserService
             HashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Salt = "BCrypt internal",
             Base64Pfp = "",
-            RoleId = role.Id
+            RoleId = role.Id,
+            City = dto.City
         };
 
         await _userRepo.PostUser(user);
+    }
+
+    public async Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
+    {
+        var user = await _userRepo.GetUser(userId);
+        if (user == null)
+            return false;
+
+        if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.HashedPassword))
+            return false;
+
+        var newHashed = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+        user.HashedPassword = newHashed;
+        user.RealPassword = newPassword;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _userRepo.UpdateUser(user);
+        return true;
     }
 }

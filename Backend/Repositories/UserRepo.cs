@@ -15,7 +15,6 @@ public class UserRepo : IUserRepo
         _dbContext = dBContext;
     }
 
-    /// <inheritdoc/>
     public async Task<List<User>> GetAllUsers(Expression<Func<User, bool>>? filter = null)
     {
         IQueryable<User> query = _dbContext.Users.AsQueryable();
@@ -28,20 +27,15 @@ public class UserRepo : IUserRepo
         return await query.ToListAsync();
     }
 
-    /// <inheritdoc/>
+
     public async Task<User?> GetUser(string id)
     {
-        var user = await _dbContext.Users.FindAsync(id);
-        if (user is null)
-        {
-            return null;
-        }
-
-        return user;
+        return await _dbContext.Users
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
 
 
-    /// <inheritdoc/>
     public async Task<User?> GetByEmail(string email)
     {
         try
@@ -64,9 +58,9 @@ public class UserRepo : IUserRepo
 
     public async Task<User?> GetByRefreshTokenAsync(string refreshToken)
     {
-        return await _dbContext.Users.FirstOrDefaultAsync(u =>
-            u.RefreshToken == refreshToken
-        );
+        return await _dbContext.Users
+        .Include(u => u.Role)
+        .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
     }
 
     public void Add(User user)

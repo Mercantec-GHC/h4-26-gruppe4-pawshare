@@ -5,6 +5,7 @@ import '../../../classes/objects/user_dto.dart';
 import '../../../colors.dart';
 import '../../../widgets/profile_name.dart';
 import '../../../widgets/profile_tile.dart';
+import '../../chat/chat_page.dart';
 import '../profile_bloc.dart';
 import '../profile_events_states.dart';
 
@@ -33,20 +34,20 @@ class ShowProfileView extends StatelessWidget {
 
             ProfileTile(
               context: context, 
-              icon: Icons.article_outlined, 
-              title: 'My Posts', 
+              icon: Icons.pets_outlined, 
+              title: 'My animals', 
               onTap: () {
-                debugPrint('my posts');
+                context.read<ProfileBloc>().add(ShowConnectedAnimalsEvent());
               },
             ),
 
             const SizedBox(height: 12),
             ProfileTile(
               context: context, 
-              icon: Icons.place_outlined, 
-              title: 'My Visits',
+              icon: Icons.chat_bubble_outline, 
+              title: 'My chats',
               onTap: () {
-                debugPrint('my visits');
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ChatPage()));
               },
             ),
             const SizedBox(height: 12),

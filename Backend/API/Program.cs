@@ -1,6 +1,9 @@
+using API.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Models;
 using Repositories;
 using Repositories.Context;
 using Repositories.Interfaces;
@@ -9,6 +12,7 @@ using Services;
 using Services.Interfaces;
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +20,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 IConfiguration Configuration = builder.Configuration;
 
-string connectionString = builder.Configuration.GetConnectionString("db") 
-                          ?? builder.Configuration.GetConnectionString("DefaultConnection")
-                                                       ?? throw new InvalidOperationException("Connection string 'db' not found.");
+string connectionString = Configuration.GetConnectionString("db") 
+                          ?? Configuration.GetConnectionString("DefaultConnection")
+                                ?? throw new InvalidOperationException("Connection string 'db' not found.");
 
 builder.Services.AddDbContext<AppDBContext>(options => options.UseNpgsql(connectionString));
 
@@ -34,6 +45,7 @@ builder.Services.AddScoped<IChatRepo, ChatRepo>();
 builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 builder.Services.AddScoped<IBookingRepo, BookingRepo>();
 builder.Services.AddScoped<IRoleRepo, RoleRepo>();
+builder.Services.AddScoped<IMessageReadReceiptRepo, MessageReadReceiptRepo>();
 
 
 // services
@@ -46,6 +58,8 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -60,13 +74,30 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = Configuration["Jwt:Issuer"],
+        ValidAudience = Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
-                builder.Configuration["Jwt:SecretKey"]!
+                Configuration["Jwt:SecretKey"]!
             )
         )
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            if (!string.IsNullOrEmpty(accessToken)
+                && path.StartsWithSegments("/ws/chat"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -115,13 +146,8 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// 🔹 AUTOMATIC MIGRATIONS
- /*using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.    GetRequiredService<AppDBContext>();
-    dbContext.Database.Migrate();
-} 
-*/
+
+
 app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
@@ -153,11 +179,11 @@ app.MapScalarApiReference(options =>
 // Enable CORS - SKAL være før UseAuthorization
 app.UseCors(app.Environment.IsDevelopment() ? "AllowAllLocalhost" : "AllowFlutterApp");
 
-
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/ws/chat");
 
 // Log API dokumentations URL'er ved opstart
 app.Lifetime.ApplicationStarted.Register(() =>
@@ -177,3 +203,122 @@ app.Lifetime.ApplicationStarted.Register(() =>
 });
 
 app.Run();
+
+static async Task SeedInitialDataAsync(AppDBContext dbContext)
+{
+    string[] defaultAnimalTypes = ["Dog", "Cat"];
+
+    var existingAnimalTypeNames = await dbContext.AnimalTypes
+        .Select(type => type.Name)
+        .ToListAsync();
+
+    foreach (var typeName in defaultAnimalTypes)
+    {
+        if (existingAnimalTypeNames.Any(name =>
+                string.Equals(name, typeName, StringComparison.OrdinalIgnoreCase)))
+        {
+            continue;
+        }
+
+        dbContext.AnimalTypes.Add(new AnimalType
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = typeName,
+            Description = $"Default animal type: {typeName}",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+    }
+
+    var testUserEmail = "test@test.dk";
+    var testUserEmail2 = "test2@test.dk";
+    var existingTestUser = await dbContext.Users
+        .AnyAsync(user => user.Email == testUserEmail);
+    var existingTestUser2 = await dbContext.Users
+        .AnyAsync(user => user.Email == testUserEmail2);
+
+    if (!existingTestUser)
+    {
+        var animalOwnerRole = await dbContext.Roles
+            .FirstOrDefaultAsync(role => role.Name == "AnimalOwner");
+
+        if (animalOwnerRole is not null)
+        {
+            dbContext.Users.Add(new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Test User",
+                Email = testUserEmail,
+                HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
+                Salt = "BCrypt internal",
+                RealPassword = null,
+                Base64Pfp = Convert.ToBase64String([0x00]),
+                City = "TestCity",
+                RoleId = animalOwnerRole.Id,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+    }
+
+    if (!existingTestUser2)
+    {
+        var animalOwnerRole = await dbContext.Roles
+            .FirstOrDefaultAsync(role => role.Name == "AnimalOwner");
+
+        if (animalOwnerRole is not null)
+        {
+            dbContext.Users.Add(new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Test User 2",
+                Email = testUserEmail2,
+                HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
+                Salt = "BCrypt internal",
+                RealPassword = null,
+                Base64Pfp = Convert.ToBase64String([0x00]),
+                City = "TestCity",
+                RoleId = animalOwnerRole.Id,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+    }
+
+    await dbContext.SaveChangesAsync();
+
+    // Seed test chat if it doesn't exist
+    var existingChat = await dbContext.Chats
+        .Include(c => c.ChatUsers)
+        .FirstOrDefaultAsync(chat =>
+            chat.ChatUsers.Any(cu => cu.User.Email == testUserEmail) &&
+            chat.ChatUsers.Any(cu => cu.User.Email == testUserEmail2));
+    
+    if (existingChat == null)
+    {
+        var testUser1 = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == testUserEmail);
+        var testUser2 = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == testUserEmail2);
+
+        if (testUser1 != null && testUser2 != null)
+        {
+            var newChat = new Chat
+            {
+                Id = Guid.NewGuid().ToString(),
+                Title = "Test Chat",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                ChatUsers = new List<ChatUserConvo>()
+            };
+            newChat.ChatUsers = new List<ChatUserConvo>
+            {
+                new ChatUserConvo { UserId = testUser1.Id, ChatId = newChat.Id },
+                new ChatUserConvo { UserId = testUser2.Id, ChatId = newChat.Id }
+            };
+            
+
+            dbContext.Chats.Add(newChat);
+        }
+    }
+
+    await dbContext.SaveChangesAsync();
+}

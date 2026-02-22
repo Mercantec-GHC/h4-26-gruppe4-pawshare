@@ -85,7 +85,9 @@ public class UserRepoTest
 
         var _roleRepo = new Mock<IRoleRepo>();
 
-        _auth = new AuthService(_userRepo, _jwtService, _roleRepo.Object);
+        var _mockAnimalRepo = new Mock<IAnimalRepo>();
+
+        _auth = new AuthService(_userRepo, _jwtService, _roleRepo.Object, _mockAnimalRepo.Object);
 
     }
 
@@ -108,6 +110,7 @@ public class UserRepoTest
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
 
@@ -148,6 +151,7 @@ public class UserRepoTest
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         await _userRepo.PostUser(user);
@@ -165,6 +169,7 @@ public class UserRepoTest
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         var updatedUser = await _userRepo.UpdateUser(updatedUserData);
@@ -202,6 +207,7 @@ public class UserRepoTest
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         await _userRepo.PostUser(user);
@@ -248,6 +254,7 @@ public class UserRepoTest
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         await userRepo.PostUser(user);
@@ -257,7 +264,8 @@ public class UserRepoTest
         var config = factory.Services.GetRequiredService<IConfiguration>();
         var jwtService = new JwtService(config);
         var roleRepoMock = new Mock<IRoleRepo>();
-        var authService = new AuthService(userRepo, jwtService, roleRepoMock.Object);
+        var _mockAnimalRepo = new Mock<IAnimalRepo>();
+        var authService = new AuthService(userRepo, jwtService, roleRepoMock.Object, _mockAnimalRepo.Object);
 
         var userLoginDTO = new LoginDto()
         {
@@ -311,6 +319,7 @@ public class UserRepoTest
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         await userRepo.PostUser(user);
@@ -381,7 +390,8 @@ public class UserRepoTest
                 RealPassword = $"Password{i}",
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                RoleId = 1  // Required foreign key field
+                RoleId = 1,
+                City = "Test City"
 
             });
         }

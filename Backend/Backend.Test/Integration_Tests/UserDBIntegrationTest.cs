@@ -38,10 +38,8 @@ public class UserDBIntegrationTest
             });
 
         db = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<AppDBContext>();
-        // await db.Database.EnsureCreatedAsync();
-        await db.Database.MigrateAsync();
-        //var pending = await db.Database.GetPendingMigrationsAsync();
-        //Console.WriteLine("Pending migrations: " + string.Join(", ", pending));
+        // Create the database schema directly instead of running migrations
+        await db.Database.EnsureCreatedAsync();
 
     }
 
@@ -64,6 +62,7 @@ public class UserDBIntegrationTest
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             RoleId = 1,
+            City = "Test City"
         };
 
         db.Users.Add(user);
@@ -107,6 +106,7 @@ public class UserDBIntegrationTest
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             RoleId = 1,
+            City = "Test City"
 
         };
 

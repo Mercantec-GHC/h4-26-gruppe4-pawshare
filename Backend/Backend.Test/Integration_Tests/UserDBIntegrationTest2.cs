@@ -58,7 +58,8 @@ public class UserDBIntegrationTest2
             Base64Pfp = "profile_picture.png",
             CreatedAt =  DateTime.UtcNow,
             UpdatedAt =  DateTime.UtcNow,
-            RoleId = 1
+            RoleId = 1,
+            City = "Test City"
             
         };
         

@@ -1,0 +1,159 @@
+meta {
+  name: get /api/Animal/type/:typeId
+  type: http
+  seq: 6
+  tags: [
+    Animal
+  ]
+}
+
+get {
+  url: {{baseUrl}}/api/Animal/type/:typeId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  typeId: 
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Animal/type/:typeId
+    method: GET
+    mode: none
+    params:path: {
+      typeId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/plain
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+        [
+          {
+            "name": "",
+            "description": "",
+            "base64Image": "",
+            "dateOfBirth": "",
+            "typeId": "",
+            "animalType": "",
+            "userId": "",
+            "user": "",
+            "bookings": "",
+            "id": "",
+            "createdAt": "",
+            "updatedAt": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Animal/type/:typeId
+    method: GET
+    mode: none
+    params:path: {
+      typeId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "name": "",
+            "description": "",
+            "base64Image": "",
+            "dateOfBirth": "",
+            "typeId": "",
+            "animalType": "",
+            "userId": "",
+            "user": "",
+            "bookings": "",
+            "id": "",
+            "createdAt": "",
+            "updatedAt": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Animal/type/:typeId
+    method: GET
+    mode: none
+    params:path: {
+      typeId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "name": "",
+            "description": "",
+            "base64Image": "",
+            "dateOfBirth": "",
+            "typeId": "",
+            "animalType": "",
+            "userId": "",
+            "user": "",
+            "bookings": "",
+            "id": "",
+            "createdAt": "",
+            "updatedAt": ""
+          }
+        ]
+      '''
+    }
+  }
+}

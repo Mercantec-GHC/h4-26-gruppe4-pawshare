@@ -1,0 +1,58 @@
+meta {
+  name: post /api/auth/register
+  type: http
+  seq: 1
+  tags: [
+    Auth
+  ]
+}
+
+post {
+  url: {{baseUrl}}/api/auth/register
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "",
+    "name": "",
+    "password": "",
+    "city": "",
+    "base64Pfp": ""
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/auth/register
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "email": "",
+        "name": "",
+        "password": "",
+        "city": "",
+        "base64Pfp": ""
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

@@ -1,0 +1,155 @@
+meta {
+  name: get /api/Chat/:chatId/messages
+  type: http
+  seq: 3
+  tags: [
+    Chat
+  ]
+}
+
+get {
+  url: {{baseUrl}}/api/Chat/:chatId/messages
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~limit: 
+  ~offset: 
+}
+
+params:path {
+  chatId: 
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Chat/:chatId/messages
+    method: GET
+    mode: none
+    params:query: {
+      ~limit: 
+      ~offset: 
+    }
+  
+    params:path: {
+      chatId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/plain
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+        [
+          {
+            "messageId": "",
+            "content": "",
+            "senderId": "",
+            "createdAt": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Chat/:chatId/messages
+    method: GET
+    mode: none
+    params:query: {
+      ~limit: 
+      ~offset: 
+    }
+  
+    params:path: {
+      chatId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "messageId": "",
+            "content": "",
+            "senderId": "",
+            "createdAt": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Chat/:chatId/messages
+    method: GET
+    mode: none
+    params:query: {
+      ~limit: 
+      ~offset: 
+    }
+  
+    params:path: {
+      chatId: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "messageId": "",
+            "content": "",
+            "senderId": "",
+            "createdAt": ""
+          }
+        ]
+      '''
+    }
+  }
+}

@@ -1,0 +1,157 @@
+meta {
+  name: get /api/Chat/me
+  type: http
+  seq: 2
+  tags: [
+    Chat
+  ]
+}
+
+get {
+  url: {{baseUrl}}/api/Chat/me
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~limit: 
+  ~offset: 
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Chat/me
+    method: GET
+    mode: none
+    params:query: {
+      ~limit: 
+      ~offset: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/plain
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+        [
+          {
+            "chatId": "",
+            "title": "",
+            "newestMessage": "",
+            "members": [
+              {
+                "userId": "",
+                "userName": ""
+              }
+            ],
+            "unreadCount": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Chat/me
+    method: GET
+    mode: none
+    params:query: {
+      ~limit: 
+      ~offset: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "chatId": "",
+            "title": "",
+            "newestMessage": "",
+            "members": [
+              {
+                "userId": "",
+                "userName": ""
+              }
+            ],
+            "unreadCount": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Chat/me
+    method: GET
+    mode: none
+    params:query: {
+      ~limit: 
+      ~offset: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "chatId": "",
+            "title": "",
+            "newestMessage": "",
+            "members": [
+              {
+                "userId": "",
+                "userName": ""
+              }
+            ],
+            "unreadCount": ""
+          }
+        ]
+      '''
+    }
+  }
+}

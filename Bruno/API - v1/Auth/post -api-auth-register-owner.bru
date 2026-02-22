@@ -1,0 +1,66 @@
+meta {
+  name: post /api/auth/register-owner
+  type: http
+  seq: 2
+  tags: [
+    Auth
+  ]
+}
+
+post {
+  url: {{baseUrl}}/api/auth/register-owner
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "",
+    "name": "",
+    "password": "",
+    "city": "",
+    "base64Pfp": "",
+    "animalName": "",
+    "animalDescription": "",
+    "dateOfBirth": "",
+    "animalTypeId": ""
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/auth/register-owner
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "email": "",
+        "name": "",
+        "password": "",
+        "city": "",
+        "base64Pfp": "",
+        "animalName": "",
+        "animalDescription": "",
+        "dateOfBirth": "",
+        "animalTypeId": ""
+      }
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

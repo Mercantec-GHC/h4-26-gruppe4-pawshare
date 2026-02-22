@@ -87,7 +87,7 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
   Future<UserDTO?> _getProfileInformation() async {
     try {
       // Get user id from secure storage
-      String? userId = await SecureStorageHelper.readFromStorage(SecureStorageKey.userId);
+      /*String? userId = await SecureStorageHelper.readFromStorage(SecureStorageKey.userId);
   
       if (userId != null) {
         // Sends get request to api/users/(userId)
@@ -95,12 +95,12 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
 
         if (resp.statusCode != 200) {
           return null;
-        }
+        }*/
 
         // Creates dto object and returns
-        UserDTO profileData = UserDTO.fromJson(json.decode(resp.body));
+        UserDTO profileData = UserDTO(id: "id", name: "name", email: "email", profilePictureKey: "b08cbea4e2214c989ed004f23deda31e_8a0c29db581934d850f0ce62da563592.jpg");//UserDTO.fromJson(json.decode(resp.body));
         return profileData; 
-      }
+      //}
 
       return null;
     } catch (e) {

@@ -29,7 +29,12 @@ class ShowProfileView extends StatelessWidget {
         child: Column(
           children: [
             // PROFILE CARD
-            ProfileName(profile: profile),
+            ProfileName(
+              profile: profile,
+              onProfileUpdated: (updatedProfile) {
+                context.read<ProfileBloc>().add(const LoadProfileEvent());
+              },
+            ),
             const SizedBox(height: 18),
 
             ProfileTile(

@@ -7,9 +7,9 @@ import 'auth.dart';
 
 class API {
   static const String _url =
-      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/api/';
+      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://localhost:7258')}/api/';
   static const String _testUrl =
-      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://dev-pawshare-api.mercantec.tech')}/api/';
+      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://localhost:7258')}/api/';
 
   static final Map<String, String> _headers = {};
 
@@ -222,6 +222,43 @@ class API {
     // Returns future response
     return temp;
   }
+
+  static Future<http.Response> uploadFile(
+    List<int> bytes,
+    String filename,
+  ) async {
+    await _applyAuthHeader();
+
+    final uri = _buildUri(ApiPath.mediaUpload);
+
+    // Multipart request for file upload
+    final request = http.MultipartRequest('POST', uri)
+      ..headers.addAll({
+        'Accept': 'application/json',
+        ..._headers,
+      })
+      ..files.add(
+        http.MultipartFile.fromBytes(
+          'file',
+          bytes,
+          filename: filename,
+        ),
+      );
+
+    // Send the request and convert the streamed response to a regular http.Response
+    return await _attemptApiWithRefresh(
+      () async {
+        final streamed = await request.send();
+        return http.Response.fromStream(streamed);
+      },
+      null,
+    );
+  }
+
+  static String mediaFileUrl(String key) {
+    return '${_baseUrl}media/file/$key';
+  }
+
 
   static void setAuthHeader(String token) {
     _headers['Authorization'] = 'Bearer $token';

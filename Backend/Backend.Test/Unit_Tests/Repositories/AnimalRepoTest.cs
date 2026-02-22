@@ -32,7 +32,6 @@ public class AnimalRepoTest
             HashedPassword = "x",
             Salt = "x",
             RealPassword = "x",
-            Base64Pfp = "iVBORw0KGgoAAAANSUhEUgAAAAUA",
             RoleId = 2,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,

@@ -4,6 +4,7 @@ import 'classes/helpers/theme_manager.dart';
 import 'ui/auth/auth_gate.dart';
 import 'ui/discover/discover_page.dart';
 import 'ui/login/login_page.dart';
+import 'ui/profile/profile_page.dart';
 import 'ui/register/register_institution_page.dart';
 import 'ui/register/register_owner_page.dart';
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
           themeMode: mode, 
           theme: buildLightTheme(), 
           darkTheme: buildDarkTheme(),
-          home: const AuthGate(),
+          home: const ProfilePage(),
           routes: {
             '/login': (context) => const LoginPage(),
             '/discover': (context) => const DiscoverPage(),

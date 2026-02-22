@@ -3,13 +3,13 @@ class UserDTO {
   final String id;
   final String name;
   final String email;
-  final String? base64Pfp;
+  String? profilePictureKey;
 
   UserDTO({
     required this.id,
     required this.name,
     required this.email,
-    required this.base64Pfp,
+    required this.profilePictureKey,
   });
 
 
@@ -18,7 +18,8 @@ class UserDTO {
       id: json['id'] as String,
       name: json['name'] as String,
       email: json['email'] as String,
-      base64Pfp: json['base64Pfp'] as String,
+      // TODO: RENAME
+      profilePictureKey: json['base64Pfp'] as String,
     );
   }
 
@@ -27,7 +28,7 @@ class UserDTO {
       'id': id,
       'name': name,
       'email': email,
-      'base64Pfp': base64Pfp,
+      'profilePictureKey': profilePictureKey,
     };
   }
 }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../classes/helpers/general_helper.dart';
+import '../../classes/helpers/secure_storage_helper.dart';
 import '../../classes/objects/animal.dart';
+import '../../main.dart';
 import '../chat/chat_page.dart';
 import '../login/login_page.dart';
 import '../profile/profile_page.dart';
@@ -60,8 +62,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
               leading: Icon(Icons.lock),
               title: Text('Log out'),
               onTap: () {
-                // TODO: ADD FUNCTIONALITY
-                GeneralUtil.goToPage(context, LoginPage());
+                SecureStorageHelper.clearSecureStorage();
+                
+                Navigator.pushAndRemoveUntil(
+                  globalNavigatorKey.currentContext!, 
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (route) => false,
+                );
               },
             ),
           ],
@@ -72,13 +79,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
         child: BlocBuilder<DiscoverBloc, DiscoverState>(
           builder: (context, state) {
             switch (state.runtimeType) {
-              case DiscoverAnimalsInitial:
-              case DiscoverAnimalsLoading:
+              case const (DiscoverAnimalsInitial):
+              case const (DiscoverAnimalsLoading):
                 return const Center(child: CircularProgressIndicator());
-              case DiscoverAnimalsSuccess:
+              case const (DiscoverAnimalsSuccess):
                 var animals = (state as DiscoverAnimalsSuccess).animals;
                 return _buildCards(animals);
-              case DiscoverAnimalsFailure:
+              case const (DiscoverAnimalsFailure):
                 var errorMessage =
                     (state as DiscoverAnimalsFailure).errorMessage;
                 return Center(child: Text(errorMessage));

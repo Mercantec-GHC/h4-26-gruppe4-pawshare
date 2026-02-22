@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Models;
+using Models;
 using Repositories;
 using Repositories.Context;
 using Repositories.Interfaces;
@@ -58,8 +59,9 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
-
+builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddSignalR();
+builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection(MinioOptions.SectionName));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -252,7 +254,7 @@ static async Task SeedInitialDataAsync(AppDBContext dbContext)
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
                 Salt = "BCrypt internal",
                 RealPassword = null,
-                Base64Pfp = Convert.ToBase64String([0x00]),
+                ProfilePictureKey = Convert.ToBase64String([0x00]),
                 City = "TestCity",
                 RoleId = animalOwnerRole.Id,
                 CreatedAt = DateTime.UtcNow,
@@ -276,7 +278,7 @@ static async Task SeedInitialDataAsync(AppDBContext dbContext)
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
                 Salt = "BCrypt internal",
                 RealPassword = null,
-                Base64Pfp = Convert.ToBase64String([0x00]),
+                ProfilePictureKey = Convert.ToBase64String([0x00]),
                 City = "TestCity",
                 RoleId = animalOwnerRole.Id,
                 CreatedAt = DateTime.UtcNow,

@@ -13,8 +13,9 @@ namespace API.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IMediaService _mediaService;
     
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, IMediaService mediaService)
     {
         _userService = userService;
     }

@@ -1,6 +1,7 @@
 name: Run tests and publish results on PRs
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
@@ -34,6 +35,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
+      - name: Build projekt
+        run: dotnet build 
+
       - name: Run Tests
         run: |
           mkdir -p test-results
@@ -44,4 +48,4 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: test-results/test-results.trx 
+          files: Backend/test-results/test-results.trx 

@@ -9,7 +9,7 @@ namespace Models.DTOs
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required string Base64Image { get; set; }
-        public required int Age { get; set; }
+        public required DateOnly DateOfBirth { get; set; }
 
         public required string UserName { get; set; }
         public required string UserId { get; set; }
@@ -22,8 +22,8 @@ namespace Models.DTOs
     }
 
     public class CreateAnimalTypeDto
-{
-    public string Name { get; set; } = default!;
-    public string Description { get; set; } = default!;
-}
+    {
+        public string Name { get; set; } = default!;
+        public string Description { get; set; } = default!;
+    }
 }

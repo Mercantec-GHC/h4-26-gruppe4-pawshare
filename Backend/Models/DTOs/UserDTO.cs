@@ -32,6 +32,7 @@ namespace Models.DTOs
 
     public class AuthResponseDto
     {
+        public string UserId { get; set; } = null!;
         public string AccessToken { get; set; } = null!;
         public string RefreshToken { get; set; } = null!;
     }
@@ -50,7 +51,7 @@ namespace Models.DTOs
 
         public required string AnimalName { get; set; }
         public required string AnimalDescription { get; set; }
-        public required int AnimalAge { get; set; }
+        public required DateOnly DateOfBirth { get; set; }
         public required string AnimalTypeId { get; set; }
     }
 
@@ -61,5 +62,11 @@ namespace Models.DTOs
         public required string Password { get; set; }
         public required string City { get; set; }
         public required string Base64Pfp { get; set; }
+    }
+
+    public class ChangePasswordDto
+    {
+        public required string CurrentPassword { get; set; }
+        public required string NewPassword { get; set; }
     }
 }

@@ -38,7 +38,8 @@ public class AnimalServiceTests
                 Base64Pfp = "abc",
                 RoleId = 2,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                City = "Test City"
             });
         }
 
@@ -76,7 +77,7 @@ public class AnimalServiceTests
             Name = "animal_1",
             Description = "description_1",
             Base64Image = "image_1",
-            Age = 1,
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
             TypeId = "type_1",
             UserId = "user_1",
             CreatedAt = DateTime.UtcNow,
@@ -101,7 +102,7 @@ public class AnimalServiceTests
             Name = $"animal_{i}",
             Description = $"description_{i}",
             Base64Image = $"image_{i}",
-            Age = i,
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(i)),
             TypeId = "type_1",
             UserId = "user_1",
             CreatedAt = DateTime.UtcNow,
@@ -129,7 +130,7 @@ public class AnimalServiceTests
                 Name = $"a{i + 1}",
                 Description = $"d{i + 1}",
                 Base64Image = $"i{i + 1}",
-                Age = i + 1,
+                DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(i + 1)),
                 TypeId = "type_" + i,
                 UserId = "user_1",
                 CreatedAt = DateTime.UtcNow,
@@ -161,7 +162,7 @@ public class AnimalServiceTests
                 Name = $"a{i + 1}",
                 Description = $"d{i + 1}",
                 Base64Image = $"i{i + 1}",
-                Age = i + 1,
+                DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(i + 1)),
                 TypeId = "type_" + i,
                 UserId = i % 2 != 0 ? "userB" : "userA",
                 CreatedAt = DateTime.UtcNow,
@@ -188,7 +189,7 @@ public class AnimalServiceTests
             Name = "test_animal",
             Description = "test_description",
             Base64Image = "test_image",
-            Age = 2,
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
             TypeId = "type_1",
             UserId = "user_1",
             CreatedAt = DateTime.MinValue,
@@ -212,7 +213,7 @@ public class AnimalServiceTests
             Name = "a",
             Description = "d",
             Base64Image = "i",
-            Age = 1,
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
             TypeId = "type_1",
             UserId = "user_1",
             CreatedAt = DateTime.UtcNow,

@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import '../classes/helpers/general_helper.dart';
 import '../classes/helpers/theme_manager.dart';
 import '../classes/objects/user_dto.dart';
 import '../colors.dart';
@@ -16,7 +17,7 @@ class ProfileName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasAvatar = profile.base64Pfp != null && profile.base64Pfp!.isNotEmpty;
+    final bool hasAvatar = profile.base64Pfp != null && profile.base64Pfp!.isNotEmpty && GeneralUtil.isBase64(profile.base64Pfp!);
     ThemeData theme = getCurrentThemeData(context);
 
     return Container(
@@ -39,7 +40,7 @@ class ProfileName extends StatelessWidget {
               : null,
             child: hasAvatar
               ? null
-              : const Icon(Icons.person, size: 40, color: Colors.white),
+              : const Icon(Icons.person, size: 40, color: Colors.black),
           ),
     
           const SizedBox(width: 12),

@@ -27,9 +27,6 @@ namespace Repositories.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("integer");
-
                     b.Property<string>("AnimalTypeId")
                         .HasColumnType("text");
 
@@ -39,6 +36,9 @@ namespace Repositories.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<string>("Description")
                         .IsRequired()

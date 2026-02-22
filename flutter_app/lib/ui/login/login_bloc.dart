@@ -1,14 +1,11 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+  import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
-import '../../services/auth_service.dart';
+import '../../classes/helpers/auth.dart';
+import '../../classes/services/chat_service.dart';
 import 'login_events_states.dart';
 
-
 class LoginBloc extends Bloc<LoginEvents, LoginState> {
-  final AuthService _authService;
-  
-  LoginBloc(this._authService) 
-      : super(const LoginFormState()) {
+  LoginBloc() : super(const LoginFormState()) {
     on<LoginSubmitted>(_onLoginSubmitted);
   }
 
@@ -19,11 +16,14 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
     emit(const LoginFormState(isLoading: true));
 
     try {
-      await _authService.login(email: event.email, password: event.password);
+      bool success = await Auth.login(event.email, event.password);
 
-      emit(const LoginFormState(isSuccess: true));
-    } on AuthException catch (e) {
-      emit(LoginFormState(errorMessage: e.message));
+      if (success) {
+        await ChatService.instance.connect();
+        emit(const LoginFormState(isSuccess: true));
+      } else {
+        emit(const LoginFormState(errorMessage: 'Invalid email or password'));
+      }
     } catch (_) {
       emit(const LoginFormState(errorMessage: 'Something went wrong'));
     }

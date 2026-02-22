@@ -29,7 +29,6 @@ public class UserServiceTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
             Salt = "BCrypt internal",

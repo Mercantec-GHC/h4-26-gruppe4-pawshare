@@ -66,7 +66,6 @@ var flutter = builder.AddFlutterApp("pawshare", "../../flutter_app")
     .WithDartDefine("APP_ENV", "local")
     .WithDartDefine("API_URL_HTTP", api.GetEndpoint("http"))
     .WithDartDefine("API_URL_HTTPS", api.GetEndpoint("https"))
-    .WithReference(api)
-    .WithExplicitStart();
+    .WithReference(api);
 
 builder.Build().Run();

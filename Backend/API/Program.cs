@@ -50,8 +50,8 @@ builder.Services.AddScoped<IMessageReadReceiptRepo, MessageReadReceiptRepo>();
 
 // services
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAnimalService, AnimalService>();
 builder.Services.AddScoped<IAnimalTypeService, AnimalTypeService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
@@ -146,6 +146,12 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+ using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.    GetRequiredService<AppDBContext>();
+    dbContext.Database.Migrate();
+} 
+
 
 
 app.MapDefaultEndpoints();
@@ -203,6 +209,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
 });
 
 app.Run();
+
 
 static async Task SeedInitialDataAsync(AppDBContext dbContext)
 {

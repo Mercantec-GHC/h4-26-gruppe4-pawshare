@@ -1,19 +1,20 @@
 ﻿using Models;
 using Models.DTOs;
 using Repositories.Interfaces;
+using Services.Interfaces;
 using System.Security.Cryptography;
 
 namespace Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly IUserRepo _users;
-        private readonly JwtService _jwtService;
+        private readonly IJwtService _jwtService;
         private readonly IRoleRepo _roleRepo;
         private readonly IAnimalRepo _animalRepo;
 
 
-        public AuthService(IUserRepo users, JwtService jwtService, IRoleRepo roleRepo, IAnimalRepo animalRepo)
+        public AuthService(IUserRepo users, IJwtService jwtService, IRoleRepo roleRepo, IAnimalRepo animalRepo)
         {
             _users = users;
             _roleRepo = roleRepo;

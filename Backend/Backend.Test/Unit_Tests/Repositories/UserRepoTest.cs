@@ -14,6 +14,8 @@ using Moq;
 using Moq.EntityFrameworkCore;
 using NuGet.Packaging;
 using Microsoft.Data.Sqlite;
+using Services.Interfaces;
+using System.Security.Cryptography;
 
 namespace Backend.Test.Unit_Tests.Repositories;
 
@@ -219,6 +221,8 @@ public class UserRepoTest
         Assert.That(getUpdatedUser.Email, Is.EqualTo("user1@email.com"));
     }
 
+
+
     [Test]
     public async Task Get_User_By_Refresh_Token()
     {
@@ -262,10 +266,19 @@ public class UserRepoTest
         // Create a new AuthService with the real context
         var factory = new TestApplicationFactory();
         var config = factory.Services.GetRequiredService<IConfiguration>();
-        var jwtService = new JwtService(config);
+        var jwtServiceMock = new Mock<IJwtService>();
+        jwtServiceMock.Setup(j => j.GenerateToken(It.IsAny<User>())).Returns("mocked_jwt_token");
         var roleRepoMock = new Mock<IRoleRepo>();
         var _mockAnimalRepo = new Mock<IAnimalRepo>();
-        var authService = new AuthService(userRepo, jwtService, roleRepoMock.Object, _mockAnimalRepo.Object);
+        var authServiceMock = new Mock<IAuthService>();
+        authServiceMock.Setup(a => a.Login(It.IsAny<LoginDto>())).ReturnsAsync(new AuthResponseDto()
+        {
+            UserId = "1",
+            AccessToken = "mocked_access_token",
+            RefreshToken = "mocked_refresh_token"
+        });
+
+        await userRepo.UpdateRefreshToken("1", "mocked_refresh_token", DateTime.UtcNow.AddDays(7));
 
         var userLoginDTO = new LoginDto()
         {
@@ -273,7 +286,7 @@ public class UserRepoTest
             Password = "Password1"
         };
 
-        var userLogin = await authService.Login(userLoginDTO);
+        var userLogin = await authServiceMock.Object.Login(userLoginDTO);
 
         _refreshToken = userLogin.RefreshToken;
 
@@ -422,4 +435,10 @@ public class UserRepoTest
     {
 
     }
+
+            private static string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+
 }

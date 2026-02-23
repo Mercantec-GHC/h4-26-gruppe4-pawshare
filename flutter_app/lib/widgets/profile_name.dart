@@ -27,7 +27,7 @@ class _ProfileNameState extends State<ProfileName> {
 
   Future<void> _pickAndUploadImage() async {
     final ImagePicker picker = ImagePicker();
-    
+
     // Show dialog to get picture
     final ImageSource? source = await showDialog<ImageSource>(
       context: context,
@@ -70,8 +70,26 @@ class _ProfileNameState extends State<ProfileName> {
       final response = await API.uploadFile(bytes, image.name);
 
       if (response.statusCode == 200) {
-        final updatedUser = widget.profile;
-        updatedUser.profilePictureKey = json.decode(response.body)['fileKey'];
+        var payload = json.decode(response.body);
+        String? fileKey = payload['objectKey'];
+
+        if (fileKey == null || fileKey.isEmpty) {
+          fileKey = payload['fileKey'];
+        }
+
+        if (fileKey == null || fileKey.isEmpty) {
+          GeneralUtil.showToast(
+            'Upload succeeded, but no file key was returned',
+          );
+          return;
+        }
+
+        final updatedUser = UserDTO(
+          id: widget.profile.id,
+          name: widget.profile.name,
+          email: widget.profile.email,
+          profilePictureKey: fileKey,
+        );
 
         if (widget.onProfileUpdated != null) {
           widget.onProfileUpdated!(updatedUser);
@@ -92,9 +110,13 @@ class _ProfileNameState extends State<ProfileName> {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasAvatar = widget.profile.profilePictureKey != null && widget.profile.profilePictureKey!.isNotEmpty;
+    final bool hasAvatar =
+        widget.profile.profilePictureKey != null &&
+        widget.profile.profilePictureKey!.isNotEmpty;
     ThemeData theme = getCurrentThemeData(context);
-    final imageUrl = hasAvatar ? API.mediaFileUrl(widget.profile.profilePictureKey!) : null;
+    final imageUrl = hasAvatar
+        ? API.mediaFileUrl(widget.profile.profilePictureKey!)
+        : null;
 
     return Container(
       width: double.infinity,
@@ -114,11 +136,14 @@ class _ProfileNameState extends State<ProfileName> {
                 CircleAvatar(
                   radius: 43,
                   backgroundColor: AppColors.avatarPlaceholder,
-                  backgroundImage: hasAvatar && imageUrl != null ? NetworkImage(imageUrl) : null,
+                  backgroundImage: hasAvatar && imageUrl != null
+                      ? NetworkImage(imageUrl)
+                      : null,
                   child: _isUploading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : hasAvatar && imageUrl != null ? null
-                        : const Icon(Icons.person, size: 40, color: Colors.white),
+                      : hasAvatar && imageUrl != null
+                      ? null
+                      : const Icon(Icons.person, size: 40, color: Colors.white),
                 ),
                 if (!_isUploading)
                   Positioned(
@@ -149,16 +174,12 @@ class _ProfileNameState extends State<ProfileName> {
             children: [
               Text(
                 widget.profile.name,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontSize: 20,
-                ),
+                style: theme.textTheme.titleLarge?.copyWith(fontSize: 20),
               ),
               const SizedBox(height: 6),
               Text(
                 widget.profile.email,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontSize: 14,
-                ),
+                style: theme.textTheme.bodyMedium?.copyWith(fontSize: 14),
               ),
             ],
           ),

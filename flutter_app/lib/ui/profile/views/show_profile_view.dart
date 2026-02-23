@@ -32,7 +32,7 @@ class ShowProfileView extends StatelessWidget {
             ProfileName(
               profile: profile,
               onProfileUpdated: (updatedProfile) {
-                context.read<ProfileBloc>().add(const LoadProfileEvent());
+                context.read<ProfileBloc>().add(ProfileUpdatedEvent(updatedProfile));
               },
             ),
             const SizedBox(height: 18),

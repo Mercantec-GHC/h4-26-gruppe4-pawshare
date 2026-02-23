@@ -87,7 +87,7 @@ namespace Services
                 DateOfBirth = dto.DateOfBirth,
                 TypeId = dto.AnimalTypeId,
                 UserId = user.Id,
-                Base64Image = ""
+                AnimalPictureKey = ""
             };
 
             await _animalRepo.PostAnimal(animal);

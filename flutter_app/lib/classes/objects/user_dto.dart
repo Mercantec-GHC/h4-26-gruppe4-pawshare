@@ -18,8 +18,7 @@ class UserDTO {
       id: json['id'] as String,
       name: json['name'] as String,
       email: json['email'] as String,
-      // TODO: RENAME
-      profilePictureKey: json['base64Pfp'] as String,
+      profilePictureKey: json['profilePictureKey'] as String,
     );
   }
 

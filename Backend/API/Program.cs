@@ -147,6 +147,22 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+    
+    if (app.Configuration.GetValue<string>("DEV:ENV", "not_aspire") == "local")
+    {
+        await dbContext.Database.MigrateAsync();
+    }
+
+    if (app.Configuration.GetValue<bool>("DEV:SEED", false))
+    {
+        await SeedInitialDataAsync(dbContext);
+    }
+}
+
+
 
 app.MapDefaultEndpoints();
 

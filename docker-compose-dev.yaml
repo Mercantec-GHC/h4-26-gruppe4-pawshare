@@ -19,6 +19,7 @@ services:
       dockerfile: Dockerfile
       args:
         - BUILDKIT_INLINE_CACHE=1
+        - ENVIRONMENT=debug
     ports:
       - "4044:80"
     depends_on:

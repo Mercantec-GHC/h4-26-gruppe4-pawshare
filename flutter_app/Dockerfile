@@ -4,6 +4,9 @@ FROM ghcr.io/cirruslabs/flutter:stable AS build-env
 # Set working directory
 WORKDIR /app
 
+
+ARG ENVIRONMENT="release"
+
 # Copy pubspec files
 COPY pubspec.* ./
 
@@ -19,7 +22,7 @@ COPY assets/ ./assets/
 COPY analysis_options.yaml ./
 
 # Build for web
-RUN flutter build web --release
+RUN flutter build web --$ENVIRONMENT
 
 # Stage 2: Create the run-time image
 FROM nginx:alpine

@@ -20,7 +20,7 @@ COPY assets/ ./assets/
 COPY analysis_options.yaml ./
 
 # Build for web
-RUN flutter build web --debug
+RUN flutter build web --dart-define="API_URL_HTTPS=https://dev-pawshare-api.mercantec.tech"
 
 # Stage 2: Create the run-time image
 FROM nginx:alpine

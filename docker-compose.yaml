@@ -25,6 +25,7 @@ services:
       dockerfile: Dockerfile
       args:
         - BUILDKIT_INLINE_CACHE=1
+        - APP_ENV=prod
     ports:
       - "4041:80"
     depends_on:

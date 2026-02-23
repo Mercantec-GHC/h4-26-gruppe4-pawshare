@@ -102,8 +102,15 @@ class _DiscoverPageState extends State<DiscoverPage> {
   );
 
   PreferredSizeWidget discoverAppBar(BuildContext context) {
+    final theme = Theme.of(context);
     return AppBar(
-      backgroundColor: Color(0xFFFFFCF5),
+      backgroundColor: theme.appBarTheme.backgroundColor,
+      iconTheme: theme.appBarTheme.iconTheme?.copyWith(
+        color: theme.colorScheme.onSurface,
+      ) ?? IconThemeData(color: theme.colorScheme.onSurface),
+      actionsIconTheme: theme.appBarTheme.actionsIconTheme?.copyWith(
+        color: theme.colorScheme.onSurface,
+      ) ?? IconThemeData(color: theme.colorScheme.onSurface),
       elevation: 0,
       title: Center(
         child: Row(
@@ -115,7 +122,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
               fit: BoxFit.fitWidth,
             ),
             Padding(padding: EdgeInsets.only(left: 40)),
-            Text('Pawshare', overflow: TextOverflow.visible),
+            Text(
+              'Pawshare',
+              overflow: TextOverflow.visible,
+              style: theme.appBarTheme.titleTextStyle,
+            ),
           ],
         ),
       ),

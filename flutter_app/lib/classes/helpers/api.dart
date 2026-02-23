@@ -6,6 +6,7 @@ import '../objects/api_path.dart';
 import 'auth.dart';
 
 class API {
+  static const String _appEnv = String.fromEnvironment('APP_ENV', defaultValue: '');
   static const String _url =
       '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://localhost:7258')}/api/';
   static const String _testUrl =
@@ -13,7 +14,18 @@ class API {
 
   static final Map<String, String> _headers = {};
 
-  static String get _baseUrl => kReleaseMode ? _url : _testUrl;
+  static bool get _useProdApi {
+    final normalizedEnv = _appEnv.toLowerCase();
+    if (normalizedEnv == 'prod' || normalizedEnv == 'production') {
+      return true;
+    }
+    if (normalizedEnv == 'dev' || normalizedEnv == 'development' || normalizedEnv == 'local') {
+      return false;
+    }
+    return kReleaseMode;
+  }
+
+  static String get _baseUrl => _useProdApi ? _url : _testUrl;
 
   static Map<String, String> _jsonHeaders() {
     return {
@@ -270,12 +282,24 @@ class API {
 }
 
 class WebSocketAPI {
+  static const String _appEnv = String.fromEnvironment('APP_ENV', defaultValue: '');
   static const String _hubUrl =
       '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/ws/chat';
   static const String _hubTestUrl =
       '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://dev-pawshare-api.mercantec.tech')}/ws/chat';
 
-  static String getHubUrl() => kReleaseMode ? _hubUrl : _hubTestUrl;
+  static bool get _useProdApi {
+    final normalizedEnv = _appEnv.toLowerCase();
+    if (normalizedEnv == 'prod' || normalizedEnv == 'production') {
+      return true;
+    }
+    if (normalizedEnv == 'dev' || normalizedEnv == 'development' || normalizedEnv == 'local') {
+      return false;
+    }
+    return kReleaseMode;
+  }
+
+  static String getHubUrl() => _useProdApi ? _hubUrl : _hubTestUrl;
 
   static final Map<String, Function(String?)> _callbacks = {};
 

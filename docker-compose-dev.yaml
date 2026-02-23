@@ -16,9 +16,10 @@ services:
   flutterweb:
     build:
       context: ./flutter_app
-      dockerfile: Dockerfile
+      dockerfile: DockerfileDev
       args:
         - BUILDKIT_INLINE_CACHE=1
+        - APP_ENV=dev
     ports:
       - "4044:80"
     depends_on:

@@ -42,6 +42,9 @@ public class AnimalController : ControllerBase
     /// <returns>The animal with the specified ID.</returns>
     /// <response code="200">Returns the animal.</response>
     /// <response code="404">If the animal is not found.</response>
+        // commenting it out for now, as it is not used in the frontend and we want to avoid accidental get request during testing and development.
+    // We can re-enable it later if needed. Plus it would be a security risk to have it open when we dont use it.
+    /*
     [HttpGet("{id}")]
     public async Task<ActionResult<Animal>> GetAnimal(string id)
     {
@@ -52,6 +55,7 @@ public class AnimalController : ControllerBase
         }
         return Ok(animal);
     }
+    */
 
     /// <summary>
     /// Gets all animals of a specific type.
@@ -59,13 +63,16 @@ public class AnimalController : ControllerBase
     /// <param name="typeId">The unique identifier of the animal type.</param>
     /// <returns>A list of animals matching the specified type.</returns>
     /// <response code="200">Returns the list of animals.</response>
+    // commenting it out for now, as it is not used in the frontend and we want to avoid accidental get request during testing and development.
+    // We can re-enable it later if needed. Plus it would be a security risk to have it open when we dont use it.
+    /*
     [HttpGet("type/{typeId}")]
     public async Task<ActionResult<List<Animal>>> GetAnimalsByType(string typeId)
     {
         var animals = await _animalService.GetAnimalsByTypeAsync(typeId);
         return Ok(animals);
     }
-
+*/
     /// <summary>
     /// Gets all animals belonging to a specific user.
     /// </summary>
@@ -91,6 +98,9 @@ public class AnimalController : ControllerBase
     /// <returns>The newly created animal.</returns>
     /// <response code="201">Returns the newly created animal.</response>
     /// <response code="400">If the animal data is invalid.</response>
+    // commenting it out for now, as it is not used in the frontend and we want to avoid accidental creation during testing and development.
+    // We can re-enable it later if needed. Plus it would be a security risk to have it open when we dont use it.
+    /*
     [HttpPost]
     public async Task<ActionResult<Animal>> CreateAnimal([FromBody] Animal animal)
     {
@@ -101,7 +111,7 @@ public class AnimalController : ControllerBase
         }
         return CreatedAtAction(nameof(GetAnimal), new { id = created.Id }, created);
     }
-
+*/
     /// <summary>
     /// Updates an existing animal.
     /// </summary>
@@ -110,7 +120,9 @@ public class AnimalController : ControllerBase
     /// <returns>The updated animal.</returns>
     /// <response code="200">Returns the updated animal.</response>
     /// <response code="404">If the animal is not found.</response>
-    [HttpPut("{id}")]
+    // commenting it out for now, as it is not used in the frontend and we want to avoid accidental updates during testing and development.
+    // We can re-enable it later if needed. Plus it would be a security risk to have it open when we dont use it.
+    /*[HttpPut("{id}")]
     public async Task<ActionResult<Animal>> UpdateAnimal(string id, [FromBody] AnimalDto animal)
     {
         var updated = await _animalService.UpdateAnimalAsync(id, animal);
@@ -120,14 +132,16 @@ public class AnimalController : ControllerBase
         }
         return Ok(updated);
     }
-
+*/
     /// <summary>
     /// Deletes an animal.
     /// </summary>
     /// <param name="id">The unique identifier of the animal to delete.</param>
     /// <response code="204">If the animal was successfully deleted.</response>
     /// <response code="404">If the animal is not found.</response>
-    [HttpDelete("{id}")]
+    // commenting it out for now, as it is not used in the frontend and we want to avoid accidental deletions during testing and development.
+    // We can re-enable it later if needed. Plus it would be a security risk to have it open when we dont use it.
+    /*[HttpDelete("{id}")]
     public async Task<ActionResult> DeleteAnimal(string id)
     {
         var deleted = await _animalService.DeleteAnimalAsync(id);
@@ -136,5 +150,5 @@ public class AnimalController : ControllerBase
             return NotFound();
         }
         return NoContent();
-    }
+    }*/
 }

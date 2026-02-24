@@ -58,7 +58,7 @@ public class MediaController : ControllerBase
         var uploadResult = await _mediaService.UploadFileAsync(fileStream, file.FileName, detectedContentType, cancellationToken);
 
         if (uploadResult == null)
-            return StatusCode(500, new { error = "File upload failed" });
+            return StatusCode(500, new { error = "File upload failed (media storage error)" });
 
         var fileUrl = Url.Action(nameof(GetFile), "Media", new { key = uploadResult.Value.Key }, Request.Scheme, Request.Host.Value) ?? "";
         

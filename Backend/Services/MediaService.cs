@@ -33,20 +33,24 @@ public class MediaService : IMediaService
     {
         if (!_options.IsConfigured)
         {
+            Console.WriteLine("[MediaService.Upload] MinIO is not configured");
             return null;
         }
 
         var minioClient = CreateMinioClient();
         if (minioClient == null)
         {
+            Console.WriteLine("[MediaService.Upload] Failed to create MinIO client");
             return null;
         }
 
         var uniqueObjectKey = GenerateUniqueObjectKey(fileName);
+        Console.WriteLine($"[MediaService.Upload] Starting upload. Endpoint={_options.Endpoint}, Bucket={_options.BucketName}, File={fileName}, Key={uniqueObjectKey}");
 
         try
         {
             await CreateBucketIfNotExistsAsync(minioClient, cancellationToken);
+            Console.WriteLine($"[MediaService.Upload] Bucket check completed. Bucket={_options.BucketName}");
 
             var uploadRequest = new PutObjectArgs()
                 .WithBucket(_options.BucketName)
@@ -56,6 +60,7 @@ public class MediaService : IMediaService
                 .WithContentType(contentType);
 
             await minioClient.PutObjectAsync(uploadRequest, cancellationToken);
+            Console.WriteLine($"[MediaService.Upload] Upload succeeded. Key={uniqueObjectKey}");
 
             var accessUrl = $"/api/Media/file/{uniqueObjectKey}";
                         
@@ -63,6 +68,8 @@ public class MediaService : IMediaService
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"[MediaService.Upload] Upload failed. Message={ex.Message}");
+            Console.WriteLine(ex.ToString());
             return null;
         }
     }
@@ -107,7 +114,7 @@ public class MediaService : IMediaService
         {
             return null;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }
@@ -170,7 +177,7 @@ public class MediaService : IMediaService
         {
             return false;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return false;
         }

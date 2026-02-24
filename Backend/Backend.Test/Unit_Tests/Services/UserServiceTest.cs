@@ -5,6 +5,7 @@ using Repositories;
 using Repositories.Context;
 using Repositories.Interfaces;
 using Services;
+using Services.Interfaces;
 
 namespace Backend.Test.Unit_Tests.Services;
 
@@ -45,7 +46,8 @@ public class UserServiceTest
 
         var userRepo = new UserRepo(db);
         var mockRoleRepo = new Mock<IRoleRepo>();
-        var userService = new UserService(userRepo, mockRoleRepo.Object);
+        var mockMediaService = new Mock<IMediaService>();
+        var userService = new UserService(userRepo, mockRoleRepo.Object, mockMediaService.Object);
         var user = await userService.GetUser("1");
         
         Assert.That(user, Is.Not.Null);

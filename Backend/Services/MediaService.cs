@@ -25,7 +25,7 @@ public class MediaService : IMediaService
     }
 
     /// <inheritdoc/>
-    public async Task<(string Key, string Url)?> UploadFileAsync(
+    public async Task<(string? Key, string? Url, string? Error)> UploadFileAsync(
         Stream fileStream,
         string fileName,
         string contentType,
@@ -33,24 +33,20 @@ public class MediaService : IMediaService
     {
         if (!_options.IsConfigured)
         {
-            Console.WriteLine("[MediaService.Upload] MinIO is not configured");
-            return null;
+            return (null, null, "MinIO is not configured");
         }
 
         var minioClient = CreateMinioClient();
         if (minioClient == null)
         {
-            Console.WriteLine("[MediaService.Upload] Failed to create MinIO client");
-            return null;
+            return (null, null, "Failed to create MinIO client");
         }
 
         var uniqueObjectKey = GenerateUniqueObjectKey(fileName);
-        Console.WriteLine($"[MediaService.Upload] Starting upload. Endpoint={_options.Endpoint}, Bucket={_options.BucketName}, File={fileName}, Key={uniqueObjectKey}");
 
         try
         {
             await CreateBucketIfNotExistsAsync(minioClient, cancellationToken);
-            Console.WriteLine($"[MediaService.Upload] Bucket check completed. Bucket={_options.BucketName}");
 
             var uploadRequest = new PutObjectArgs()
                 .WithBucket(_options.BucketName)
@@ -60,17 +56,14 @@ public class MediaService : IMediaService
                 .WithContentType(contentType);
 
             await minioClient.PutObjectAsync(uploadRequest, cancellationToken);
-            Console.WriteLine($"[MediaService.Upload] Upload succeeded. Key={uniqueObjectKey}");
 
             var accessUrl = $"/api/Media/file/{uniqueObjectKey}";
                         
-            return (uniqueObjectKey, accessUrl);
+            return (uniqueObjectKey, accessUrl, null);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[MediaService.Upload] Upload failed. Message={ex.Message}");
-            Console.WriteLine(ex.ToString());
-            return null;
+            return (null, null, ex.Message);
         }
     }
 

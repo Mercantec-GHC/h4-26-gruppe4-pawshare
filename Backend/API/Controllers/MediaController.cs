@@ -57,14 +57,14 @@ public class MediaController : ControllerBase
         using var fileStream = file.OpenReadStream();
         var uploadResult = await _mediaService.UploadFileAsync(fileStream, file.FileName, detectedContentType, cancellationToken);
 
-        if (uploadResult == null)
-            return StatusCode(500, new { error = "File upload failed (media storage error)" });
+        if (string.IsNullOrWhiteSpace(uploadResult.Key))
+            return StatusCode(500, new { error = "File upload failed", reason = uploadResult.Error ?? "Unknown media storage error" });
 
-        var fileUrl = Url.Action(nameof(GetFile), "Media", new { key = uploadResult.Value.Key }, Request.Scheme, Request.Host.Value) ?? "";
+        var fileUrl = Url.Action(nameof(GetFile), "Media", new { key = uploadResult.Key }, Request.Scheme, Request.Host.Value) ?? "";
         
         return Ok(new MediaUploadResponse 
         { 
-            ObjectKey = uploadResult.Value.Key, 
+            ObjectKey = uploadResult.Key, 
             FileUrl = fileUrl 
         });
     }

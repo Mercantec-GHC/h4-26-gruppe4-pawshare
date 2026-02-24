@@ -12,8 +12,8 @@ public interface IMediaService
     /// <param name="fileName">The original filename.</param>
     /// <param name="contentType">The content type of the file.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The object key and URL if successful, otherwise null.</returns>
-    Task<(string Key, string Url)?> UploadFileAsync(
+    /// <returns>The object key/url on success, or an error reason on failure.</returns>
+    Task<(string? Key, string? Url, string? Error)> UploadFileAsync(
         Stream fileStream,
         string fileName,
         string contentType,

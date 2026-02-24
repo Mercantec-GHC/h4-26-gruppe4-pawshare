@@ -84,6 +84,19 @@ class _ProfileNameState extends State<ProfileName> {
           return;
         }
 
+        final saveResponse = await API.postRequest(
+          ApiPath.updateProfilePicture,
+          {
+            'newProfilePictureKey': fileKey,
+            'oldProfilePictureKey': widget.profile.profilePictureKey,
+          },
+        );
+
+        if (saveResponse.statusCode != 200) {
+          GeneralUtil.showToast('Failed to save profile picture');
+          return;
+        }
+
         final updatedUser = UserDTO(
           id: widget.profile.id,
           name: widget.profile.name,

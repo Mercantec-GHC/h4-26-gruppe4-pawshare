@@ -67,4 +67,10 @@ namespace Models.DTOs
         public required string CurrentPassword { get; set; }
         public required string NewPassword { get; set; }
     }
+
+    public class UpdateProfilePictureDto
+    {
+        public required string NewProfilePictureKey { get; set; }
+        public string? OldProfilePictureKey { get; set; }
+    }
 }

@@ -12,6 +12,7 @@ enum ApiPath {
   register,
   registerOwner,
   mediaUpload,
+  updateProfilePicture,
 }
 
 // Specify the string needed for each path. Avoids accidental misspellings and ensures consistency
@@ -29,5 +30,6 @@ extension PathExtension on ApiPath {
     ApiPath.register => 'auth/register',
     ApiPath.registerOwner => 'auth/register-owner',
     ApiPath.mediaUpload => 'media/upload',
+    ApiPath.updateProfilePicture => 'Users/profile-picture',
   };
 }

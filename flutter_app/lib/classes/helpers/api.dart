@@ -243,23 +243,21 @@ class API {
 
     final uri = _buildUri(ApiPath.mediaUpload);
 
-    // Multipart request for file upload
-    final request = http.MultipartRequest('POST', uri)
-      ..headers.addAll({
-        'Accept': 'application/json',
-        ..._headers,
-      })
-      ..files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          bytes,
-          filename: filename,
-        ),
-      );
-
-    // Send the request and convert the streamed response to a regular http.Response
+    // Build a fresh MultipartRequest inside the callback so it can be recreated on retry
     return await _attemptApiWithRefresh(
       () async {
+        final request = http.MultipartRequest('POST', uri)
+          ..headers.addAll({
+            'Accept': 'application/json',
+            ..._headers,
+          })
+          ..files.add(
+            http.MultipartFile.fromBytes(
+              'file',
+              bytes,
+              filename: filename,
+            ),
+          );
         final streamed = await request.send();
         return http.Response.fromStream(streamed);
       },

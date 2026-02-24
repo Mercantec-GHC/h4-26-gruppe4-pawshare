@@ -2,7 +2,7 @@ namespace Models
 {
     public class MinioOptions
     {
-        public const string SectionName = "MinIO";
+        public const string SectionName = "Storage:MinIO";
         public string? Endpoint { get; set; }
         public string? AccessKey { get; set; }
         public string? SecretKey { get; set; }

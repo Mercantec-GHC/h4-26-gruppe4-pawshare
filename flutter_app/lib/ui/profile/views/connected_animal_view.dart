@@ -7,7 +7,6 @@ import '../../../classes/objects/api_path.dart';
 import '../../../widgets/skeleton_tile.dart';
 import '../../../widgets/empty_state_card.dart';
 import '../../../classes/objects/animal.dart';
-import '../../../classes/objects/animal_type.dart';
 
 class ConnectedAnimalView extends StatefulWidget {
   const ConnectedAnimalView(this.context, {super.key});
@@ -85,8 +84,7 @@ class _ConnectedAnimalViewState extends State<ConnectedAnimalView> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-      child: Expanded(
-        child: _animals.isEmpty ? Column(
+      child: _animals.isEmpty ? Column(
           children: [
             const SizedBox(height: 4),
             const EmptyStateCard(message: 'No animals found'),

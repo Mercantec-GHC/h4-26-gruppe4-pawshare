@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../classes/helpers/general_helper.dart';
 import '../classes/helpers/theme_manager.dart';
+import '../classes/objects/api_path.dart';
 import '../classes/objects/user_dto.dart';
 import '../classes/helpers/api.dart';
 import '../colors.dart';

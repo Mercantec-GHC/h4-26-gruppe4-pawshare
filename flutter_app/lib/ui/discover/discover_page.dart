@@ -6,6 +6,7 @@ import '../../classes/objects/animal.dart';
 import '../chat/chat_page.dart';
 import '../login/login_page.dart';
 import '../profile/profile_page.dart';
+import '../../widgets/default_appbar.dart';
 import 'discover_bloc.dart';
 import 'discover_events_states.dart';
 
@@ -20,7 +21,23 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: discoverAppBar(context),
+      appBar: DefaultAppbar(
+        titleWidget: Row(
+          children: [
+            Image(
+              image: AssetImage('assets/pawshare_logo.png'),
+              height: 40,
+              width: 44,
+              fit: BoxFit.fitWidth,
+            ),
+            Padding(padding: EdgeInsets.only(left: 40)),
+            Text('Pawshare', overflow: TextOverflow.visible),
+          ],
+        ),
+        additionalWidgets: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
+        ],
+      ),
       drawer: Drawer(
         child: ListView(
           children: [
@@ -100,28 +117,6 @@ class _DiscoverPageState extends State<DiscoverPage> {
       description: animals[index].Description,
     ),
   );
-
-  PreferredSizeWidget discoverAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Color(0xFFFFFCF5),
-      elevation: 0,
-      title: Center(
-        child: Row(
-          children: [
-            Image(
-              image: AssetImage('assets/pawshare_logo.png'),
-              height: 40,
-              width: 44,
-              fit: BoxFit.fitWidth,
-            ),
-            Padding(padding: EdgeInsets.only(left: 40)),
-            Text('Pawshare', overflow: TextOverflow.visible),
-          ],
-        ),
-      ),
-      actions: [IconButton(onPressed: () {}, icon: Icon(Icons.notifications))],
-    );
-  }
 }
 
 class DiscoverCard extends StatefulWidget {

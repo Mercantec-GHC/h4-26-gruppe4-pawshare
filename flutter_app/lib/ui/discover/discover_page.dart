@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../classes/helpers/general_helper.dart';
 import '../../classes/helpers/secure_storage_helper.dart';
 import '../../classes/objects/animal.dart';
-import '../../main.dart';
 import '../chat/chat_page.dart';
 import '../login/login_page.dart';
 import '../profile/profile_page.dart';
@@ -61,11 +60,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
             ListTile(
               leading: Icon(Icons.lock),
               title: Text('Log out'),
-              onTap: () {
-                SecureStorageHelper.clearSecureStorage();
-                
+              onTap: () async {
+                await SecureStorageHelper.clearSecureStorage();
+                if (!context.mounted) return;
                 Navigator.pushAndRemoveUntil(
-                  globalNavigatorKey.currentContext!, 
+                  context,
                   MaterialPageRoute(builder: (context) => LoginPage()),
                   (route) => false,
                 );
@@ -78,14 +77,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
         create: (_) => DiscoverBloc()..add(DiscoverAnimals()),
         child: BlocBuilder<DiscoverBloc, DiscoverState>(
           builder: (context, state) {
-            switch (state.runtimeType) {
-              case const (DiscoverAnimalsInitial):
-              case const (DiscoverAnimalsLoading):
+            switch (state) {
+              case DiscoverAnimalsInitial():
+              case DiscoverAnimalsLoading():
                 return const Center(child: CircularProgressIndicator());
-              case const (DiscoverAnimalsSuccess):
+              case DiscoverAnimalsSuccess():
                 var animals = (state as DiscoverAnimalsSuccess).animals;
                 return _buildCards(animals);
-              case const (DiscoverAnimalsFailure):
+              case DiscoverAnimalsFailure():
                 var errorMessage =
                     (state as DiscoverAnimalsFailure).errorMessage;
                 return Center(child: Text(errorMessage));

@@ -16,6 +16,7 @@ using NuGet.Packaging;
 using Microsoft.Data.Sqlite;
 using Services.Interfaces;
 using System.Security.Cryptography;
+using System.Configuration;
 
 namespace Backend.Test.Unit_Tests.Repositories;
 
@@ -23,11 +24,9 @@ namespace Backend.Test.Unit_Tests.Repositories;
 public class UserRepoTest
 {
     private IUserRepo _userRepo;
-    private JwtService _jwtService;
     private List<User> _users;
     private string _refreshToken;
 
-    private AuthService _auth;
 
     private Mock<AppDBContext> _mockDbContext;
 
@@ -37,6 +36,8 @@ public class UserRepoTest
 
         var factory = new TestApplicationFactory();
         var config = factory.Services.GetRequiredService<IConfiguration>();
+
+
 
 
 
@@ -83,13 +84,6 @@ public class UserRepoTest
 
         _userRepo = new UserRepo(_mockDbContext.Object);
 
-        _jwtService = new JwtService(config);
-
-        var _roleRepo = new Mock<IRoleRepo>();
-
-        var _mockAnimalRepo = new Mock<IAnimalRepo>();
-
-        _auth = new AuthService(_userRepo, _jwtService, _roleRepo.Object, _mockAnimalRepo.Object);
 
     }
 

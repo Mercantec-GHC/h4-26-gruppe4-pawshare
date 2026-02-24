@@ -23,7 +23,7 @@ public class UserDBIntegrationTest2
 
         var config = builder.Build();
 
-        _connectionString = config.GetConnectionString("DefaultConnection") ?? Environment.GetEnvironmentVariable("MY_ENV_VAR");
+        _connectionString = config.GetConnectionString("db") ?? Environment.GetEnvironmentVariable("ConnectionStrings__db");
 
         Console.WriteLine(_connectionString);
         

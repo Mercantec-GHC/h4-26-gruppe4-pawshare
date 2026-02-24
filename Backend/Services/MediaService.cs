@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;
 using Models;
@@ -13,12 +12,10 @@ namespace Services;
 public class MediaService : IMediaService
 {
     private readonly MinioOptions _options;
-    private readonly ILogger<MediaService> _logger;
 
-    public MediaService(IOptions<MinioOptions> options, ILogger<MediaService> logger)
+    public MediaService(IOptions<MinioOptions> options)
     {
         _options = options.Value;
-        _logger = logger;
     }
 
     /// <inheritdoc/>
@@ -36,14 +33,12 @@ public class MediaService : IMediaService
     {
         if (!_options.IsConfigured)
         {
-            _logger.LogWarning("Media storage is not properly configured");
             return null;
         }
 
         var minioClient = CreateMinioClient();
         if (minioClient == null)
         {
-            _logger.LogError("Unable to create MinIO client");
             return null;
         }
 
@@ -63,14 +58,11 @@ public class MediaService : IMediaService
             await minioClient.PutObjectAsync(uploadRequest, cancellationToken);
 
             var accessUrl = $"/api/Media/file/{uniqueObjectKey}";
-            
-            _logger.LogInformation("Successfully uploaded media file: {ObjectKey} ({FileSize} bytes)", uniqueObjectKey, fileStream.Length);
-            
+                        
             return (uniqueObjectKey, accessUrl);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error uploading media file to storage: {ObjectKey}", uniqueObjectKey);
             return null;
         }
     }
@@ -89,7 +81,6 @@ public class MediaService : IMediaService
     {
         if (!_options.IsConfigured || string.IsNullOrWhiteSpace(objectKey))
         {
-            _logger.LogWarning("Cannot retrieve file: storage not configured or invalid object key");
             return null;
         }
 
@@ -114,12 +105,10 @@ public class MediaService : IMediaService
         }
         catch (Minio.Exceptions.ObjectNotFoundException)
         {
-            _logger.LogWarning("Media file not found in storage: {ObjectKey}", objectKey);
             return null;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving media file from storage: {ObjectKey}", objectKey);
             return null;
         }
     }
@@ -153,7 +142,6 @@ public class MediaService : IMediaService
 
         var createBucketRequest = new MakeBucketArgs().WithBucket(_options.BucketName);
         await client.MakeBucketAsync(createBucketRequest, cancellationToken);
-        _logger.LogInformation("Created media storage bucket: {BucketName}", _options.BucketName);
     }
 
     /// <inheritdoc/>
@@ -161,7 +149,6 @@ public class MediaService : IMediaService
     {
         if (!_options.IsConfigured || string.IsNullOrWhiteSpace(objectKey))
         {
-            _logger.LogWarning("Cannot delete file: storage not configured or invalid object key");
             return false;
         }
 
@@ -177,17 +164,14 @@ public class MediaService : IMediaService
 
             await minioClient.RemoveObjectAsync(deleteRequest, cancellationToken);
             
-            _logger.LogInformation("Successfully deleted media file: {ObjectKey}", objectKey);
             return true;
         }
         catch (Minio.Exceptions.ObjectNotFoundException)
         {
-            _logger.LogWarning("File not found for deletion: {ObjectKey}", objectKey);
             return false;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting media file from storage: {ObjectKey}", objectKey);
             return false;
         }
     }

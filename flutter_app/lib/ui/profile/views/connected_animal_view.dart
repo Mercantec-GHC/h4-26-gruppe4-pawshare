@@ -134,6 +134,6 @@ class _ConnectedAnimalViewState extends State<ConnectedAnimalView> {
             );
           },
         ),
-      ));
+      );
   }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Models;
+using Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Services
     /// <summary>
     /// Service for generating JWT tokens
     /// </summary>
-    public class JwtService
+    public class JwtService : IJwtService
     {
         private readonly string _secretKey;
         private readonly string _issuer;

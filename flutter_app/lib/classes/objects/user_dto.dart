@@ -18,7 +18,7 @@ class UserDTO {
       id: json['id'] as String,
       name: json['name'] as String,
       email: json['email'] as String,
-      profilePictureKey: json['profilePictureKey'] as String,
+      profilePictureKey: json['profilePictureKey'] as String?,
     );
   }
 

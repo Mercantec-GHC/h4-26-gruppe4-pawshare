@@ -40,7 +40,19 @@ public class MediaController : ControllerBase
             return StatusCode(503, new { error = "Media storage service is not available" });
 
         var fileExtension = Path.GetExtension(file.FileName).TrimStart('.').ToLowerInvariant();
-        var detectedContentType = DetermineContentType(file.ContentType, fileExtension);
+
+        var allowedExtensions = new HashSet<string> { "jpg", "jpeg", "png", "gif", "webp" };
+        if (!allowedExtensions.Contains(fileExtension))
+            return BadRequest(new { error = "Only image files (jpg, jpeg, png, gif, webp) are allowed" });
+
+        var detectedContentType = fileExtension switch
+        {
+            "jpg" or "jpeg" => "image/jpeg",
+            "png" => "image/png",
+            "gif" => "image/gif",
+            "webp" => "image/webp",
+            _ => "application/octet-stream"
+        };
 
         using var fileStream = file.OpenReadStream();
         var uploadResult = await _mediaService.UploadFileAsync(fileStream, file.FileName, detectedContentType, cancellationToken);
@@ -55,21 +67,6 @@ public class MediaController : ControllerBase
             ObjectKey = uploadResult.Value.Key, 
             FileUrl = fileUrl 
         });
-    }
-
-    private static string DetermineContentType(string? providedContentType, string extension)
-    {
-        if (!string.IsNullOrWhiteSpace(providedContentType))
-            return providedContentType;
-
-        return extension switch
-        {
-            "jpg" or "jpeg" => "image/jpeg",
-            "png" => "image/png",
-            "gif" => "image/gif",
-            "webp" => "image/webp",
-            _ => "application/octet-stream"
-        };
     }
 
     /// <summary>
@@ -98,6 +95,7 @@ public class MediaController : ControllerBase
             return NotFound();
 
         Response.Headers.CacheControl = "public, max-age=3600";
+        Response.Headers.Append("X-Content-Type-Options", "nosniff");
         return File(fileResult.Value.Stream, fileResult.Value.ContentType);
     }
 }

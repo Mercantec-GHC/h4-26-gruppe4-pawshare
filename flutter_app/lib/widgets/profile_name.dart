@@ -102,9 +102,11 @@ class _ProfileNameState extends State<ProfileName> {
     } catch (e) {
       GeneralUtil.showToast('Error: $e');
     } finally {
-      setState(() {
-        _isUploading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+        });
+      }
     }
   }
 

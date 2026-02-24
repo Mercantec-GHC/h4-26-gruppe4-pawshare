@@ -8,9 +8,9 @@ import 'auth.dart';
 class API {
   static const String _appEnv = String.fromEnvironment('APP_ENV', defaultValue: '');
   static const String _url =
-      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://localhost:7258')}/api/';
+      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/api/';
   static const String _testUrl =
-      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://localhost:7258')}/api/';
+      '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://dev-pawshare-api.mercantec.tech')}/api/';
 
   static final Map<String, String> _headers = {};
 

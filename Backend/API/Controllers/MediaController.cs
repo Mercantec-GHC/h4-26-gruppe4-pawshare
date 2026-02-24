@@ -7,6 +7,7 @@ namespace API.Controllers;
 /// <summary>
 /// Controller for managing media file uploads and retrieval from MinIO storage.
 /// </summary>
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class MediaController : ControllerBase

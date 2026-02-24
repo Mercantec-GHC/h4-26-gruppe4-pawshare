@@ -55,7 +55,6 @@ public class UserDBIntegrationTest2
             RealPassword = "password123",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("password123"),
             Salt = "BCrypt internal",
-            Base64Pfp = "profile_picture.png",
             CreatedAt =  DateTime.UtcNow,
             UpdatedAt =  DateTime.UtcNow,
             RoleId = 1,

@@ -90,7 +90,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         'Name': event.name,
         'Password': event.password,
         'City': event.city,
-        'Base64Pfp': '',
+        'ProfilePictureKey': '',
       });
 
       if (!success) {

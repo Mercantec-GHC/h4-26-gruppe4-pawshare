@@ -20,7 +20,7 @@ class Animal extends Common {
     required this.UserName,
     required this.createdAt,
     required this.updatedAt,
-    required this.Base64Image,
+    required this.animalPictureKey,
     required this.bookings,
   });
 
@@ -28,7 +28,7 @@ class Animal extends Common {
 
   final String Description;
 
-  final String Base64Image;
+  final String animalPictureKey;
 
   final int Age;
 
@@ -65,7 +65,7 @@ class Animal extends Common {
       id: json['id'] as String,
       Name: (json['name'] as String).replaceAll('"', ''),
       Description: (json['description'] as String).replaceAll('"', ''),
-      Base64Image: (json['base64Image'] as String).replaceAll('"', ''),
+      animalPictureKey: (json['animalPictureKey'] as String? ?? '').replaceAll('"', ''),
       Age: json['age'] as int,
       TypeId: (json['typeId'] as String).replaceAll('"', ''),
       TypeName: (json['typeName'] as String).replaceAll('"', ''),

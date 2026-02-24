@@ -36,6 +36,12 @@ class ChangePasswordEvent extends ProfileEvents {
   ChangePasswordEvent(this.currentPassword, this.newPassword);
 }
 
+class ProfileUpdatedEvent extends ProfileEvents {
+  final UserDTO updatedProfile;
+
+  const ProfileUpdatedEvent(this.updatedProfile);
+}
+
 
 // STATES
 abstract class ProfileState {

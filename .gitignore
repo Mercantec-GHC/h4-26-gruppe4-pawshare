@@ -16,8 +16,6 @@
 .vscode/
 
 
-**/Migrations
-
 # C#
 */bin
 */obj

@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 using Models.DTOs;
-using Repositories.Interfaces;
 using Services;
 using System.Security.Claims;
 
@@ -17,7 +15,7 @@ namespace API.Controllers
         public AuthController(AuthService auth)
         {
             _auth = auth;
-            
+
         }
 
         [HttpPost("register")]
@@ -90,6 +88,13 @@ namespace API.Controllers
         }
 
 
-    }
 
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+        {
+            await _auth.ForgotPassword(dto.Email);
+            return Ok("Password reset email sent");
+        }
+    }
 }

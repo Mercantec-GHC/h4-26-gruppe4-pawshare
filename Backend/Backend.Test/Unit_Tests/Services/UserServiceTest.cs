@@ -32,8 +32,6 @@ public class UserServiceTest
             Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,

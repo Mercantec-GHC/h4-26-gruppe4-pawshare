@@ -42,7 +42,6 @@ public class UserService : IUserService
             Name = dto.Name,
             Email = dto.Email,
             HashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Salt = "BCrypt internal",
             Base64Pfp = "",
             RoleId = role.Id,
             City = dto.City
@@ -63,7 +62,6 @@ public class UserService : IUserService
         var newHashed = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
         user.HashedPassword = newHashed;
-        user.RealPassword = newPassword;
         user.UpdatedAt = DateTime.UtcNow;
 
         await _userRepo.UpdateUser(user);

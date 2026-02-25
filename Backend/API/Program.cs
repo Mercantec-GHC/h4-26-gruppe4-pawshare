@@ -58,6 +58,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddSignalR();
 
@@ -250,8 +251,6 @@ static async Task SeedInitialDataAsync(AppDBContext dbContext)
                 Name = "Test User",
                 Email = testUserEmail,
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
-                Salt = "BCrypt internal",
-                RealPassword = null,
                 Base64Pfp = Convert.ToBase64String([0x00]),
                 City = "TestCity",
                 RoleId = animalOwnerRole.Id,
@@ -274,8 +273,6 @@ static async Task SeedInitialDataAsync(AppDBContext dbContext)
                 Name = "Test User 2",
                 Email = testUserEmail2,
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
-                Salt = "BCrypt internal",
-                RealPassword = null,
                 Base64Pfp = Convert.ToBase64String([0x00]),
                 City = "TestCity",
                 RoleId = animalOwnerRole.Id,

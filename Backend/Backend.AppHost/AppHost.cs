@@ -37,6 +37,13 @@ var WithSeedRun = builder.AddParameter("WithSeedRun").WithCustomInput(parameter 
 //var smtpsender = builder.AddParameter("SmtpSender");
 //var smtpsendername = builder.AddParameter("SmtpSenderName");
 
+var minioUsername = builder.AddParameter("miniousername");
+var minioPassword = builder.AddParameter("miniopassword");
+var minioBucket = builder.AddParameter("miniobucket");
+
+
+var minio = builder.AddMinioContainer("minio", rootUser: minioUsername, rootPassword: minioPassword).WithUserName(minioUsername).WithPassword(minioPassword);
+
 var abc = builder.AddPostgres("whatever")
     //.WithDataVolume()
     .WithPgWeb();
@@ -50,7 +57,12 @@ var api = builder.AddProject<Projects.API>("api")
     .WithEnvironment("Jwt__SecretKey", JWTSecret)
     .WithEnvironment("Jwt__ExpiryMinutes", JWTExpirationMinutes)
     .WithReference(db)
+    .WithEnvironment("Storage__MinIO__Endpoint", minio.GetEndpoint("http"))
+    .WithEnvironment("Storage__MinIO__AccessKey", minioUsername)
+    .WithEnvironment("Storage__MinIO__SecretKey", minioPassword)
+    .WithEnvironment("Storage__MinIO__BucketName", minioBucket)
     .WaitFor(db)
+    .WaitFor(minio)
     //.WithEnvironment("MailSettings__SmtpServer", smtpserver)
     //.WithEnvironment("MailSettings__SmtpPort", smtpport)
     //.WithEnvironment("MailSettings__SmtpUsername", smtpusername)

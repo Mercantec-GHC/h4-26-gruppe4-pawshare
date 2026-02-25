@@ -7,7 +7,9 @@ import 'chat_bloc.dart';
 import 'chat_events_states.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final String? chatId;
+
+  const ChatPage({super.key, this.chatId});
 
   @override
   State<ChatPage> createState() => _ChatPageState();

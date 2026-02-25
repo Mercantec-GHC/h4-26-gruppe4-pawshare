@@ -17,6 +17,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
+  bool _didTryInitialChatOpen = false;
 
   @override
   void dispose() {
@@ -28,7 +29,24 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ChatBloc()..add(const ChatLoadEvent()),
-      child: BlocBuilder<ChatBloc, ChatState>(
+      child: BlocConsumer<ChatBloc, ChatState>(
+        listener: (context, state) {
+          final chatId = widget.chatId;
+          if (_didTryInitialChatOpen ||
+              chatId == null ||
+              chatId.trim().isEmpty) {
+            return;
+          }
+
+          if (state is ChatListState) {
+            final hasTargetChat = state.chats.any((chat) => chat.id == chatId);
+            if (!hasTargetChat) {
+              return;
+            }
+            _didTryInitialChatOpen = true;
+            context.read<ChatBloc>().add(ChatOpenEvent(chatId));
+          }
+        },
         builder: (context, state) {
           if (state is ChatDetailState) {
             return _buildChatDetail(context, state);

@@ -2,14 +2,15 @@
 using Models.DTOs;
 using Repositories.Interfaces;
 using Services.Interfaces;
+using Services.Interfaces;
 using System.Security.Cryptography;
 
 namespace Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly IUserRepo _users;
-        private readonly JwtService _jwtService;
+        private readonly IJwtService _jwtService;
         private readonly IRoleRepo _roleRepo;
         private readonly IAnimalRepo _animalRepo;
         private readonly IEmailService _emailService;
@@ -48,8 +49,8 @@ namespace Services
                 RoleId = role.Id,
                 City = dto.City,
 
-                // Required by the model but not used for authentication
-                Base64Pfp = dto.Base64Pfp
+                
+                ProfilePictureKey = dto.ProfilePictureKey
             };
 
             await _users.PostUser(user);
@@ -71,7 +72,7 @@ namespace Services
                 HashedPassword = hashedPassword,
                 RoleId = role.Id,
                 City = dto.City,
-                Base64Pfp = dto.Base64Pfp,
+                ProfilePictureKey = dto.ProfilePictureKey,
             };
 
             await _users.PostUser(user);
@@ -86,7 +87,7 @@ namespace Services
                 DateOfBirth = dto.DateOfBirth,
                 TypeId = dto.AnimalTypeId,
                 UserId = user.Id,
-                Base64Image = ""
+                AnimalPictureKey = ""
             };
 
             await _animalRepo.PostAnimal(animal);
@@ -114,7 +115,7 @@ namespace Services
                 HashedPassword = hashedPassword,
                 RoleId = role.Id,
                 City = dto.City,
-                Base64Pfp = dto.Base64Pfp,
+                ProfilePictureKey = dto.ProfilePictureKey,
             };
 
             await _users.PostUser(user);

@@ -1,11 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 
+import '../../classes/helpers/api.dart';
 import '../../classes/helpers/general_helper.dart';
+import '../../classes/helpers/secure_storage_helper.dart';
 import '../../classes/objects/animal.dart';
+import '../../classes/objects/api_path.dart';
+import '../../classes/objects/chat.dart';
 import '../chat/chat_page.dart';
 import '../login/login_page.dart';
 import '../profile/profile_page.dart';
+import '../../widgets/default_appbar.dart';
 import 'discover_bloc.dart';
 import 'discover_events_states.dart';
 
@@ -20,7 +28,23 @@ class _DiscoverPageState extends State<DiscoverPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: discoverAppBar(context),
+      appBar: DefaultAppbar(
+        titleWidget: Row(
+          children: [
+            Image(
+              image: AssetImage('assets/pawshare_logo.png'),
+              height: 40,
+              width: 44,
+              fit: BoxFit.fitWidth,
+            ),
+            Padding(padding: EdgeInsets.only(left: 40)),
+            Text('Pawshare', overflow: TextOverflow.visible),
+          ],
+        ),
+        additionalWidgets: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
+        ],
+      ),
       drawer: Drawer(
         child: ListView(
           children: [
@@ -59,9 +83,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
             ListTile(
               leading: Icon(Icons.lock),
               title: Text('Log out'),
-              onTap: () {
-                // TODO: ADD FUNCTIONALITY
-                GeneralUtil.goToPage(context, LoginPage());
+              onTap: () async {
+                await SecureStorageHelper.clearSecureStorage();
+                if (!context.mounted) return;
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (route) => false,
+                );
               },
             ),
           ],
@@ -71,14 +100,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
         create: (_) => DiscoverBloc()..add(DiscoverAnimals()),
         child: BlocBuilder<DiscoverBloc, DiscoverState>(
           builder: (context, state) {
-            switch (state.runtimeType) {
-              case DiscoverAnimalsInitial:
-              case DiscoverAnimalsLoading:
+            switch (state) {
+              case DiscoverAnimalsInitial():
+              case DiscoverAnimalsLoading():
                 return const Center(child: CircularProgressIndicator());
-              case DiscoverAnimalsSuccess:
+              case DiscoverAnimalsSuccess():
                 var animals = (state as DiscoverAnimalsSuccess).animals;
                 return _buildCards(animals);
-              case DiscoverAnimalsFailure:
+              case DiscoverAnimalsFailure():
                 var errorMessage =
                     (state as DiscoverAnimalsFailure).errorMessage;
                 return Center(child: Text(errorMessage));
@@ -96,43 +125,24 @@ class _DiscoverPageState extends State<DiscoverPage> {
     itemCount: animals.length,
     itemBuilder: (context, index) => DiscoverCard(
       name: animals[index].Name,
-      age: animals[index].Age,
+      age: animals[index].dateOfBirth.year,
       description: animals[index].Description,
+      userId: animals[index].UserId,
     ),
   );
-
-  PreferredSizeWidget discoverAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Color(0xFFFFFCF5),
-      elevation: 0,
-      title: Center(
-        child: Row(
-          children: [
-            Image(
-              image: AssetImage('assets/pawshare_logo.png'),
-              height: 40,
-              width: 44,
-              fit: BoxFit.fitWidth,
-            ),
-            Padding(padding: EdgeInsets.only(left: 40)),
-            Text('Pawshare', overflow: TextOverflow.visible),
-          ],
-        ),
-      ),
-      actions: [IconButton(onPressed: () {}, icon: Icon(Icons.notifications))],
-    );
-  }
 }
 
 class DiscoverCard extends StatefulWidget {
   final String name;
   final int age;
   final String description;
+  final String? userId;
   const DiscoverCard({
     super.key,
     required this.name,
     required this.age,
     required this.description,
+    this.userId,
   });
 
   @override
@@ -160,7 +170,9 @@ class _DiscoverCardState extends State<DiscoverCard> {
         padding: const EdgeInsets.all(16),
         decoration: ShapeDecoration(
           color: const Color(0xFFFFFCF5),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           shadows: [
             BoxShadow(
               color: Color(0x3F000000),
@@ -221,6 +233,39 @@ class _DiscoverCardState extends State<DiscoverCard> {
                     ),
                   ),
                 ],
+              ),
+            ),
+
+         SizedBox(
+              width: 37,
+              height: 37,
+              child: TextButton(
+                onPressed: () async {
+                  var response = await API.postRequest(ApiPath.chat, {
+                    'userIds': [super.widget.userId],
+                    'title': 'Chat about ${super.widget.name}',
+                  });
+                  Response chatIdResponse;
+                  bool chatCreated = false;
+                  if (response.statusCode == 200) {
+                    var chatJson = json.decode(response.body);
+                    var chatId = ChatId.fromJson(chatJson).chatId;
+
+                    print(chatId);
+                    do {
+                      chatIdResponse = await API.getRequestWithId(ApiPath.chat, chatId);
+                    } while (chatIdResponse.body != 'true');
+                    
+
+                    GeneralUtil.goToPage(context, ChatPage());
+                  } else {
+                    // Handle error
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to create chat')),
+                    );
+                  }
+                },
+                child: Text('Contact ->'),
               ),
             ),
           ],

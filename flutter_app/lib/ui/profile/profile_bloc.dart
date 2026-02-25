@@ -17,6 +17,7 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
     on<ShowChangePasswordEvent>(_onShowChangePassword);
     on<ShowConnectedAnimalsEvent>(_onShowConnectedAnimals);
     on<ChangePasswordEvent>(_onChangePassword);
+    on<ProfileUpdatedEvent>(_onProfileUpdated);
   }
 
 
@@ -77,6 +78,10 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
     } catch (e) {
       emit(PasswordChangedState(false));
     }
+  }
+
+  void _onProfileUpdated(ProfileUpdatedEvent event, Emitter<ProfileState> emit) {
+    emit(ShowProfileState(profile: event.updatedProfile));
   }
 
   // endregion

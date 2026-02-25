@@ -50,8 +50,8 @@ builder.Services.AddScoped<IMessageReadReceiptRepo, MessageReadReceiptRepo>();
 
 // services
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAnimalService, AnimalService>();
 builder.Services.AddScoped<IAnimalTypeService, AnimalTypeService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
@@ -59,8 +59,9 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-
+builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddSignalR();
+builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection(MinioOptions.SectionName));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -148,6 +149,24 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+    
+    if (app.Configuration.GetValue<string>("DEV:ENV", "not_aspire") == "local")
+    {
+        await dbContext.Database.MigrateAsync();
+    }
+
+    if (app.Configuration.GetValue<bool>("DEV:SEED", false))
+    {
+        await SeedInitialDataAsync(dbContext);
+    }
+}
+
+
+
+
 
 app.MapDefaultEndpoints();
 
@@ -205,6 +224,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
 
 app.Run();
 
+
 static async Task SeedInitialDataAsync(AppDBContext dbContext)
 {
     string[] defaultAnimalTypes = ["Dog", "Cat"];
@@ -251,7 +271,7 @@ static async Task SeedInitialDataAsync(AppDBContext dbContext)
                 Name = "Test User",
                 Email = testUserEmail,
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
-                Base64Pfp = Convert.ToBase64String([0x00]),
+                ProfilePictureKey = "TestImage.jpg",
                 City = "TestCity",
                 RoleId = animalOwnerRole.Id,
                 CreatedAt = DateTime.UtcNow,
@@ -273,7 +293,7 @@ static async Task SeedInitialDataAsync(AppDBContext dbContext)
                 Name = "Test User 2",
                 Email = testUserEmail2,
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
-                Base64Pfp = Convert.ToBase64String([0x00]),
+                ProfilePictureKey = "TestImage.jpg",
                 City = "TestCity",
                 RoleId = animalOwnerRole.Id,
                 CreatedAt = DateTime.UtcNow,

@@ -222,7 +222,7 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
                                     'Name': _nameController.text,
                                     'Password': _passwordController.text,
                                     'City': _cityController.text,
-                                    'Base64Pfp': '',
+                                    'ProfilePictureKey': '',
                                     'AnimalName': _animalNameController.text,
                                     'AnimalDescription':
                                         _animalDescriptionController.text,

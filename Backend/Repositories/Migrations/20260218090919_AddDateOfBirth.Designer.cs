@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Repositories.Context;
@@ -11,9 +12,11 @@ using Repositories.Context;
 namespace Repositories.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260218090919_AddDateOfBirth")]
+    partial class AddDateOfBirth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,14 +30,14 @@ namespace Repositories.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("AnimalPictureKey")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("Age")
                         .HasColumnType("integer");
 
                     b.Property<string>("AnimalTypeId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Base64Image")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -289,6 +292,10 @@ namespace Repositories.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("Base64Pfp")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("text");
@@ -306,9 +313,6 @@ namespace Repositories.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProfilePictureKey")
                         .HasColumnType("text");
 
                     b.Property<string>("RealPassword")

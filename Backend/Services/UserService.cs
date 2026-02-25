@@ -9,11 +9,13 @@ public class UserService : IUserService
 {
     private readonly IUserRepo _userRepo;
     private readonly IRoleRepo _roleRepo;
+    private readonly IMediaService _mediaService;
 
-    public UserService(IUserRepo userRepo, IRoleRepo roleRepo)
+    public UserService(IUserRepo userRepo, IRoleRepo roleRepo, IMediaService mediaService)
     {
         _userRepo = userRepo;
         _roleRepo = roleRepo;
+        _mediaService = mediaService;
     }
     public async Task<UserDto?> GetUser(string id)
     {
@@ -25,7 +27,7 @@ public class UserService : IUserService
             Id = user.Id,
             Name = user.Name,
             Email = user.Email,
-            Base64Pfp = user.Base64Pfp
+            ProfilePictureKey = user.ProfilePictureKey
         };
     }
 
@@ -42,7 +44,7 @@ public class UserService : IUserService
             Name = dto.Name,
             Email = dto.Email,
             HashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Base64Pfp = "",
+            ProfilePictureKey = dto.ProfilePictureKey,
             RoleId = role.Id,
             City = dto.City
         };
@@ -65,6 +67,33 @@ public class UserService : IUserService
         user.UpdatedAt = DateTime.UtcNow;
 
         await _userRepo.UpdateUser(user);
+        return true;
+    }
+
+    public async Task<bool> UpdateProfilePictureAsync(string userId, string newProfilePictureKey, string? oldProfilePictureKey = null)
+    {
+        var user = await _userRepo.GetUser(userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        // Delete old picture if it exists
+        if (!string.IsNullOrWhiteSpace(oldProfilePictureKey))
+        {
+            await _mediaService.DeleteFileAsync(oldProfilePictureKey);
+        }
+
+        // Update user with new picture key
+        user.ProfilePictureKey = newProfilePictureKey;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        var updated = await _userRepo.UpdateUser(user);
+        if (updated == null)
+        {
+            return false;
+        }
+
         return true;
     }
 }

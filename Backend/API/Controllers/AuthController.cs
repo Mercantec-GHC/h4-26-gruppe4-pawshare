@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
 using Services;
+using Services.Interfaces;
 using System.Security.Claims;
 
 namespace API.Controllers
@@ -10,9 +11,9 @@ namespace API.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _auth;
+        private readonly IAuthService _auth;
 
-        public AuthController(AuthService auth)
+        public AuthController(IAuthService auth)
         {
             _auth = auth;
 

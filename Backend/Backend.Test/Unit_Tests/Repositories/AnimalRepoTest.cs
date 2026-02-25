@@ -30,7 +30,6 @@ public class AnimalRepoTest
             Name = "Repo Test User",
             Email = "repo@test.com",
             HashedPassword = "x",
-            Base64Pfp = "iVBORw0KGgoAAAANSUhEUgAAAAUA",
             RoleId = 2,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -66,7 +65,7 @@ public class AnimalRepoTest
             Id = $"{i}",
             Name = $"animal_{i}",
             Description = $"description_{i}",
-            Base64Image = $"image_{i}",
+            AnimalPictureKey = $"image_{i}",
             DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(i)),
             TypeId = "type_default",
             UserId = "user_default",
@@ -87,7 +86,7 @@ public class AnimalRepoTest
             Assert.That(result[i].Id, Is.EqualTo(expected[i].Id));
             Assert.That(result[i].Name, Is.EqualTo(expected[i].Name));
             Assert.That(result[i].Description, Is.EqualTo(expected[i].Description));
-            Assert.That(result[i].Base64Image, Is.EqualTo(expected[i].Base64Image));
+            Assert.That(result[i].AnimalPictureKey, Is.EqualTo(expected[i].AnimalPictureKey));
             Assert.That(result[i].DateOfBirth, Is.EqualTo(expected[i].DateOfBirth));
             Assert.That(result[i].TypeId, Is.EqualTo(expected[i].TypeId));
             Assert.That(result[i].UserId, Is.EqualTo(expected[i].UserId));
@@ -102,7 +101,7 @@ public class AnimalRepoTest
             Id = $"{i}",
             Name = $"animal_{i}",
             Description = $"description_{i}",
-            Base64Image = $"image_{i}",
+            AnimalPictureKey = $"image_{i}",
             DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(i)),
             TypeId = "type_default",
             UserId = "user_default",
@@ -131,7 +130,7 @@ public class AnimalRepoTest
             Id = "1",
             Name = "animal_1",
             Description = "description_1",
-            Base64Image = "image_1",
+            AnimalPictureKey = "image_1",
             DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
             TypeId = "type_default",
             UserId = "user_default",
@@ -153,7 +152,7 @@ public class AnimalRepoTest
             Id = "1",
             Name = "old_animal_1",
             Description = "old_description_1",
-            Base64Image = "old_image_1",
+            AnimalPictureKey = "old_image_1",
             DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
             TypeId = "type_default",
             UserId = "user_default",
@@ -182,7 +181,7 @@ public class AnimalRepoTest
             Id = "1",
             Name = "animal_1",
             Description = "description_1",
-            Base64Image = "image_1",
+            AnimalPictureKey = "image_1",
             DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
             TypeId = "type_default",
             UserId = "user_default",

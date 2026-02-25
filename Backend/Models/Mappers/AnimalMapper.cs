@@ -13,7 +13,7 @@ public static class AnimalMapper
 
             Name = a.Name,
             Description = a.Description,
-            Base64Image = a.Base64Image,
+            AnimalPictureKey = a.AnimalPictureKey,
             DateOfBirth = a.DateOfBirth,
 
             UserId = a.UserId,
@@ -38,7 +38,7 @@ public static class AnimalMapper
         entity.Id = dto.Id;
         entity.Name = dto.Name;
         entity.Description = dto.Description;
-        entity.Base64Image = dto.Base64Image;
+        entity.AnimalPictureKey = dto.AnimalPictureKey;
         entity.DateOfBirth = dto.DateOfBirth;
         entity.TypeId = dto.TypeId;
         entity.UserId = dto.UserId;

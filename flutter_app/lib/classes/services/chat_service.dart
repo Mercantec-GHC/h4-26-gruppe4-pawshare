@@ -11,16 +11,20 @@ class ChatService {
 
   static const String _initialChatsEvent = 'InitialChats';
   static const String _receiveMessageEvent = 'ReceiveMessage';
+  static const String _chatCreatedEvent = 'ChatCreated';
 
   final WebSocketAPI _webSocketAPI = WebSocketAPI();
   final StreamController<MessageDTO> _messageController =
       StreamController<MessageDTO>.broadcast();
+  final StreamController<ChatDto> _chatCreatedController =
+      StreamController<ChatDto>.broadcast();
 
   bool _handlersRegistered = false;
   Completer<List<ChatDto>>? _initialChatsCompleter;
   List<ChatDto> _initialChatsCache = [];
 
   Stream<MessageDTO> get messageStream => _messageController.stream;
+  Stream<ChatDto> get chatCreatedStream => _chatCreatedController.stream;
 
   Future<void> connect() async {
     _registerHandlers();
@@ -131,6 +135,7 @@ class ChatService {
 
     _webSocketAPI.registerHandler(_initialChatsEvent, _onInitialChatsRaw);
     _webSocketAPI.registerHandler(_receiveMessageEvent, _onReceiveMessageRaw);
+    _webSocketAPI.registerHandler(_chatCreatedEvent, _onChatCreatedRaw);
     _handlersRegistered = true;
   }
 
@@ -152,6 +157,25 @@ class ChatService {
     final parsed = _parseMessage(payload);
     if (parsed != null) {
       _messageController.add(parsed);
+    }
+  }
+
+  void _onChatCreatedRaw(String? payload) {
+    if (payload == null || payload.isEmpty) {
+      return;
+    }
+
+    try {
+      final decoded = json.decode(payload);
+      final chatMap = _toMap(decoded);
+      if (chatMap == null) {
+        return;
+      }
+
+      final chat = ChatDto.fromJson(chatMap);
+      _chatCreatedController.add(chat);
+    } catch (_) {
+      return;
     }
   }
 

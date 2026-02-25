@@ -53,6 +53,13 @@ public class ChatService : IChatService
         return ChatMapper.ToListItemDto(chat, newestMessage: null, unreadCount: 0); 
     }
 
+    public async Task<bool> GetChat(string chatId) {
+        var chat = await _chatRepo.GetChat(chatId);
+        if (chat is null)
+            return false;
+        return true;
+    }
+
     public async Task<List<ChatListItemDto>> GetChatsForUserAsync(string userId, int? limit, int? offset) {
 
         // Gets queryable chats sorted by creation date

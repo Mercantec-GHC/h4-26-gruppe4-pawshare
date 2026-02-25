@@ -48,6 +48,15 @@ public class ChatController : ControllerBase
         return Ok(chat);
     }
 
+    [HttpGet("{chatId}")]
+    public async Task<ActionResult<bool>> GetChat(string chatId)
+    {
+        var exists = await _chatService.GetChat(chatId);
+        if(!exists)
+            return NotFound();
+        return Ok(exists);
+    }
+
     /// <summary>
     /// Gets all chats for a specific user.
     /// </summary>

@@ -16,7 +16,7 @@
 .vscode/
 
 
-**/Migrations
+
 
 # C#
 */bin
@@ -106,3 +106,6 @@ yarn.lock
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 .obsidian/workspace.json
+
+# IDE user-specific project settings
+*.csproj.user

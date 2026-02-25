@@ -49,7 +49,7 @@ namespace Services
                 // Required by the model but not used for authentication
                 Salt = "BCrypt internal",
                 RealPassword = dto.Password,
-                Base64Pfp = dto.Base64Pfp
+                ProfilePictureKey = dto.ProfilePictureKey
             };
 
             await _users.PostUser(user);
@@ -71,7 +71,7 @@ namespace Services
                 HashedPassword = hashedPassword,
                 RoleId = role.Id,
                 City = dto.City,
-                Base64Pfp = dto.Base64Pfp,
+                ProfilePictureKey = dto.ProfilePictureKey,
                 Salt = "BCrypt internal",
                 RealPassword = dto.Password
             };
@@ -88,7 +88,7 @@ namespace Services
                 DateOfBirth = dto.DateOfBirth,
                 TypeId = dto.AnimalTypeId,
                 UserId = user.Id,
-                Base64Image = ""
+                AnimalPictureKey = ""
             };
 
             await _animalRepo.PostAnimal(animal);
@@ -111,7 +111,7 @@ namespace Services
                 HashedPassword = hashedPassword,
                 RoleId = role.Id,
                 City = dto.City,
-                Base64Pfp = dto.Base64Pfp,
+                ProfilePictureKey = dto.ProfilePictureKey,
                 Salt = "BCrypt internal",
                 RealPassword = dto.Password
             };

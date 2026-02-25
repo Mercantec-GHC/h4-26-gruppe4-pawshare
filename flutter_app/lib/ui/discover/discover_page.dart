@@ -6,6 +6,7 @@ import 'package:http/http.dart';
 
 import '../../classes/helpers/api.dart';
 import '../../classes/helpers/general_helper.dart';
+import '../../classes/helpers/secure_storage_helper.dart';
 import '../../classes/objects/animal.dart';
 import '../../classes/objects/api_path.dart';
 import '../../classes/objects/chat.dart';
@@ -82,9 +83,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
             ListTile(
               leading: Icon(Icons.lock),
               title: Text('Log out'),
-              onTap: () {
-                // TODO: ADD FUNCTIONALITY
-                GeneralUtil.goToPage(context, LoginPage());
+              onTap: () async {
+                await SecureStorageHelper.clearSecureStorage();
+                if (!context.mounted) return;
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (route) => false,
+                );
               },
             ),
           ],
@@ -94,14 +100,14 @@ class _DiscoverPageState extends State<DiscoverPage> {
         create: (_) => DiscoverBloc()..add(DiscoverAnimals()),
         child: BlocBuilder<DiscoverBloc, DiscoverState>(
           builder: (context, state) {
-            switch (state.runtimeType) {
-              case DiscoverAnimalsInitial:
-              case DiscoverAnimalsLoading:
+            switch (state) {
+              case DiscoverAnimalsInitial():
+              case DiscoverAnimalsLoading():
                 return const Center(child: CircularProgressIndicator());
-              case DiscoverAnimalsSuccess:
+              case DiscoverAnimalsSuccess():
                 var animals = (state as DiscoverAnimalsSuccess).animals;
                 return _buildCards(animals);
-              case DiscoverAnimalsFailure:
+              case DiscoverAnimalsFailure():
                 var errorMessage =
                     (state as DiscoverAnimalsFailure).errorMessage;
                 return Center(child: Text(errorMessage));

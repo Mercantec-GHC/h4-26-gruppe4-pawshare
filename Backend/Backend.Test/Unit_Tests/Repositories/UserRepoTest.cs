@@ -98,7 +98,6 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
             Salt = "BCrypt internal",
@@ -139,7 +138,6 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
             Salt = "BCrypt internal",
@@ -157,8 +155,7 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_2",
-            Email = "user1@email.com",
+            Email = "user2@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
             Salt = "BCrypt internal",
             RealPassword = "Password1",
@@ -171,7 +168,7 @@ public class UserRepoTest
         var updatedUser = await _userRepo.UpdateUser(updatedUserData);
 
         Assert.That(updatedUser, Is.Not.Null);
-        Assert.That(updatedUser.Base64Pfp, Is.EqualTo("profile_pic_2"));
+        Assert.That(updatedUser.Email, Is.EqualTo("user2@email.com"));
 
     }
 
@@ -195,7 +192,6 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
             Salt = "BCrypt internal",
@@ -244,7 +240,6 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
             Salt = "BCrypt internal",
@@ -318,7 +313,6 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
             Salt = "BCrypt internal",
@@ -390,7 +384,6 @@ public class UserRepoTest
             {
                 Id = $"{i}",
                 Name = $"user{i}",
-                Base64Pfp = $"profile_pic_{i}",
                 Email = $"user{i}@email.com",
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword($"Password{i}"),
                 Salt = "BCrypt internal",

@@ -47,4 +47,26 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("profile-picture")]
+    public async Task<IActionResult> UpdateProfilePicture(UpdateProfilePictureDto dto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        if (string.IsNullOrWhiteSpace(dto.NewProfilePictureKey))
+            return BadRequest(new { error = "Profile picture key is required" });
+
+        var success = await _userService.UpdateProfilePictureAsync(
+            userId,
+            dto.NewProfilePictureKey,
+            dto.OldProfilePictureKey
+        );
+
+        if (!success)
+            return BadRequest(new { error = "Failed to update profile picture" });
+
+        return Ok();
+    }
+
 }

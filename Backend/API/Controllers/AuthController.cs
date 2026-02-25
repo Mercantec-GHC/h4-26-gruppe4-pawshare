@@ -97,5 +97,16 @@ namespace API.Controllers
             await _auth.ForgotPassword(dto.Email);
             return Ok("Password reset email sent");
         }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var result = await _auth.ResetPassword(dto.Token, dto.NewPassword);
+
+            if (!result)
+                return BadRequest("Invalid or expired token");
+
+            return Ok();
+        }
     }
 }

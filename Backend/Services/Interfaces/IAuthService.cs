@@ -17,4 +17,5 @@ public interface IAuthService
 
     public Task<bool> LogoutAsync(string refreshToken);
     public Task ForgotPassword(string email);
+    public Task<bool> ResetPassword(string token, string newPassword);
 }

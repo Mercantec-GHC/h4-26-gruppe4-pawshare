@@ -15,7 +15,7 @@ namespace Services
         private readonly IEmailService _emailService;
 
 
-        public AuthService(IUserRepo users, JwtService jwtService, IRoleRepo roleRepo, IAnimalRepo animalRepo, IEmailService emailService)
+        public AuthService(IUserRepo users, IJwtService jwtService, IRoleRepo roleRepo, IAnimalRepo animalRepo, IEmailService emailService)
         {
             _users = users;
             _roleRepo = roleRepo;
@@ -34,7 +34,7 @@ namespace Services
         {
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
-            var role = await _roleRepo.GetByNameAsync("AnimalUser")
+            var role = await _roleRepo.GetByNameAsync("AnimalOwner")
                 ?? throw new Exception("Default role not found");
 
             var user = new User
@@ -208,7 +208,7 @@ namespace Services
 
             await _users.UpdateUser(user);
 
-            var resetLink = $"https://yourfrontend.com/reset-password?token={resetToken}";
+            var resetLink = $"http://localhost:60714/#/reset-password?token={resetToken}";
 
             await _emailService.SendAsync(
                 user.Email,
@@ -227,10 +227,8 @@ namespace Services
                 user.PasswordResetTokenExpiresAt < DateTime.UtcNow)
                 return false;
 
-            // 🔐 BCrypt
+            
             user.HashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
-
-            // 🔥 Інвалідовуємо токен
             user.PasswordResetToken = null;
             user.PasswordResetTokenExpiresAt = null;
 

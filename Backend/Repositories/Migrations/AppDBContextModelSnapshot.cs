@@ -31,14 +31,14 @@ namespace Repositories.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("integer");
-
                     b.Property<string>("AnimalTypeId")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -308,10 +308,13 @@ namespace Repositories.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ProfilePictureKey")
+                    b.Property<string>("PasswordResetToken")
                         .HasColumnType("text");
 
-                    b.Property<string>("RealPassword")
+                    b.Property<DateTime?>("PasswordResetTokenExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProfilePictureKey")
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
@@ -322,10 +325,6 @@ namespace Repositories.Migrations
 
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Salt")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

@@ -14,6 +14,7 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     on<ChatBackToListEvent>(_onChatBackToList);
     on<ChatSendMessageEvent>(_onChatSendMessage);
     on<ChatRealtimeMessageReceivedEvent>(_onRealtimeMessageReceived);
+    on<ChatCreatedRealtimeEvent>(_onChatCreatedRealtime);
   }
 
   static String currentUserId = '';
@@ -23,6 +24,7 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
   final Map<String, List<MessageDTO>> _messages = {};
   String? _activeChatId;
   StreamSubscription<MessageDTO>? _messageSubscription;
+  StreamSubscription<ChatDto>? _chatCreatedSubscription;
 
   Future<void> _onChatLoad(ChatLoadEvent event, Emitter<ChatState> emit) async {
     currentUserId = await Auth.getCurrentUserId();
@@ -32,6 +34,11 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     _messageSubscription?.cancel();
     _messageSubscription = _chatService.messageStream.listen((message) {
       add(ChatRealtimeMessageReceivedEvent(message));
+    });
+
+    _chatCreatedSubscription?.cancel();
+    _chatCreatedSubscription = _chatService.chatCreatedStream.listen((chat) {
+      add(ChatCreatedRealtimeEvent(chat));
     });
 
     final chats = await _chatService.getInitialChats();
@@ -133,6 +140,32 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     }
   }
 
+  Future<void> _onChatCreatedRealtime(
+    ChatCreatedRealtimeEvent event,
+    Emitter<ChatState> emit,
+  ) async {
+    _upsertChat(event.chat);
+
+    if (state is ChatDetailState) {
+      final detailState = state as ChatDetailState;
+      if (_activeChatId == event.chat.id) {
+        final chat = _chats.firstWhere(
+          (item) => item.id == event.chat.id,
+          orElse: () => detailState.chat,
+        );
+        final messages = _messages[event.chat.id] ?? detailState.messages;
+        emit(
+          ChatDetailState(chat: chat, messages: List.unmodifiable(messages)),
+        );
+      }
+      return;
+    }
+
+    if (state is ChatListState) {
+      emit(ChatListState(List.unmodifiable(_chats)));
+    }
+  }
+
   List<MessageDTO> _addMessageIfMissing(MessageDTO message) {
     final chatMessages = _messages.putIfAbsent(message.chatId, () => []);
     final alreadyExists = chatMessages.any((item) => item.id == message.id);
@@ -196,6 +229,16 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     );
   }
 
+  void _upsertChat(ChatDto chat) {
+    final existingIndex = _chats.indexWhere((item) => item.id == chat.id);
+    if (existingIndex == -1) {
+      _chats.insert(0, chat);
+      return;
+    }
+
+    _chats[existingIndex] = chat;
+  }
+
   ChatDto _copyChatWith(
     ChatDto chat, {
     String? lastMessage,
@@ -220,6 +263,8 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
 
     await _messageSubscription?.cancel();
     _messageSubscription = null;
+    await _chatCreatedSubscription?.cancel();
+    _chatCreatedSubscription = null;
 
     return super.close();
   }

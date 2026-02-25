@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Models.DTOs;
 using System.ComponentModel.DataAnnotations;
+using API.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace API.Controllers;
 
@@ -17,11 +19,13 @@ public class ChatController : ControllerBase
 {
     private readonly IChatService _chatService;
     private readonly IMessageService _messageService;
+    private readonly IHubContext<ChatHub> _chatHubContext;
 
-    public ChatController(IChatService chatService, IMessageService messageService)
+    public ChatController(IChatService chatService, IMessageService messageService, IHubContext<ChatHub> chatHubContext)
     {
         _chatService = chatService;
         _messageService = messageService;
+        _chatHubContext = chatHubContext;
     }
 
     /// <summary>
@@ -42,10 +46,25 @@ public class ChatController : ControllerBase
         dto.UserIds.Add(userId); // Ensure the creator is part of the chat
 
         var chat = await _chatService.CreateChatAsync(dto);
+
         if (chat is null)
             return BadRequest();
 
+        if (dto.UserIds.Count > 0)
+        {
+            await _chatHubContext.Clients.Users(dto.UserIds).SendAsync("ChatCreated", chat);
+        }
+
         return Ok(chat);
+    }
+
+    [HttpGet("{chatId}")]
+    public async Task<ActionResult<bool>> GetChat(string chatId)
+    {
+        var exists = await _chatService.GetChat(chatId);
+        if(!exists)
+            return NotFound();
+        return Ok(exists);
     }
 
     /// <summary>

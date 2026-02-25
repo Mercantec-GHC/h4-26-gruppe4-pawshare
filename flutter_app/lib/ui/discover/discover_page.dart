@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 
+import '../../classes/helpers/api.dart';
 import '../../classes/helpers/general_helper.dart';
 import '../../classes/helpers/secure_storage_helper.dart';
 import '../../classes/objects/animal.dart';
+import '../../classes/objects/api_path.dart';
+import '../../classes/objects/chat.dart';
 import '../chat/chat_page.dart';
 import '../login/login_page.dart';
 import '../profile/profile_page.dart';
@@ -119,8 +125,9 @@ class _DiscoverPageState extends State<DiscoverPage> {
     itemCount: animals.length,
     itemBuilder: (context, index) => DiscoverCard(
       name: animals[index].Name,
-      age: animals[index].Age,
+      age: animals[index].dateOfBirth.year,
       description: animals[index].Description,
+      userId: animals[index].UserId,
     ),
   );
 }
@@ -129,11 +136,13 @@ class DiscoverCard extends StatefulWidget {
   final String name;
   final int age;
   final String description;
+  final String? userId;
   const DiscoverCard({
     super.key,
     required this.name,
     required this.age,
     required this.description,
+    this.userId,
   });
 
   @override
@@ -161,7 +170,9 @@ class _DiscoverCardState extends State<DiscoverCard> {
         padding: const EdgeInsets.all(16),
         decoration: ShapeDecoration(
           color: const Color(0xFFFFFCF5),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           shadows: [
             BoxShadow(
               color: Color(0x3F000000),
@@ -222,6 +233,39 @@ class _DiscoverCardState extends State<DiscoverCard> {
                     ),
                   ),
                 ],
+              ),
+            ),
+
+         SizedBox(
+              width: 37,
+              height: 37,
+              child: TextButton(
+                onPressed: () async {
+                  var response = await API.postRequest(ApiPath.chat, {
+                    'userIds': [super.widget.userId],
+                    'title': 'Chat about ${super.widget.name}',
+                  });
+                  Response chatIdResponse;
+                  bool chatCreated = false;
+                  if (response.statusCode == 200) {
+                    var chatJson = json.decode(response.body);
+                    var chatId = ChatId.fromJson(chatJson).chatId;
+
+                    print(chatId);
+                    do {
+                      chatIdResponse = await API.getRequestWithId(ApiPath.chat, chatId);
+                    } while (chatIdResponse.body != 'true');
+                    
+
+                    GeneralUtil.goToPage(context, ChatPage());
+                  } else {
+                    // Handle error
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to create chat')),
+                    );
+                  }
+                },
+                child: Text('Contact ->'),
               ),
             ),
           ],

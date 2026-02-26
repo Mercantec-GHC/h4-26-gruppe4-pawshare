@@ -62,7 +62,7 @@ class ProfileBloc extends Bloc<ProfileEvents, ProfileState> {
 
   void _onChangePassword(ChangePasswordEvent event, Emitter<ProfileState> emit) async {
     try {
-      final resp = await API.postRequest(
+      final resp = await API.patchRequest(
         ApiPath.changePassword,
         {
           'currentPassword': event.currentPassword,

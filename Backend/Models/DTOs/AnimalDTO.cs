@@ -26,4 +26,10 @@ namespace Models.DTOs
         public string Name { get; set; } = default!;
         public string Description { get; set; } = default!;
     }
+
+    public class UpdateAnimalPictureDto
+    {
+        public required string NewAnimalPictureKey { get; set; }
+        public string? OldAnimalPictureKey { get; set; }
+    }
 }

@@ -85,7 +85,7 @@ class _ProfileNameState extends State<ProfileName> {
           return;
         }
 
-        final saveResponse = await API.postRequest(
+        final saveResponse = await API.patchRequest(
           ApiPath.updateProfilePicture,
           {
             'newProfilePictureKey': fileKey,

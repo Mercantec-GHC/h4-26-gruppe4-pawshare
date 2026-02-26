@@ -9,10 +9,12 @@ namespace Services;
 public class AnimalService : IAnimalService
 {
     private readonly IAnimalRepo _animalRepo;
+    private readonly IMediaService _mediaService;
 
-    public AnimalService(IAnimalRepo animalRepo)
+    public AnimalService(IAnimalRepo animalRepo, IMediaService mediaService)
     {
         _animalRepo = animalRepo;
+        _mediaService = mediaService;
     }
 
     /// <inheritdoc/>
@@ -94,6 +96,37 @@ public class AnimalService : IAnimalService
     public async Task<bool> DeleteAnimalAsync(string id)
     {
         return await _animalRepo.DeleteAnimal(id);
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> UpdateAnimalPictureAsync(string userId, string animalId, string newAnimalPictureKey, string? oldAnimalPictureKey = null)
+    {
+        var animal = await _animalRepo.GetAnimal(animalId);
+        if (animal is null)
+        {
+            return false;
+        }
+
+        if (animal.UserId != userId)
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(oldAnimalPictureKey))
+        {
+            await _mediaService.DeleteFileAsync(oldAnimalPictureKey);
+        }
+
+        animal.AnimalPictureKey = newAnimalPictureKey;
+        animal.UpdatedAt = DateTime.UtcNow;
+
+        var updated = await _animalRepo.UpdateAnimal(animal);
+        if (updated == null)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
 

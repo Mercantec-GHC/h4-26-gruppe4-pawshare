@@ -12,6 +12,7 @@ public interface IUserRepo
     /// <returns>User with given email, if not found returns null</returns>
     Task<User?> GetByEmail(string email);
     Task<User?> GetByRefreshTokenAsync(string refreshToken);
+    Task<User?> GetByResetToken(string token);
 
     /// <summary>
     /// Gets user with given Id from table

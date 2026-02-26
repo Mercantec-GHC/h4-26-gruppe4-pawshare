@@ -46,6 +46,7 @@ builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 builder.Services.AddScoped<IBookingRepo, BookingRepo>();
 builder.Services.AddScoped<IRoleRepo, RoleRepo>();
 builder.Services.AddScoped<IMessageReadReceiptRepo, MessageReadReceiptRepo>();
+builder.Services.AddScoped<AuthService>();
 
 
 // services
@@ -58,6 +59,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IMediaService, MediaService>();
 builder.Services.AddSignalR();
 builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection(MinioOptions.SectionName));
@@ -270,8 +272,6 @@ static async Task SeedInitialDataAsync(AppDBContext dbContext)
                 Name = "Test User",
                 Email = testUserEmail,
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
-                Salt = "BCrypt internal",
-                RealPassword = null,
                 ProfilePictureKey = "TestImage.jpg",
                 City = "TestCity",
                 RoleId = animalOwnerRole.Id,
@@ -294,8 +294,6 @@ static async Task SeedInitialDataAsync(AppDBContext dbContext)
                 Name = "Test User 2",
                 Email = testUserEmail2,
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword("test"),
-                Salt = "BCrypt internal",
-                RealPassword = null,
                 ProfilePictureKey = "TestImage.jpg",
                 City = "TestCity",
                 RoleId = animalOwnerRole.Id,

@@ -66,7 +66,7 @@ class Animal extends Common {
       Name: (json['name'] as String).replaceAll('"', ''),
       Description: (json['description'] as String).replaceAll('"', ''),
       animalPictureKey: (json['animalPictureKey'] as String? ?? '').replaceAll('"', ''),
-      Age: json['age'] as int,
+      dateOfBirth: DateTime.tryParse(json['dateOfBirth']) ?? DateTime.now(),
       TypeId: (json['typeId'] as String).replaceAll('"', ''),
       TypeName: json['typeName'] == null ? null : (json['typeName'] as String).replaceAll('"', ''),
       TypeDescription: json['typeDescription'] == null ? null : (json['typeDescription'] as String).replaceAll('"', ''),

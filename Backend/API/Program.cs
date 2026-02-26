@@ -46,6 +46,7 @@ builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 builder.Services.AddScoped<IBookingRepo, BookingRepo>();
 builder.Services.AddScoped<IRoleRepo, RoleRepo>();
 builder.Services.AddScoped<IMessageReadReceiptRepo, MessageReadReceiptRepo>();
+builder.Services.AddScoped<AuthService>();
 
 
 // services

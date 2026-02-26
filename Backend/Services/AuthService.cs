@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Microsoft.Extensions.Configuration;
+using Models;
 using Models.DTOs;
 using Repositories.Interfaces;
 using Services.Interfaces;
@@ -13,15 +14,17 @@ namespace Services
         private readonly IRoleRepo _roleRepo;
         private readonly IAnimalRepo _animalRepo;
         private readonly IEmailService _emailService;
+        private readonly IConfiguration _config;
 
 
-        public AuthService(IUserRepo users, IJwtService jwtService, IRoleRepo roleRepo, IAnimalRepo animalRepo, IEmailService emailService)
+        public AuthService(IUserRepo users, IJwtService jwtService, IRoleRepo roleRepo, IAnimalRepo animalRepo, IEmailService emailService, IConfiguration config)
         {
             _users = users;
             _roleRepo = roleRepo;
             _jwtService = jwtService;
             _animalRepo = animalRepo;
             _emailService = emailService;
+            _config = config;
         }
 
         private static string GenerateRefreshToken()
@@ -207,8 +210,8 @@ namespace Services
             user.PasswordResetTokenExpiresAt = resetExpires;
 
             await _users.UpdateUser(user);
-
-            var resetLink = $"http://localhost:60714/#/reset-password?token={resetToken}";
+            var frontendUrl = _config["FrontendUrl"];
+            var resetLink = $"{frontendUrl}/#/reset-password?token={resetToken}";
 
             await _emailService.SendAsync(
                 user.Email,

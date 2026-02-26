@@ -100,8 +100,6 @@ public class UserRepoTest
             Name = "user1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
@@ -140,8 +138,6 @@ public class UserRepoTest
             Name = "user1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
@@ -157,8 +153,6 @@ public class UserRepoTest
             Name = "user1",
             Email = "user2@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
@@ -194,8 +188,6 @@ public class UserRepoTest
             Name = "user1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
@@ -242,8 +234,6 @@ public class UserRepoTest
             Name = "user1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
@@ -315,8 +305,6 @@ public class UserRepoTest
             Name = "user1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
@@ -386,8 +374,6 @@ public class UserRepoTest
                 Name = $"user{i}",
                 Email = $"user{i}@email.com",
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword($"Password{i}"),
-                Salt = "BCrypt internal",
-                RealPassword = $"Password{i}",
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
                 RoleId = 1,
@@ -409,7 +395,6 @@ public class UserRepoTest
             Assert.That(users[i].Id, Is.EqualTo(usersList[i].Id));
             Assert.That(users[i].Name, Is.EqualTo(usersList[i].Name));
             Assert.That(users[i].HashedPassword, Is.EqualTo(usersList[i].HashedPassword));
-            Assert.That(users[i].Salt, Is.EqualTo(usersList[i].Salt));
             Assert.That(users[i].CreatedAt, Is.EqualTo(usersList[i].CreatedAt));
             Assert.That(users[i].UpdatedAt, Is.EqualTo(usersList[i].UpdatedAt));
         }

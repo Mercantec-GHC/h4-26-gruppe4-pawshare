@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 using Models.DTOs;
-using Repositories.Interfaces;
 using Services;
 using Services.Interfaces;
 using System.Security.Claims;
@@ -18,7 +16,7 @@ namespace API.Controllers
         public AuthController(IAuthService auth)
         {
             _auth = auth;
-            
+
         }
 
         [HttpPost("register")]
@@ -91,6 +89,24 @@ namespace API.Controllers
         }
 
 
-    }
 
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+        {
+            await _auth.ForgotPassword(dto.Email);
+            return Ok("Password reset email sent");
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var result = await _auth.ResetPassword(dto.Token, dto.NewPassword);
+
+            if (!result)
+                return BadRequest("Invalid or expired token");
+
+            return Ok();
+        }
+    }
 }

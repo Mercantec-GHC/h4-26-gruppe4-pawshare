@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../classes/helpers/general_helper.dart';
 import '../../widgets/default_scaffold.dart';
 import 'login_bloc.dart';
 import 'login_events_states.dart';

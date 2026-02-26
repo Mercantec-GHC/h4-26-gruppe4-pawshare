@@ -35,7 +35,6 @@ public class UserRepo : IUserRepo
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
-
     public async Task<User?> GetByEmail(string email)
     {
         try
@@ -63,13 +62,12 @@ public class UserRepo : IUserRepo
         .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
     }
 
-    public void Add(User user)
+    public async Task<User?> GetByResetToken(string token)
     {
-        _dbContext.Users.Add(user);
-        _dbContext.SaveChanges();
+        return await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.PasswordResetToken == token);
     }
-
-    /// <inheritdoc/>
+    
     public async Task<User?> PostUser(User newUser)
     {
         _dbContext.Users.Add(newUser);
@@ -92,8 +90,7 @@ public class UserRepo : IUserRepo
         return newUser;
     }
 
-    /// <inheritdoc/>
-    public async Task<User?> UpdateUser(User user)
+        public async Task<User?> UpdateUser(User user)
     {
         _dbContext.Users.Update(user);
         await _dbContext.SaveChangesAsync();
@@ -114,7 +111,6 @@ public class UserRepo : IUserRepo
             );
     }
 
-    /// <inheritdoc/>
     public async Task<bool> DeleteUser(string UserId)
     {
         var user = await _dbContext.Users.FindAsync(UserId);
@@ -125,6 +121,6 @@ public class UserRepo : IUserRepo
 
         _dbContext.Users.Remove(user);
         await _dbContext.SaveChangesAsync();
-        return true;   
+        return true;
     }
 }

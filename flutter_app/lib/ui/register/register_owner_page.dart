@@ -187,7 +187,7 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
                     }
 
                     return DropdownButtonFormField<AnimalType>(
-                      value: _selectedType,
+                      initialValue: _selectedType,
                       decoration: const InputDecoration(
                         labelText: 'Animal type',
                         border: OutlineInputBorder(),

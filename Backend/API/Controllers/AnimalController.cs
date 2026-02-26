@@ -91,7 +91,7 @@ public class AnimalController : ControllerBase
         return Ok(animals);
     }
 
-    [HttpPost("{id}/picture")]
+    [HttpPatch("{id}/picture")]
     public async Task<IActionResult> UpdateAnimalPicture(string id, UpdateAnimalPictureDto dto)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

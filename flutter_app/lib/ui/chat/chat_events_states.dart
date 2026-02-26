@@ -31,6 +31,12 @@ class ChatRealtimeMessageReceivedEvent extends ChatEvents {
   final MessageDTO message;
 }
 
+class ChatCreatedRealtimeEvent extends ChatEvents {
+  const ChatCreatedRealtimeEvent(this.chat);
+
+  final ChatDto chat;
+}
+
 abstract class ChatState {
   const ChatState();
 }

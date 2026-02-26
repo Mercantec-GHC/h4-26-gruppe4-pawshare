@@ -10,6 +10,7 @@ import '../../classes/helpers/secure_storage_helper.dart';
 import '../../classes/objects/animal.dart';
 import '../../classes/objects/api_path.dart';
 import '../../classes/objects/chat.dart';
+import '../../classes/services/chat_service.dart';
 import '../chat/chat_page.dart';
 import '../login/login_page.dart';
 import '../profile/profile_page.dart';
@@ -125,7 +126,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     itemCount: animals.length,
     itemBuilder: (context, index) => DiscoverCard(
       name: animals[index].Name,
-      age: animals[index].dateOfBirth.year,
+      age: animals[index].dateOfBirth!.year,
       description: animals[index].Description,
       userId: animals[index].UserId,
     ),
@@ -251,10 +252,7 @@ class _DiscoverCardState extends State<DiscoverCard> {
                     var chatJson = json.decode(response.body);
                     var chatId = ChatId.fromJson(chatJson).chatId;
 
-                    print(chatId);
-                    do {
-                      chatIdResponse = await API.getRequestWithId(ApiPath.chat, chatId);
-                    } while (chatIdResponse.body != 'true');
+                    await ChatService.instance.chatCreatedStream.firstWhere((createdChatId) => createdChatId == chatId).timeout( Duration(seconds: 2));
                     
 
                     GeneralUtil.goToPage(context, ChatPage());

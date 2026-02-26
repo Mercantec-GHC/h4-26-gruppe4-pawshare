@@ -14,6 +14,12 @@ final class DiscoverAnimalsSuccess extends DiscoverState {
   DiscoverAnimalsSuccess({required this.animals});
 }
 
+@immutable
+sealed class ContactButtonState {}
+
+final class ChatHasbeenCreated extends ContactButtonState {
+}
+
 final class DiscoverAnimalsFailure extends DiscoverState {
   final String errorMessage;
 
@@ -24,3 +30,17 @@ final class DiscoverAnimalsFailure extends DiscoverState {
 sealed class DiscoverEvents {}
 
 final class DiscoverAnimals extends DiscoverEvents {}
+
+final class ContactButtonClicked extends DiscoverEvents {
+  final String userId;
+  final String animalName;
+
+  ContactButtonClicked({required this.userId, required this.animalName});
+}
+
+final class ChatCreated extends DiscoverEvents {
+  final BuildContext context;
+  final String chatId;
+
+  ChatCreated({required this.context, required this.chatId});
+}

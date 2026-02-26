@@ -28,16 +28,29 @@ public class EmailService : IEmailService
 
         using var smtp = new SmtpClient();
 
-        await smtp.ConnectAsync(
-            _config["Email:Smtp"],
-            int.Parse(_config["Email:Port"]),
-            SecureSocketOptions.StartTls
-        );
-       
-        await smtp.AuthenticateAsync(
-            _config["Email:Username"],
-            _config["Email:Password"]
-        );
+
+        if (bool.Parse(_config["Email:Local"] ?? "false"))
+        {
+            await smtp.ConnectAsync(
+                _config["Email:Smtp"],
+                int.Parse(_config["Email:Port"]),
+                SecureSocketOptions.Auto
+            );
+        }
+        else
+        {
+            
+            await smtp.ConnectAsync(
+                _config["Email:Smtp"],
+                int.Parse(_config["Email:Port"]),
+                SecureSocketOptions.StartTls
+            );
+        
+            await smtp.AuthenticateAsync(
+                _config["Email:Username"],
+                _config["Email:Password"]
+            );
+        }
 
         await smtp.SendAsync(email);
         await smtp.DisconnectAsync(true);

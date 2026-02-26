@@ -91,6 +91,29 @@ public class AnimalController : ControllerBase
         return Ok(animals);
     }
 
+    [HttpPost("{id}/picture")]
+    public async Task<IActionResult> UpdateAnimalPicture(string id, UpdateAnimalPictureDto dto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            return Unauthorized();
+
+        if (string.IsNullOrWhiteSpace(dto.NewAnimalPictureKey))
+            return BadRequest(new { error = "Animal picture key is required" });
+
+        var success = await _animalService.UpdateAnimalPictureAsync(
+            userId,
+            id,
+            dto.NewAnimalPictureKey,
+            dto.OldAnimalPictureKey
+        );
+
+        if (!success)
+            return BadRequest(new { error = "Failed to update animal picture" });
+
+        return Ok();
+    }
+
     /// <summary>
     /// Creates a new animal.
     /// </summary>

@@ -1,0 +1,254 @@
+meta {
+  name: post /api/Appointment
+  type: http
+  seq: 5
+  tags: [
+    Appointment
+  ]
+}
+
+post {
+  url: {{baseUrl}}/api/Appointment
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "start": "",
+    "end": "",
+    "address": "",
+    "description": "",
+    "users": "",
+    "animals": [
+      {
+        "appointmentId": "",
+        "appointment": "",
+        "animalId": "",
+        "animal": "",
+        "id": "",
+        "createdAt": "",
+        "updatedAt": ""
+      }
+    ],
+    "id": "",
+    "createdAt": "",
+    "updatedAt": ""
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Appointment
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "start": "",
+        "end": "",
+        "address": "",
+        "description": "",
+        "users": "",
+        "animals": [
+          {
+            "appointmentId": "",
+            "appointment": "",
+            "animalId": "",
+            "animal": "",
+            "id": "",
+            "createdAt": "",
+            "updatedAt": ""
+          }
+        ],
+        "id": "",
+        "createdAt": "",
+        "updatedAt": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/plain
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+        {
+          "start": "",
+          "end": "",
+          "address": "",
+          "description": "",
+          "users": "",
+          "animals": [
+            {
+              "appointmentId": "",
+              "appointment": "",
+              "animalId": "",
+              "animal": "",
+              "id": "",
+              "createdAt": "",
+              "updatedAt": ""
+            }
+          ],
+          "id": "",
+          "createdAt": "",
+          "updatedAt": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Appointment
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "start": "",
+        "end": "",
+        "address": "",
+        "description": "",
+        "users": "",
+        "animals": [
+          {
+            "appointmentId": "",
+            "appointment": "",
+            "animalId": "",
+            "animal": "",
+            "id": "",
+            "createdAt": "",
+            "updatedAt": ""
+          }
+        ],
+        "id": "",
+        "createdAt": "",
+        "updatedAt": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "start": "",
+          "end": "",
+          "address": "",
+          "description": "",
+          "users": "",
+          "animals": [
+            {
+              "appointmentId": "",
+              "appointment": "",
+              "animalId": "",
+              "animal": "",
+              "id": "",
+              "createdAt": "",
+              "updatedAt": ""
+            }
+          ],
+          "id": "",
+          "createdAt": "",
+          "updatedAt": ""
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Appointment
+    method: POST
+    mode: json
+    body:json: {
+      {
+        "start": "",
+        "end": "",
+        "address": "",
+        "description": "",
+        "users": "",
+        "animals": [
+          {
+            "appointmentId": "",
+            "appointment": "",
+            "animalId": "",
+            "animal": "",
+            "id": "",
+            "createdAt": "",
+            "updatedAt": ""
+          }
+        ],
+        "id": "",
+        "createdAt": "",
+        "updatedAt": ""
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "start": "",
+          "end": "",
+          "address": "",
+          "description": "",
+          "users": "",
+          "animals": [
+            {
+              "appointmentId": "",
+              "appointment": "",
+              "animalId": "",
+              "animal": "",
+              "id": "",
+              "createdAt": "",
+              "updatedAt": ""
+            }
+          ],
+          "id": "",
+          "createdAt": "",
+          "updatedAt": ""
+        }
+      '''
+    }
+  }
+}

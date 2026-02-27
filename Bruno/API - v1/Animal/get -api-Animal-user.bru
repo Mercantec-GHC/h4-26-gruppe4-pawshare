@@ -1,0 +1,146 @@
+meta {
+  name: get /api/Animal/user
+  type: http
+  seq: 2
+  tags: [
+    Animal
+  ]
+}
+
+get {
+  url: {{baseUrl}}/api/Animal/user
+  body: none
+  auth: inherit
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Animal/user
+    method: GET
+    mode: none
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/plain
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+        [
+          {
+            "name": "",
+            "description": "",
+            "animalPictureKey": "",
+            "dateOfBirth": "",
+            "typeId": "",
+            "animalType": "",
+            "userId": "",
+            "user": "",
+            "bookings": "",
+            "id": "",
+            "createdAt": "",
+            "updatedAt": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Animal/user
+    method: GET
+    mode: none
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "name": "",
+            "description": "",
+            "animalPictureKey": "",
+            "dateOfBirth": "",
+            "typeId": "",
+            "animalType": "",
+            "userId": "",
+            "user": "",
+            "bookings": "",
+            "id": "",
+            "createdAt": "",
+            "updatedAt": ""
+          }
+        ]
+      '''
+    }
+  }
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Animal/user
+    method: GET
+    mode: none
+  }
+  
+  response: {
+    headers: {
+      Content-Type: text/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "name": "",
+            "description": "",
+            "animalPictureKey": "",
+            "dateOfBirth": "",
+            "typeId": "",
+            "animalType": "",
+            "userId": "",
+            "user": "",
+            "bookings": "",
+            "id": "",
+            "createdAt": "",
+            "updatedAt": ""
+          }
+        ]
+      '''
+    }
+  }
+}

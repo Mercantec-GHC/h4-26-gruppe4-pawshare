@@ -1,0 +1,48 @@
+meta {
+  name: delete /api/Appointment/:appointmentId/animals/:animalId
+  type: http
+  seq: 7
+  tags: [
+    Appointment
+  ]
+}
+
+delete {
+  url: {{baseUrl}}/api/Appointment/:appointmentId/animals/:animalId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  appointmentId: 
+  animalId: 
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Appointment/:appointmentId/animals/:animalId
+    method: DELETE
+    mode: none
+    params:path: {
+      appointmentId: 
+      animalId: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

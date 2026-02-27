@@ -204,6 +204,44 @@ class API {
     return temp;
   }
 
+  // Patch Request
+  static Future<http.Response> patchRequest(ApiPath action, Object? body) async {
+    await _applyAuthHeader();
+
+    // Patch Request from url with header and body
+    var temp = await _attemptApiWithRefresh(
+      () => http.patch(
+        _buildUri(action),
+        headers: _jsonHeaders(),
+        body: body == null ? null : jsonEncode(body),
+      ),
+      null,
+    );
+
+    return temp;
+  }
+
+  // Patch Request
+  static Future<http.Response> patchRequestWithId(
+    ApiPath action,
+    String id,
+    Object? body,
+    {bool skipRefresh = false}
+  ) async {
+    await _applyAuthHeader();
+
+    // Patch Request from url with header, body, and "/(id)"
+    return await _attemptApiWithRefresh(
+      () => http.patch(
+        _buildUri(action, id),
+        headers: _jsonHeaders(),
+        body: body == null ? null : jsonEncode(body),
+      ),
+      null,
+      skipRefresh: skipRefresh,
+    );
+  }
+
   // Delete Request
   static Future<http.Response> deleteRequest(ApiPath action) async {
     await _applyAuthHeader();

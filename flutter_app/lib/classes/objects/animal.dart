@@ -30,7 +30,7 @@ class Animal extends Common {
 
   final String animalPictureKey;
 
-  final DateTime dateOfBirth;
+  final DateTime? dateOfBirth;
 
   final String TypeId;
 

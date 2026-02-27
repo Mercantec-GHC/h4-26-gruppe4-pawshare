@@ -56,4 +56,14 @@ public interface IAnimalService
     /// <param name="id">The unique identifier of the animal to delete.</param>
     /// <returns>True if the animal was deleted successfully, otherwise false.</returns>
     Task<bool> DeleteAnimalAsync(string id);
+
+    /// <summary>
+    /// Updates the picture key for an animal and optionally deletes the old picture.
+    /// </summary>
+    /// <param name="userId">The owner user ID.</param>
+    /// <param name="animalId">The animal ID.</param>
+    /// <param name="newAnimalPictureKey">The new animal picture object key.</param>
+    /// <param name="oldAnimalPictureKey">The old animal picture object key to delete (nullable).</param>
+    /// <returns>True if successful, false otherwise.</returns>
+    Task<bool> UpdateAnimalPictureAsync(string userId, string animalId, string newAnimalPictureKey, string? oldAnimalPictureKey = null);
 }

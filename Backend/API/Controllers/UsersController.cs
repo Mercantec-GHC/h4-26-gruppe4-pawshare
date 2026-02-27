@@ -32,7 +32,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPost("change-password")]
+    [HttpPatch("change-password")]
     public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -47,7 +47,7 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("profile-picture")]
+    [HttpPatch("profile-picture")]
     public async Task<IActionResult> UpdateProfilePicture(UpdateProfilePictureDto dto)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

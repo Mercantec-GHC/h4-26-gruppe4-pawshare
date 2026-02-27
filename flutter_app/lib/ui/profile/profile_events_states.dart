@@ -37,7 +37,7 @@ class ChangePasswordEvent extends ProfileEvents {
 }
 
 class ProfileUpdatedEvent extends ProfileEvents {
-  final UserDTO updatedProfile;
+  final dynamic updatedProfile;
 
   const ProfileUpdatedEvent(this.updatedProfile);
 }

@@ -30,8 +30,6 @@ public class AnimalRepoTest
             Name = "Repo Test User",
             Email = "repo@test.com",
             HashedPassword = "x",
-            Salt = "x",
-            RealPassword = "x",
             RoleId = 2,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,

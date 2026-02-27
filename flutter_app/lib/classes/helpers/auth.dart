@@ -69,10 +69,8 @@ class Auth {
 
   static Future<bool> refresh() async {
     var resp = await API.postRequestWithId(ApiPath.auth, 'refresh', {
-        'RefreshToken': await getRefreshToken(),
-      },
-      skipRefresh: true,
-    );
+      'RefreshToken': await getRefreshToken(),
+    }, skipRefresh: true);
 
     if (resp.statusCode == 200) {
       var decoded = json.decode(resp.body);
@@ -142,5 +140,20 @@ class Auth {
     await SecureStorageHelper.saveToStorage(SecureStorageKey.userId, '');
   }
 
-  
+  static Future<bool> forgotPassword(String email) async {
+    var resp = await API.postRequestWithId(ApiPath.auth, 'forgot-password', {
+      'Email': email,
+    }, skipRefresh: true);
+
+    return resp.statusCode == 200;
+  }
+
+  static Future<bool> resetPassword(String token, String newPassword) async {
+    var resp = await API.postRequestWithId(ApiPath.auth, 'reset-password', {
+      'Token': token,
+      'NewPassword': newPassword,
+    }, skipRefresh: true);
+
+    return resp.statusCode == 200;
+  }
 }

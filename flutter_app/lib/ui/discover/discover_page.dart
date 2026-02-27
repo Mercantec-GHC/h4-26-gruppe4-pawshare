@@ -107,11 +107,11 @@ class _DiscoverPageState extends State<DiscoverPage> {
               case DiscoverAnimalsLoading():
                 return const Center(child: CircularProgressIndicator());
               case DiscoverAnimalsSuccess():
-                var animals = (state as DiscoverAnimalsSuccess).animals;
+                var animals = (state).animals;
                 return _buildCards(animals);
               case DiscoverAnimalsFailure():
                 var errorMessage =
-                    (state as DiscoverAnimalsFailure).errorMessage;
+                    (state).errorMessage;
                 return Center(child: Text(errorMessage));
               default:
                 return Container();

@@ -1,5 +1,6 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+var EmailFrom = builder.AddParameter("EmailFrom");
 var JWTIssuer = builder.AddParameter("JWTIssuer");
 var JWTAudience = builder.AddParameter("JWTAudience");
 var JWTSecret = builder.AddParameter("JWTSecret");
@@ -30,12 +31,7 @@ var WithSeedRun = builder.AddParameter("WithSeedRun").WithCustomInput(parameter 
 });
 #pragma warning restore ASPIREINTERACTION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
-//var smtpserver = builder.AddParameter("SmtpServer");
-//var smtpport = builder.AddParameter("SmtpPort");
-//var smtpusername = builder.AddParameter("SmtpUsername");
-//var smtppassword = builder.AddParameter("SmtpPassword");
-//var smtpsender = builder.AddParameter("SmtpSender");
-//var smtpsendername = builder.AddParameter("SmtpSenderName");
+var mailpit = builder.AddMailPit("mailpit");
 
 var minioUsername = builder.AddParameter("miniousername");
 var minioPassword = builder.AddParameter("miniopassword");
@@ -45,7 +41,6 @@ var minioBucket = builder.AddParameter("miniobucket");
 var minio = builder.AddMinioContainer("minio", rootUser: minioUsername, rootPassword: minioPassword).WithUserName(minioUsername).WithPassword(minioPassword);
 
 var abc = builder.AddPostgres("whatever")
-    //.WithDataVolume()
     .WithPgWeb();
 var db = abc.AddDatabase("db");
 
@@ -56,6 +51,12 @@ var api = builder.AddProject<Projects.API>("api")
     .WithEnvironment("Jwt__Audience", JWTAudience)
     .WithEnvironment("Jwt__SecretKey", JWTSecret)
     .WithEnvironment("Jwt__ExpiryMinutes", JWTExpirationMinutes)
+    .WithEnvironment("Email__From", EmailFrom)
+    .WithEnvironment("Email__Smtp", () => mailpit.GetEndpoint("smtp").Host)
+    .WithEnvironment("Email__Port", () => mailpit.GetEndpoint("smtp").Port.ToString())
+    .WithEnvironment("Email__Local", "true")
+    .WithEnvironment("Email__Username", "mailpit")
+    .WithEnvironment("Email__Password", "mailpit")
     .WithReference(db)
     .WithEnvironment("Storage__MinIO__Endpoint", minio.GetEndpoint("http"))
     .WithEnvironment("Storage__MinIO__AccessKey", minioUsername)
@@ -69,6 +70,7 @@ var api = builder.AddProject<Projects.API>("api")
     //.WithEnvironment("MailSettings__SmtpPassword", smtppassword)
     //.WithEnvironment("MailSettings__FromEmail", smtpsender)
     //.WithEnvironment("MailSettings__FromName", smtpsendername)
+    .WaitFor(mailpit)
     ;
 
 
@@ -79,5 +81,8 @@ var flutter = builder.AddFlutterApp("pawshare", "../../flutter_app")
     .WithDartDefine("API_URL_HTTP", api.GetEndpoint("http"))
     .WithDartDefine("API_URL_HTTPS", api.GetEndpoint("https"))
     .WithReference(api);
+
+
+api.WithEnvironment("FrontendUrl", flutter.GetEndpoint("http"));
 
 builder.Build().Run();

@@ -1,42 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../widgets/default_scaffold.dart';
-import 'forgot_password_bloc.dart';
+import 'reset_password_bloc.dart';
 
-class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({super.key});
+class ResetPasswordPage extends StatefulWidget {
+  final String token;
+
+  const ResetPasswordPage({super.key, required this.token});
 
   @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final TextEditingController _emailController = TextEditingController();
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final TextEditingController _passwordController = TextEditingController();
 
-  String? _emailError;
+  String? _passwordError;
   String? _statusMessage;
   bool _isSuccess = false;
 
-  bool get _isFormValid => _emailController.text.isNotEmpty;
+  bool get _isFormValid => _passwordController.text.isNotEmpty;
 
-  bool _isValidEmail(String email) {
-    return email.contains('@') && email.contains('.');
+  bool _isValidPassword(String password) {
+    return password.length >= 8;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ForgotPasswordBloc(),
-      child: BlocListener<ForgotPasswordBloc, ForgotPasswordState>(
+      create: (_) => ResetPasswordBloc(),
+      child: BlocListener<ResetPasswordBloc, ResetPasswordState>(
         listener: (context, state) {
-          if (state is ForgotPasswordSuccess) {
+          if (state is ResetPasswordSuccess) {
             setState(() {
               _isSuccess = true;
-              _statusMessage = 'Reset link sent to your email';
+              _statusMessage = "Password successfully updated";
             });
           }
 
-          if (state is ForgotPasswordFailure) {
+          if (state is ResetPasswordFailure) {
             setState(() {
               _isSuccess = false;
               _statusMessage = state.message;
@@ -56,36 +58,32 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 40),
-            Image.asset('assets/pawshare_logo.png', height: 80),
-            const SizedBox(height: 24),
-            
+
             const Text(
-              'Forgot password',
+              'Reset password',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 12),
-            const Text(
-              'Enter your email and we will send you a password reset link.',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            
+
+            const SizedBox(height: 24),
+
             TextField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
+              controller: _passwordController,
+              obscureText: true,
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
-                labelText: 'Email',
+                labelText: 'New password',
                 border: const OutlineInputBorder(),
-                errorText: _emailError,
+                errorText: _passwordError,
               ),
             ),
+
             const SizedBox(height: 24),
-            
+
             _buildButton(context),
+
             if (_statusMessage != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
                 _statusMessage!,
                 textAlign: TextAlign.center,
@@ -95,53 +93,64 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
               ),
             ],
-            const SizedBox(height: 12),
-            
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Back to login'),
-            ),
-            
+
+            const SizedBox(height: 16),
+
+            if (_isSuccess)
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Back to login"),
+              ),
           ],
-          
         ),
-        
       ),
-      
     );
-    
   }
 
   Widget _buildButton(BuildContext context) {
-    return BlocBuilder<ForgotPasswordBloc, ForgotPasswordState>(
+    return BlocBuilder<ResetPasswordBloc, ResetPasswordState>(
       builder: (context, state) {
-        if (state is ForgotPasswordLoading) {
+        if (state is ResetPasswordLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-
+        TextButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    ResetPasswordPage(token: "ВСТАВ_ТУТ_ТОКЕН_З_EMAIL"),
+              ),
+            );
+          },
+          child: const Text("TEST RESET"),
+        );
         return ElevatedButton(
           onPressed: _isFormValid
               ? () {
                   setState(() {
-                    _emailError = null;
+                    _passwordError = null;
                     _statusMessage = null;
                   });
 
-                  if (!_isValidEmail(_emailController.text)) {
+                  if (!_isValidPassword(_passwordController.text)) {
                     setState(() {
-                      _emailError = 'Invalid email address';
+                      _passwordError = "Password must be at least 8 characters";
                     });
                     return;
                   }
 
-                  context.read<ForgotPasswordBloc>().add(
-                    ForgotPasswordSubmitted(_emailController.text.trim()),
+                  context.read<ResetPasswordBloc>().add(
+                    ResetPasswordSubmitted(
+                      widget.token,
+                      _passwordController.text.trim(),
+                    ),
                   );
                 }
               : null,
-          child: const Text('Send reset link'),
+          child: const Text("Update password"),
         );
       },
     );

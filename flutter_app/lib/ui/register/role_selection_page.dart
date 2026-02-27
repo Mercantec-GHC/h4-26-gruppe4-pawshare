@@ -8,6 +8,7 @@ class RoleSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(elevation: 0),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -15,22 +16,19 @@ class RoleSelectionPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
-          Image.asset('assets/pawshare_logo.png', height: 80),
-          const SizedBox(height: 24),
+              Image.asset('assets/pawshare_logo.png', height: 80),
+              const SizedBox(height: 24),
               const Text(
                 'Who are you?',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
-
               const SizedBox(height: 40),
 
               _RoleCard(
                 icon: Icons.pets,
                 title: 'Animal Owner',
-                subtitle: 'I own pets and need services',
+                subtitle:
+                    'I want to share my pet\'s warmth and bring joy to others',
                 onTap: () {
                   Navigator.push(
                     context,
@@ -46,7 +44,7 @@ class RoleSelectionPage extends StatelessWidget {
               _RoleCard(
                 icon: Icons.business,
                 title: 'Institution',
-                subtitle: 'I provide care services',
+                subtitle: 'We would love visits from furry friends',
                 onTap: () {
                   Navigator.push(
                     context,
@@ -63,6 +61,7 @@ class RoleSelectionPage extends StatelessWidget {
     );
   }
 }
+
 class _RoleCard extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -85,9 +84,7 @@ class _RoleCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          border: Border.all(color: Theme.of(context).colorScheme.primary),
         ),
         child: Row(
           children: [
@@ -104,10 +101,7 @@ class _RoleCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 14),
-                  ),
+                  Text(subtitle, style: const TextStyle(fontSize: 14)),
                 ],
               ),
             ),

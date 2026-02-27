@@ -36,8 +36,6 @@ public class AnimalServiceTests
                 Name = id + "_name",
                 Email = id + "@mail.com",
                 HashedPassword = "abc",
-                Salt = "abc",
-                RealPassword = "abc",
                 ProfilePictureKey = "abc",
                 RoleId = 2,
                 CreatedAt = DateTime.UtcNow,

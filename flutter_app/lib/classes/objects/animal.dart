@@ -10,7 +10,7 @@ class Animal extends Common {
     required this.id,
     required this.Name,
     required this.Description,
-    required this.Age,
+    required this.dateOfBirth,
     required this.TypeId,
     required this.animalType,
     required this.TypeDescription,
@@ -20,7 +20,7 @@ class Animal extends Common {
     required this.UserName,
     required this.createdAt,
     required this.updatedAt,
-    required this.Base64Image,
+    required this.animalPictureKey,
     required this.bookings,
   });
 
@@ -28,15 +28,15 @@ class Animal extends Common {
 
   final String Description;
 
-  final String Base64Image;
+  final String animalPictureKey;
 
-  final int Age;
+  final DateTime? dateOfBirth;
 
   final String TypeId;
 
-  final String TypeName;
+  final String? TypeName;
 
-  final String TypeDescription;
+  final String? TypeDescription;
 
   final AnimalType? animalType;
 
@@ -65,11 +65,11 @@ class Animal extends Common {
       id: json['id'] as String,
       Name: (json['name'] as String).replaceAll('"', ''),
       Description: (json['description'] as String).replaceAll('"', ''),
-      Base64Image: (json['base64Image'] as String).replaceAll('"', ''),
-      Age: json['age'] as int,
+      animalPictureKey: (json['animalPictureKey'] as String? ?? '').replaceAll('"', ''),
+      dateOfBirth: json['dateOfBirth'] as String == '' ? DateTime(1900) : DateTime.tryParse(json['dateOfBirth'] as String) ?? DateTime(1900),
       TypeId: (json['typeId'] as String).replaceAll('"', ''),
-      TypeName: (json['typeName'] as String).replaceAll('"', ''),
-      TypeDescription: (json['typeDescription'] as String).replaceAll('"', ''),
+      TypeName: json['typeName'] == null ? null : (json['typeName'] as String).replaceAll('"', ''),
+      TypeDescription: json['typeDescription'] == null ? null : (json['typeDescription'] as String).replaceAll('"', ''),
       animalType: json['animalType'] == null
           ? null
           : AnimalType.fromJson(json['animalType']),

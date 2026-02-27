@@ -20,8 +20,7 @@ jobs:
   run-tests:
     name: Run tests
     runs-on: ubuntu-latest
-    env:
-      ConnectionStrings__DefaultConnection: ${{ secrets.connectionString }}
+    environment: dev
 
     steps:
       - name: Check out code
@@ -41,11 +40,12 @@ jobs:
       - name: Run Tests
         run: |
           mkdir -p test-results
-          dotnet test --logger "trx;LogFileName=test-results.trx" --results-directory ./test-results
+          echo "##[group]Running tests with connection string: ${{ secrets.CONNECTIONSTRING }}"
+          dotnet test --environment ConnectionStrings__db="${{ secrets.CONNECTIONSTRING }}" --logger "trx;LogFileName=test-results.trx" --results-directory ./test-results
         continue-on-error: true
 
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: test-results/test-results.trx 
+          files: Backend/test-results/test-results.trx 

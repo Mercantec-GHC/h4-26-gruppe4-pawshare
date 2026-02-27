@@ -14,7 +14,7 @@ public class UserDBIntegrationTest2
     public AppDBContext db { get; private set; } = default!;
     private string _connectionString = string.Empty;
     
-    [OneTimeSetUp]
+    [OneTimeSetUp, Category("Local")]
     public async Task Setup()
     {
         
@@ -23,7 +23,7 @@ public class UserDBIntegrationTest2
 
         var config = builder.Build();
 
-        _connectionString = config.GetConnectionString("DefaultConnection") ?? Environment.GetEnvironmentVariable("MY_ENV_VAR");
+        _connectionString = config.GetConnectionString("db") ?? Environment.GetEnvironmentVariable("ConnectionStrings__db");
 
         Console.WriteLine(_connectionString);
         
@@ -44,7 +44,7 @@ public class UserDBIntegrationTest2
         
     }
 
-    [Test]
+    [Test, Category("Local")]
     public async Task Create_User_And_Check_If_It_Exists2()
     {
         var user = new User()
@@ -52,13 +52,11 @@ public class UserDBIntegrationTest2
             Id = "1",
             Name = "User",
             Email = "user@test.com",
-            RealPassword = "password123",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("password123"),
-            Salt = "BCrypt internal",
-            Base64Pfp = "profile_picture.png",
             CreatedAt =  DateTime.UtcNow,
             UpdatedAt =  DateTime.UtcNow,
-            RoleId = 1
+            RoleId = 1,
+            City = "Test City"
             
         };
         

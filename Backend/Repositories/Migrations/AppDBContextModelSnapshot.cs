@@ -27,11 +27,11 @@ namespace Repositories.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("AnimalTypeId")
+                    b.Property<string>("AnimalPictureKey")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Base64Image")
-                        .IsRequired()
+                    b.Property<string>("AnimalTypeId")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -65,7 +65,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Animals", (string)null);
+                    b.ToTable("Animals");
                 });
 
             modelBuilder.Entity("Models.AnimalType", b =>
@@ -89,7 +89,7 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AnimalTypes", (string)null);
+                    b.ToTable("AnimalTypes");
                 });
 
             modelBuilder.Entity("Models.Appointment", b =>
@@ -119,7 +119,7 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("Models.AppointmentAnimalBooking", b =>
@@ -147,7 +147,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("AppointmentId");
 
-                    b.ToTable("AppointmentAnimalBookings", (string)null);
+                    b.ToTable("AppointmentAnimalBookings");
                 });
 
             modelBuilder.Entity("Models.Chat", b =>
@@ -167,7 +167,7 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Chats", (string)null);
+                    b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("Models.ChatUserConvo", b =>
@@ -182,7 +182,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("ChatUserConvos", (string)null);
+                    b.ToTable("ChatUserConvos");
                 });
 
             modelBuilder.Entity("Models.Message", b =>
@@ -214,7 +214,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Models.MessageReadReceipt", b =>
@@ -242,7 +242,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MessageReadReceipts", (string)null);
+                    b.ToTable("MessageReadReceipts");
                 });
 
             modelBuilder.Entity("Models.Role", b =>
@@ -259,7 +259,7 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
 
                     b.HasData(
                         new
@@ -289,10 +289,6 @@ namespace Repositories.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("Base64Pfp")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("text");
@@ -312,7 +308,13 @@ namespace Repositories.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("RealPassword")
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ProfilePictureKey")
                         .HasColumnType("text");
 
                     b.Property<string>("RefreshToken")
@@ -324,10 +326,6 @@ namespace Repositories.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Salt")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -335,7 +333,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Models.UserAppointmentBooking", b =>
@@ -363,7 +361,7 @@ namespace Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserAppointmentBooking", (string)null);
+                    b.ToTable("UserAppointmentBooking");
                 });
 
             modelBuilder.Entity("Models.Animal", b =>

@@ -16,6 +16,13 @@ public interface IChatService
     public Task<ChatListItemDto?> CreateChatAsync(CreateChatDto dto);
 
     /// <summary>
+    /// Checks if a chat with the given chatId exists. Returns true if it exists, false otherwise.
+    /// </summary>
+    /// <param name="chatId"></param>
+    /// <returns></returns>
+    public Task<bool> GetChat(string chatId);
+
+    /// <summary>
     /// Retrieves all chats that a specific user is a member of.
     /// </summary>
     /// <param name="userId">The unique identifier of the user.</param>

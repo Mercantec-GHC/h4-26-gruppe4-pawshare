@@ -5,6 +5,7 @@ using Repositories;
 using Repositories.Context;
 using Repositories.Interfaces;
 using Services;
+using Services.Interfaces;
 
 namespace Backend.Test.Unit_Tests.Services;
 
@@ -14,55 +15,40 @@ public class UserServiceTest
     public void Setup() {}
 
     [Test]
-    public async Task Get_All_Users()
+    public async Task Get_User_By_Id()
     {
-            var options = new DbContextOptionsBuilder<AppDBContext>()
-                .UseInMemoryDatabase("ServiceUnitDB")
-                .Options;
+        var options = new DbContextOptionsBuilder<AppDBContext>()
+            .UseInMemoryDatabase(databaseName: "ServiceUnitDB_" + Guid.NewGuid().ToString())
+            .Options;
+    
+        var db = new AppDBContext(options);
         
-            var db = new AppDBContext(options);
+        // Ensure the database is created
+        await db.Database.EnsureCreatedAsync();
+    
+        var newUser = new User
+        {
+            Id = "1",
+            Name = "user1",
+            Email = "user1@email.com",
+            HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            RoleId = 1,
+            City = "Test City"
+        };
         
-            var users = new List<User>();
-            for (int i = 0; i < 10; i++)
-            {
-                users.Add(new User
-                {
-                    Id = $"{i}",
-                    Name = $"user{i}",
-                    Base64Pfp = $"profile_pic_{i}",
-                    Email =  $"user{i}@email.com",
-                    HashedPassword = BCrypt.Net.BCrypt.HashPassword($"Password{i}"),
-                    Salt = "BCrypt internal",
-                    RealPassword = $"Password{i}",
-                    CreatedAt =  DateTime.Now,
-                    UpdatedAt =  DateTime.Now,
-                
-                });
-            }
-        
-            db.Users.Add(new User
-            {
-                Id = "1",
-                Name = $"user1",
-                Base64Pfp = $"profile_pic_1",
-                Email =  $"user1@email.com",
-                HashedPassword = BCrypt.Net.BCrypt.HashPassword($"Password1"),
-                Salt = "BCrypt internal",
-                RealPassword = $"Password1",
-                CreatedAt =  DateTime.Now,
-                UpdatedAt =  DateTime.Now,
-                
-            });
-        
-            await db.SaveChangesAsync();
+        // Add user to the database
+        db.Users.Add(newUser);
+        await db.SaveChangesAsync();
 
-            var userRepo = new UserRepo(db);
-            var mockRoleRepo = new Mock<IRoleRepo>();
-            var userService = new UserService(userRepo, mockRoleRepo.Object);
-            var user = await userService.GetUser("1");
-            
-            Assert.That(user.Id, Is.EqualTo("1"));
-
-            
+        var userRepo = new UserRepo(db);
+        var mockRoleRepo = new Mock<IRoleRepo>();
+        var mockMediaService = new Mock<IMediaService>();
+        var userService = new UserService(userRepo, mockRoleRepo.Object, mockMediaService.Object);
+        var user = await userService.GetUser("1");
+        
+        Assert.That(user, Is.Not.Null);
+        Assert.That(user.Id, Is.EqualTo("1"));
     }
 }

@@ -4,7 +4,7 @@
     {
         public required string Name { get; set; }
         public required string Description { get; set; }
-        public required string Base64Image { get; set; }
+        public required string AnimalPictureKey { get; set; }
         public required DateOnly DateOfBirth { get; set; }
         public required string TypeId { get; set; }
         public AnimalType? AnimalType { get; set; }

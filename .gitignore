@@ -16,8 +16,6 @@
 .vscode/
 
 
-**/Migrations
-
 # C#
 */bin
 */obj
@@ -106,3 +104,8 @@ yarn.lock
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 .obsidian/workspace.json
+
+# IDE user-specific project settings
+*.csproj.user
+flutter_app/macos/Flutter/ephemeral/flutter_export_environment.sh
+flutter_app/macos/Flutter/ephemeral/Flutter-Generated.xcconfig

@@ -14,6 +14,9 @@ using Moq;
 using Moq.EntityFrameworkCore;
 using NuGet.Packaging;
 using Microsoft.Data.Sqlite;
+using Services.Interfaces;
+using System.Security.Cryptography;
+using System.Configuration;
 
 namespace Backend.Test.Unit_Tests.Repositories;
 
@@ -21,11 +24,9 @@ namespace Backend.Test.Unit_Tests.Repositories;
 public class UserRepoTest
 {
     private IUserRepo _userRepo;
-    private JwtService _jwtService;
     private List<User> _users;
     private string _refreshToken;
 
-    private AuthService _auth;
 
     private Mock<AppDBContext> _mockDbContext;
 
@@ -35,6 +36,8 @@ public class UserRepoTest
 
         var factory = new TestApplicationFactory();
         var config = factory.Services.GetRequiredService<IConfiguration>();
+
+
 
 
 
@@ -81,11 +84,6 @@ public class UserRepoTest
 
         _userRepo = new UserRepo(_mockDbContext.Object);
 
-        _jwtService = new JwtService(config);
-
-        var _roleRepo = new Mock<IRoleRepo>();
-
-        _auth = new AuthService(_userRepo, _jwtService, _roleRepo.Object);
 
     }
 
@@ -100,14 +98,12 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
 
@@ -140,14 +136,12 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         await _userRepo.PostUser(user);
@@ -157,20 +151,18 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_2",
-            Email = "user1@email.com",
+            Email = "user2@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         var updatedUser = await _userRepo.UpdateUser(updatedUserData);
 
         Assert.That(updatedUser, Is.Not.Null);
-        Assert.That(updatedUser.Base64Pfp, Is.EqualTo("profile_pic_2"));
+        Assert.That(updatedUser.Email, Is.EqualTo("user2@email.com"));
 
     }
 
@@ -194,14 +186,12 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         await _userRepo.PostUser(user);
@@ -212,6 +202,8 @@ public class UserRepoTest
         Assert.That(getUpdatedUser.Id, Is.EqualTo("1"));
         Assert.That(getUpdatedUser.Email, Is.EqualTo("user1@email.com"));
     }
+
+
 
     [Test]
     public async Task Get_User_By_Refresh_Token()
@@ -240,14 +232,12 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         await userRepo.PostUser(user);
@@ -255,9 +245,19 @@ public class UserRepoTest
         // Create a new AuthService with the real context
         var factory = new TestApplicationFactory();
         var config = factory.Services.GetRequiredService<IConfiguration>();
-        var jwtService = new JwtService(config);
+        var jwtServiceMock = new Mock<IJwtService>();
+        jwtServiceMock.Setup(j => j.GenerateToken(It.IsAny<User>())).Returns("mocked_jwt_token");
         var roleRepoMock = new Mock<IRoleRepo>();
-        var authService = new AuthService(userRepo, jwtService, roleRepoMock.Object);
+        var _mockAnimalRepo = new Mock<IAnimalRepo>();
+        var authServiceMock = new Mock<IAuthService>();
+        authServiceMock.Setup(a => a.Login(It.IsAny<LoginDto>())).ReturnsAsync(new AuthResponseDto()
+        {
+            UserId = "1",
+            AccessToken = "mocked_access_token",
+            RefreshToken = "mocked_refresh_token"
+        });
+
+        await userRepo.UpdateRefreshToken("1", "mocked_refresh_token", DateTime.UtcNow.AddDays(7));
 
         var userLoginDTO = new LoginDto()
         {
@@ -265,7 +265,7 @@ public class UserRepoTest
             Password = "Password1"
         };
 
-        var userLogin = await authService.Login(userLoginDTO);
+        var userLogin = await authServiceMock.Object.Login(userLoginDTO);
 
         _refreshToken = userLogin.RefreshToken;
 
@@ -303,14 +303,12 @@ public class UserRepoTest
         {
             Id = "1",
             Name = "user1",
-            Base64Pfp = "profile_pic_1",
             Email = "user1@email.com",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("Password1"),
-            Salt = "BCrypt internal",
-            RealPassword = "Password1",
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
             RoleId = 1,
+            City = "Test City"
         };
 
         await userRepo.PostUser(user);
@@ -374,14 +372,12 @@ public class UserRepoTest
             {
                 Id = $"{i}",
                 Name = $"user{i}",
-                Base64Pfp = $"profile_pic_{i}",
                 Email = $"user{i}@email.com",
                 HashedPassword = BCrypt.Net.BCrypt.HashPassword($"Password{i}"),
-                Salt = "BCrypt internal",
-                RealPassword = $"Password{i}",
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
-                RoleId = 1  // Required foreign key field
+                RoleId = 1,
+                City = "Test City"
 
             });
         }
@@ -399,7 +395,6 @@ public class UserRepoTest
             Assert.That(users[i].Id, Is.EqualTo(usersList[i].Id));
             Assert.That(users[i].Name, Is.EqualTo(usersList[i].Name));
             Assert.That(users[i].HashedPassword, Is.EqualTo(usersList[i].HashedPassword));
-            Assert.That(users[i].Salt, Is.EqualTo(usersList[i].Salt));
             Assert.That(users[i].CreatedAt, Is.EqualTo(usersList[i].CreatedAt));
             Assert.That(users[i].UpdatedAt, Is.EqualTo(usersList[i].UpdatedAt));
         }
@@ -412,4 +407,10 @@ public class UserRepoTest
     {
 
     }
+
+            private static string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+
 }

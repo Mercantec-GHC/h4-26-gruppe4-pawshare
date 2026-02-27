@@ -6,6 +6,7 @@ import '../objects/api_path.dart';
 import 'auth.dart';
 
 class API {
+  static const String _appEnv = String.fromEnvironment('APP_ENV', defaultValue: '');
   static const String _url =
       '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/api/';
   static const String _testUrl =
@@ -13,7 +14,18 @@ class API {
 
   static final Map<String, String> _headers = {};
 
-  static String get _baseUrl => kReleaseMode ? _url : _testUrl;
+  static bool get _useProdApi {
+    final normalizedEnv = _appEnv.toLowerCase();
+    if (normalizedEnv == 'prod' || normalizedEnv == 'production') {
+      return true;
+    }
+    if (normalizedEnv == 'dev' || normalizedEnv == 'development' || normalizedEnv == 'local') {
+      return false;
+    }
+    return kReleaseMode;
+  }
+
+  static String get _baseUrl => _useProdApi ? _url : _testUrl;
 
   static Map<String, String> _jsonHeaders() {
     return {
@@ -192,6 +204,44 @@ class API {
     return temp;
   }
 
+  // Patch Request
+  static Future<http.Response> patchRequest(ApiPath action, Object? body) async {
+    await _applyAuthHeader();
+
+    // Patch Request from url with header and body
+    var temp = await _attemptApiWithRefresh(
+      () => http.patch(
+        _buildUri(action),
+        headers: _jsonHeaders(),
+        body: body == null ? null : jsonEncode(body),
+      ),
+      null,
+    );
+
+    return temp;
+  }
+
+  // Patch Request
+  static Future<http.Response> patchRequestWithId(
+    ApiPath action,
+    String id,
+    Object? body,
+    {bool skipRefresh = false}
+  ) async {
+    await _applyAuthHeader();
+
+    // Patch Request from url with header, body, and "/(id)"
+    return await _attemptApiWithRefresh(
+      () => http.patch(
+        _buildUri(action, id),
+        headers: _jsonHeaders(),
+        body: body == null ? null : jsonEncode(body),
+      ),
+      null,
+      skipRefresh: skipRefresh,
+    );
+  }
+
   // Delete Request
   static Future<http.Response> deleteRequest(ApiPath action) async {
     await _applyAuthHeader();
@@ -223,6 +273,41 @@ class API {
     return temp;
   }
 
+  static Future<http.Response> uploadFile(
+    List<int> bytes,
+    String filename,
+  ) async {
+    await _applyAuthHeader();
+
+    final uri = _buildUri(ApiPath.mediaUpload);
+
+    // Build a fresh MultipartRequest inside the callback so it can be recreated on retry
+    return await _attemptApiWithRefresh(
+      () async {
+        final request = http.MultipartRequest('POST', uri)
+          ..headers.addAll({
+            'Accept': 'application/json',
+            ..._headers,
+          })
+          ..files.add(
+            http.MultipartFile.fromBytes(
+              'file',
+              bytes,
+              filename: filename,
+            ),
+          );
+        final streamed = await request.send();
+        return http.Response.fromStream(streamed);
+      },
+      null,
+    );
+  }
+
+  static String mediaFileUrl(String key) {
+    return '${_baseUrl}media/file/$key';
+  }
+
+
   static void setAuthHeader(String token) {
     _headers['Authorization'] = 'Bearer $token';
   }
@@ -233,12 +318,24 @@ class API {
 }
 
 class WebSocketAPI {
+  static const String _appEnv = String.fromEnvironment('APP_ENV', defaultValue: '');
   static const String _hubUrl =
       '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://pawshare-api.mercantec.tech')}/ws/chat';
   static const String _hubTestUrl =
       '${String.fromEnvironment('API_URL_HTTPS', defaultValue: 'https://dev-pawshare-api.mercantec.tech')}/ws/chat';
 
-  static String getHubUrl() => kReleaseMode ? _hubUrl : _hubTestUrl;
+  static bool get _useProdApi {
+    final normalizedEnv = _appEnv.toLowerCase();
+    if (normalizedEnv == 'prod' || normalizedEnv == 'production') {
+      return true;
+    }
+    if (normalizedEnv == 'dev' || normalizedEnv == 'development' || normalizedEnv == 'local') {
+      return false;
+    }
+    return kReleaseMode;
+  }
+
+  static String getHubUrl() => _useProdApi ? _hubUrl : _hubTestUrl;
 
   static final Map<String, Function(String?)> _callbacks = {};
 

@@ -7,7 +7,7 @@ namespace Models.DTOs
         public string Id { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public string Base64Pfp { get; set; } = null!;
+        public string? ProfilePictureKey { get; set; } = null!;
     }
     public class RegisterDto
     {
@@ -15,9 +15,7 @@ namespace Models.DTOs
         public required string Name { get; set; }
         public required string Password { get; set; }
         public required string City { get; set; }
-
-
-        public required string Base64Pfp { get; set; }
+        public string? ProfilePictureKey { get; set; }
     }
     public class LoginDto
     {
@@ -47,7 +45,7 @@ namespace Models.DTOs
         public required string Name { get; set; }
         public required string Password { get; set; }
         public required string City { get; set; }
-        public required string Base64Pfp { get; set; }
+        public string? ProfilePictureKey { get; set; }
 
         public required string AnimalName { get; set; }
         public required string AnimalDescription { get; set; }
@@ -61,12 +59,18 @@ namespace Models.DTOs
         public required string Name { get; set; }
         public required string Password { get; set; }
         public required string City { get; set; }
-        public required string Base64Pfp { get; set; }
+        public string? ProfilePictureKey { get; set; }
     }
 
     public class ChangePasswordDto
     {
         public required string CurrentPassword { get; set; }
         public required string NewPassword { get; set; }
+    }
+
+    public class UpdateProfilePictureDto
+    {
+        public required string NewProfilePictureKey { get; set; }
+        public string? OldProfilePictureKey { get; set; }
     }
 }

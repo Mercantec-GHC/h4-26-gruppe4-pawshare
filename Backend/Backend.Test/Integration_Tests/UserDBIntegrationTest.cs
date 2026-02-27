@@ -38,10 +38,8 @@ public class UserDBIntegrationTest
             });
 
         db = _factory.Services.CreateScope().ServiceProvider.GetRequiredService<AppDBContext>();
-        // await db.Database.EnsureCreatedAsync();
-        await db.Database.MigrateAsync();
-        //var pending = await db.Database.GetPendingMigrationsAsync();
-        //Console.WriteLine("Pending migrations: " + string.Join(", ", pending));
+        // Create the database schema directly instead of running migrations
+        await db.Database.EnsureCreatedAsync();
 
     }
 
@@ -57,13 +55,11 @@ public class UserDBIntegrationTest
             Id = "1",
             Name = "User",
             Email = "user@test.com",
-            RealPassword = "password123",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("password123"),
-            Salt = "BCrypt internal",
-            Base64Pfp = "profile_picture.png",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             RoleId = 1,
+            City = "Test City"
         };
 
         db.Users.Add(user);
@@ -100,13 +96,11 @@ public class UserDBIntegrationTest
             Id = "1",
             Name = "User",
             Email = "user@test.com",
-            RealPassword = "password123",
             HashedPassword = BCrypt.Net.BCrypt.HashPassword("password123"),
-            Salt = "BCrypt internal",
-            Base64Pfp = "profile_picture.png",
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             RoleId = 1,
+            City = "Test City"
 
         };
 

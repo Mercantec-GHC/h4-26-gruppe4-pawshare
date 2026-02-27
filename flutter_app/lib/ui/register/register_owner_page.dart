@@ -187,7 +187,7 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
                     }
 
                     return DropdownButtonFormField<AnimalType>(
-                      value: _selectedType,
+                      initialValue: _selectedType,
                       decoration: const InputDecoration(
                         labelText: 'Animal type',
                         border: OutlineInputBorder(),
@@ -222,7 +222,7 @@ class _RegisterOwnerPageState extends State<RegisterOwnerPage> {
                                     'Name': _nameController.text,
                                     'Password': _passwordController.text,
                                     'City': _cityController.text,
-                                    'Base64Pfp': '',
+                                    'ProfilePictureKey': '',
                                     'AnimalName': _animalNameController.text,
                                     'AnimalDescription':
                                         _animalDescriptionController.text,

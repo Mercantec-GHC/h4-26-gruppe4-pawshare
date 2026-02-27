@@ -1,24 +1,30 @@
-﻿using Models;
+﻿using Microsoft.Extensions.Configuration;
+using Models;
 using Models.DTOs;
 using Repositories.Interfaces;
+using Services.Interfaces;
 using System.Security.Cryptography;
 
 namespace Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly IUserRepo _users;
-        private readonly JwtService _jwtService;
+        private readonly IJwtService _jwtService;
         private readonly IRoleRepo _roleRepo;
         private readonly IAnimalRepo _animalRepo;
+        private readonly IEmailService _emailService;
+        private readonly IConfiguration _config;
 
 
-        public AuthService(IUserRepo users, JwtService jwtService, IRoleRepo roleRepo, IAnimalRepo animalRepo)
+        public AuthService(IUserRepo users, IJwtService jwtService, IRoleRepo roleRepo, IAnimalRepo animalRepo, IEmailService emailService, IConfiguration config)
         {
             _users = users;
             _roleRepo = roleRepo;
             _jwtService = jwtService;
             _animalRepo = animalRepo;
+            _emailService = emailService;
+            _config = config;
         }
 
         private static string GenerateRefreshToken()
@@ -31,7 +37,7 @@ namespace Services
         {
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
-            var role = await _roleRepo.GetByNameAsync("AnimalUser")
+            var role = await _roleRepo.GetByNameAsync("AnimalOwner")
                 ?? throw new Exception("Default role not found");
 
             var user = new User
@@ -45,10 +51,8 @@ namespace Services
                 RoleId = role.Id,
                 City = dto.City,
 
-                // Required by the model but not used for authentication
-                Salt = "BCrypt internal",
-                RealPassword = dto.Password,
-                Base64Pfp = dto.Base64Pfp
+                
+                ProfilePictureKey = dto.ProfilePictureKey
             };
 
             await _users.PostUser(user);
@@ -70,9 +74,7 @@ namespace Services
                 HashedPassword = hashedPassword,
                 RoleId = role.Id,
                 City = dto.City,
-                Base64Pfp = dto.Base64Pfp,
-                Salt = "BCrypt internal",
-                RealPassword = dto.Password
+                ProfilePictureKey = dto.ProfilePictureKey,
             };
 
             await _users.PostUser(user);
@@ -87,10 +89,15 @@ namespace Services
                 DateOfBirth = dto.DateOfBirth,
                 TypeId = dto.AnimalTypeId,
                 UserId = user.Id,
-                Base64Image = ""
+                AnimalPictureKey = ""
             };
 
             await _animalRepo.PostAnimal(animal);
+            await _emailService.SendAsync(
+               user.Email,
+               "Welcome to PawShare!",
+               $"Hi {user.Name},<br><br>Thank you for registering at PawShare! We're excited to have you on board.<br><br>Best regards,<br>The PawShare Team"
+           );
         }
 
         public async Task RegisterInstitution(RegisterInstitutionDto dto)
@@ -110,12 +117,16 @@ namespace Services
                 HashedPassword = hashedPassword,
                 RoleId = role.Id,
                 City = dto.City,
-                Base64Pfp = dto.Base64Pfp,
-                Salt = "BCrypt internal",
-                RealPassword = dto.Password
+                ProfilePictureKey = dto.ProfilePictureKey,
             };
 
             await _users.PostUser(user);
+
+            await _emailService.SendAsync(
+               user.Email,
+               "Welcome to PawShare!",
+               $"Hi {user.Name},<br><br>Thank you for registering at PawShare! We're excited to have you on board.<br><br>Best regards,<br>The PawShare Team"
+           );
         }
 
         public async Task<AuthResponseDto?> Login(LoginDto dto)
@@ -185,7 +196,48 @@ namespace Services
             return true;
         }
 
-       
 
+        public async Task ForgotPassword(string email)
+        {
+            var user = await _users.GetByEmail(email);
+            if (user == null)
+                return;
+
+            var resetToken = Guid.NewGuid().ToString();
+            var resetExpires = DateTime.UtcNow.AddHours(1);
+
+            user.PasswordResetToken = resetToken;
+            user.PasswordResetTokenExpiresAt = resetExpires;
+
+            await _users.UpdateUser(user);
+            var frontendUrl = _config["FrontendUrl"];
+            var resetLink = $"{frontendUrl}/#/reset-password?token={resetToken}";
+
+            await _emailService.SendAsync(
+                user.Email,
+                "Password Reset Request",
+                $"Hi {user.Name},<br><br>Click below:<br><a href='{resetLink}'>Reset Password</a>"
+            );
+        }
+
+        public async Task<bool> ResetPassword(string token, string newPassword)
+        {
+            var user = await _users.GetByResetToken(token);
+            if (user == null)
+                return false;
+
+            if (user.PasswordResetTokenExpiresAt == null ||
+                user.PasswordResetTokenExpiresAt < DateTime.UtcNow)
+                return false;
+
+            
+            user.HashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            user.PasswordResetToken = null;
+            user.PasswordResetTokenExpiresAt = null;
+
+            await _users.UpdateUser(user);
+
+            return true;
+        }
     }
 }

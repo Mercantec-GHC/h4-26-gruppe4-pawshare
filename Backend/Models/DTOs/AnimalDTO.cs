@@ -8,7 +8,7 @@ namespace Models.DTOs
     {
         public required string Name { get; set; }
         public required string Description { get; set; }
-        public required string Base64Image { get; set; }
+        public required string AnimalPictureKey { get; set; }
         public required DateOnly DateOfBirth { get; set; }
 
         public required string UserName { get; set; }
@@ -25,5 +25,11 @@ namespace Models.DTOs
     {
         public string Name { get; set; } = default!;
         public string Description { get; set; } = default!;
+    }
+
+    public class UpdateAnimalPictureDto
+    {
+        public required string NewAnimalPictureKey { get; set; }
+        public string? OldAnimalPictureKey { get; set; }
     }
 }

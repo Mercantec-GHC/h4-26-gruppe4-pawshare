@@ -1,0 +1,46 @@
+meta {
+  name: get /api/Media/file/:key
+  type: http
+  seq: 2
+  tags: [
+    Media
+  ]
+}
+
+get {
+  url: {{baseUrl}}/api/Media/file/:key
+  body: none
+  auth: inherit
+}
+
+params:path {
+  key: 
+}
+
+example {
+  name: 200 Response
+  description: OK
+  
+  request: {
+    url: {{baseUrl}}/api/Media/file/:key
+    method: GET
+    mode: none
+    params:path: {
+      key: 
+    }
+  }
+  
+  response: {
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: text
+      content: '''
+  
+      '''
+    }
+  }
+}

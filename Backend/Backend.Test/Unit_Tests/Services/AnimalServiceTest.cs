@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.DTOs;
+using Moq;
 using Repositories;
 using Repositories.Context;
 using Services;
+using Services.Interfaces;
 
 namespace Backend.Test.Unit_Tests.Services;
 
@@ -12,6 +14,7 @@ public class AnimalServiceTests
     private AppDBContext _dbContext = null!;
     private AnimalRepo _animalRepo = null!;
     private AnimalService _animalService = null!;
+    private Mock<IMediaService> _mockMediaService = null!;
 
     [SetUp]
     public void Setup()
@@ -33,12 +36,11 @@ public class AnimalServiceTests
                 Name = id + "_name",
                 Email = id + "@mail.com",
                 HashedPassword = "abc",
-                Salt = "abc",
-                RealPassword = "abc",
-                Base64Pfp = "abc",
+                ProfilePictureKey = "abc",
                 RoleId = 2,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                City = "Test City"
             });
         }
 
@@ -58,7 +60,8 @@ public class AnimalServiceTests
         _dbContext.SaveChanges();
 
         _animalRepo = new AnimalRepo(_dbContext);
-        _animalService = new AnimalService(_animalRepo);
+        _mockMediaService = new Mock<IMediaService>();
+        _animalService = new AnimalService(_animalRepo, _mockMediaService.Object);
     }
 
     [TearDown]
@@ -75,8 +78,8 @@ public class AnimalServiceTests
             Id = "1",
             Name = "animal_1",
             Description = "description_1",
-            Base64Image = "image_1",
-            Age = 1,
+            AnimalPictureKey = "image_1",
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
             TypeId = "type_1",
             UserId = "user_1",
             CreatedAt = DateTime.UtcNow,
@@ -100,8 +103,8 @@ public class AnimalServiceTests
             Id = $"{i}",
             Name = $"animal_{i}",
             Description = $"description_{i}",
-            Base64Image = $"image_{i}",
-            Age = i,
+            AnimalPictureKey = $"image_{i}",
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(i)),
             TypeId = "type_1",
             UserId = "user_1",
             CreatedAt = DateTime.UtcNow,
@@ -128,8 +131,8 @@ public class AnimalServiceTests
                 Id = (i + 1).ToString(),
                 Name = $"a{i + 1}",
                 Description = $"d{i + 1}",
-                Base64Image = $"i{i + 1}",
-                Age = i + 1,
+                AnimalPictureKey = $"i{i + 1}",
+                DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(i + 1)),
                 TypeId = "type_" + i,
                 UserId = "user_1",
                 CreatedAt = DateTime.UtcNow,
@@ -160,8 +163,8 @@ public class AnimalServiceTests
                 Id = (i + 1).ToString(),
                 Name = $"a{i + 1}",
                 Description = $"d{i + 1}",
-                Base64Image = $"i{i + 1}",
-                Age = i + 1,
+                AnimalPictureKey = $"i{i + 1}",
+                DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(i + 1)),
                 TypeId = "type_" + i,
                 UserId = i % 2 != 0 ? "userB" : "userA",
                 CreatedAt = DateTime.UtcNow,
@@ -187,8 +190,8 @@ public class AnimalServiceTests
             Id = "placeholder",
             Name = "test_animal",
             Description = "test_description",
-            Base64Image = "test_image",
-            Age = 2,
+            AnimalPictureKey = "test_image",
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
             TypeId = "type_1",
             UserId = "user_1",
             CreatedAt = DateTime.MinValue,
@@ -211,8 +214,8 @@ public class AnimalServiceTests
             Id = "1",
             Name = "a",
             Description = "d",
-            Base64Image = "i",
-            Age = 1,
+            AnimalPictureKey = "i",
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
             TypeId = "type_1",
             UserId = "user_1",
             CreatedAt = DateTime.UtcNow,
@@ -233,5 +236,62 @@ public class AnimalServiceTests
         var result = await _animalService.DeleteAnimalAsync("missing");
 
         Assert.That(result, Is.False);
+    }
+
+    [Test]
+    public async Task UpdateAnimalPictureAsync_ReturnsTrue_WhenOwnerAndAnimalFound()
+    {
+        var animal = new Animal
+        {
+            Id = "1",
+            Name = "a",
+            Description = "d",
+            AnimalPictureKey = "old_key",
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
+            TypeId = "type_1",
+            UserId = "userA",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _dbContext.Animals.Add(animal);
+        await _dbContext.SaveChangesAsync();
+
+        _mockMediaService
+            .Setup(m => m.DeleteFileAsync("old_key", default))
+            .ReturnsAsync(true);
+
+        var result = await _animalService.UpdateAnimalPictureAsync("userA", "1", "new_key", "old_key");
+
+        Assert.That(result, Is.True);
+        var updated = await _dbContext.Animals.FindAsync("1");
+        Assert.That(updated, Is.Not.Null);
+        Assert.That(updated!.AnimalPictureKey, Is.EqualTo("new_key"));
+        _mockMediaService.Verify(m => m.DeleteFileAsync("old_key", default), Times.Once);
+    }
+
+    [Test]
+    public async Task UpdateAnimalPictureAsync_ReturnsFalse_WhenUserIsNotOwner()
+    {
+        var animal = new Animal
+        {
+            Id = "2",
+            Name = "a2",
+            Description = "d2",
+            AnimalPictureKey = "old_key_2",
+            DateOfBirth = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
+            TypeId = "type_1",
+            UserId = "userA",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        _dbContext.Animals.Add(animal);
+        await _dbContext.SaveChangesAsync();
+
+        var result = await _animalService.UpdateAnimalPictureAsync("userB", "2", "new_key", "old_key_2");
+
+        Assert.That(result, Is.False);
+        _mockMediaService.Verify(m => m.DeleteFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

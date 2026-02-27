@@ -1,20 +1,20 @@
 meta {
-  name: delete /api/Animal/:id
+  name: get /api/Media/file/:key
   type: http
-  seq: 5
+  seq: 2
   tags: [
-    Animal
+    Media
   ]
 }
 
-delete {
-  url: {{baseUrl}}/api/Animal/:id
+get {
+  url: {{baseUrl}}/api/Media/file/:key
   body: none
   auth: inherit
 }
 
 params:path {
-  id: 
+  key: 
 }
 
 example {
@@ -22,11 +22,11 @@ example {
   description: OK
   
   request: {
-    url: {{baseUrl}}/api/Animal/:id
-    method: DELETE
+    url: {{baseUrl}}/api/Media/file/:key
+    method: GET
     mode: none
     params:path: {
-      id: 
+      key: 
     }
   }
   

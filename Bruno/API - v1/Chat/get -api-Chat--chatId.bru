@@ -1,16 +1,20 @@
 meta {
-  name: get /api/Users
+  name: get /api/Chat/:chatId
   type: http
-  seq: 1
+  seq: 2
   tags: [
-    Users
+    Chat
   ]
 }
 
 get {
-  url: {{baseUrl}}/api/Users
+  url: {{baseUrl}}/api/Chat/:chatId
   body: none
   auth: inherit
+}
+
+params:path {
+  chatId: 
 }
 
 example {
@@ -18,9 +22,12 @@ example {
   description: OK
   
   request: {
-    url: {{baseUrl}}/api/Users
+    url: {{baseUrl}}/api/Chat/:chatId
     method: GET
     mode: none
+    params:path: {
+      chatId: 
+    }
   }
   
   response: {
@@ -36,12 +43,7 @@ example {
     body: {
       type: text
       content: '''
-        {
-          "id": "",
-          "name": "",
-          "email": "",
-          "profilePictureKey": ""
-        }
+        false
       '''
     }
   }
@@ -52,9 +54,12 @@ example {
   description: OK
   
   request: {
-    url: {{baseUrl}}/api/Users
+    url: {{baseUrl}}/api/Chat/:chatId
     method: GET
     mode: none
+    params:path: {
+      chatId: 
+    }
   }
   
   response: {
@@ -70,12 +75,7 @@ example {
     body: {
       type: json
       content: '''
-        {
-          "id": "",
-          "name": "",
-          "email": "",
-          "profilePictureKey": ""
-        }
+        false
       '''
     }
   }
@@ -86,9 +86,12 @@ example {
   description: OK
   
   request: {
-    url: {{baseUrl}}/api/Users
+    url: {{baseUrl}}/api/Chat/:chatId
     method: GET
     mode: none
+    params:path: {
+      chatId: 
+    }
   }
   
   response: {
@@ -104,12 +107,7 @@ example {
     body: {
       type: json
       content: '''
-        {
-          "id": "",
-          "name": "",
-          "email": "",
-          "profilePictureKey": ""
-        }
+        false
       '''
     }
   }

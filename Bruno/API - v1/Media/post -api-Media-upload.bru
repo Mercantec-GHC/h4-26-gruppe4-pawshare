@@ -1,16 +1,20 @@
 meta {
-  name: get /api/Users
+  name: post /api/Media/upload
   type: http
   seq: 1
   tags: [
-    Users
+    Media
   ]
 }
 
-get {
-  url: {{baseUrl}}/api/Users
-  body: none
+post {
+  url: {{baseUrl}}/api/Media/upload
+  body: multipartForm
   auth: inherit
+}
+
+body:multipart-form {
+  file: @file()
 }
 
 example {
@@ -18,9 +22,12 @@ example {
   description: OK
   
   request: {
-    url: {{baseUrl}}/api/Users
-    method: GET
-    mode: none
+    url: {{baseUrl}}/api/Media/upload
+    method: POST
+    mode: multipartForm
+    body:multipart-form: {
+      file: @file()
+    }
   }
   
   response: {
@@ -37,10 +44,8 @@ example {
       type: text
       content: '''
         {
-          "id": "",
-          "name": "",
-          "email": "",
-          "profilePictureKey": ""
+          "objectKey": "",
+          "fileUrl": ""
         }
       '''
     }
@@ -52,9 +57,12 @@ example {
   description: OK
   
   request: {
-    url: {{baseUrl}}/api/Users
-    method: GET
-    mode: none
+    url: {{baseUrl}}/api/Media/upload
+    method: POST
+    mode: multipartForm
+    body:multipart-form: {
+      file: @file()
+    }
   }
   
   response: {
@@ -71,10 +79,8 @@ example {
       type: json
       content: '''
         {
-          "id": "",
-          "name": "",
-          "email": "",
-          "profilePictureKey": ""
+          "objectKey": "",
+          "fileUrl": ""
         }
       '''
     }
@@ -86,9 +92,12 @@ example {
   description: OK
   
   request: {
-    url: {{baseUrl}}/api/Users
-    method: GET
-    mode: none
+    url: {{baseUrl}}/api/Media/upload
+    method: POST
+    mode: multipartForm
+    body:multipart-form: {
+      file: @file()
+    }
   }
   
   response: {
@@ -105,10 +114,8 @@ example {
       type: json
       content: '''
         {
-          "id": "",
-          "name": "",
-          "email": "",
-          "profilePictureKey": ""
+          "objectKey": "",
+          "fileUrl": ""
         }
       '''
     }
